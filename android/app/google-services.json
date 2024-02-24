@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "493196103679",
+    "project_id": "seventyfiveyou",
+    "storage_bucket": "seventyfiveyou.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:493196103679:android:54f74f036e307bdcfc21ca",
+        "android_client_info": {
+          "package_name": "com.example.seventy_five_hard"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCT5WeFRSyp7AaPT_NFEBX9B-BpjxVRpPs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

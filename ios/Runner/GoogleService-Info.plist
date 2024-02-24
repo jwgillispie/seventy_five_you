@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyCkzSRisydIpy1cYxpyj5zcxz4ljyDBqk0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>493196103679</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.seventyFiveHard</string>
+	<key>PROJECT_ID</key>
+	<string>seventyfiveyou</string>
+	<key>STORAGE_BUCKET</key>
+	<string>seventyfiveyou.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:493196103679:ios:cf6ea656670ed745fc21ca</string>
+</dict>
+</plist>

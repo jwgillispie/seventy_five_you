@@ -1,0 +1,16 @@
+part of 'sign_up_bloc_bloc.dart';
+
+abstract class SignUpState {}
+
+class SignUpInitial extends SignUpState {}
+
+class SignUpLoading extends SignUpState {}
+
+class SignUpSuccess extends SignUpState {}
+
+class SignUpFailure extends SignUpState {
+  final String error;
+
+  SignUpFailure({required this.error});
+}
+
