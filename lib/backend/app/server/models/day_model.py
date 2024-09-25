@@ -2,15 +2,20 @@ from beanie import Document
 from pydantic import EmailStr
 from typing import List, Optional
 from datetime import datetime
+from .diet_model import Diet
+from .water_model import Water
+from .alcohol_model import Alcohol
+from .ten_pages_model import TenPages
+from .inside_workout_model import InsideWorkout
+from .outside_workout_model import OutsideWorkout
 class Day(Document):
     class Settings:
         name = "Day"
     date : str  # Date of the day
     firebase_uid : str
-    diet : List[str]  # List of diet entries
-    outside_workout : List[str]  # List of outside workouts
-    second_workout : List[str]  # List of second workouts
-    water : int  # Water intake amount
-    alcohol : int  # Alcohol consumption status (e.g., Yes/No)
-    pages : int  # Number of pages read
-  
+    diet : Diet # List of diet entries
+    outside_workout : OutsideWorkout  # List of outside workouts
+    inside_workout : InsideWorkout  # List of second workouts
+    water : Water  # Water intake amount
+    alcohol : Alcohol  # Alcohol consumption status (e.g., Yes/No)
+    pages : TenPages  # Number of pages read

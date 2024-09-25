@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:seventy_five_hard/features/presentation/widgets/nav_bar.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 class WorkoutTwoPage extends StatefulWidget {
   const WorkoutTwoPage({Key? key}) : super(key: key);
 
@@ -12,54 +14,99 @@ class _WorkoutTwoPageState extends State<WorkoutTwoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Workout 2'),
-        backgroundColor: Theme.of(context).colorScheme.secondary
+        title: Text(
+          'Workout 2',
+          style: GoogleFonts.lato(),
+        ),
+        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 0,
       ),
       body: Stack(
         children: [
-          // Background image or scene
-          Image.asset(
-            Theme.of(context).brightness == Brightness.dark
-                ? 'assets/images/indoor_workout_dark.jpg'
-                :'assets/images/indoor_workout_light.jpg', 
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
-          ),
-          // Journal entry form
           Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                 Text(
-                  'Description of the Workout',
-                  style: Theme.of(context)
-                      .textTheme
-                      .displaySmall
-                      ?.copyWith(fontSize: 20),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'Enter your workout description',
-                    fillColor: Colors.white,
-                    filled: true,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Theme.of(context).primaryColor),
+                      child: Column(children: [
+                        Text(
+                          'Workout ',
+                          style: GoogleFonts.lato(fontSize: 20),
+                        ),
+                        Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                decoration: const InputDecoration(
+                                  hintText: 'Enter your workout description',
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.all(10),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ])),
+                  SizedBox(height: 5),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Handle workout description submission
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Theme.of(context).primaryColor,
+                    ),
+                    child: const Text('Submit Workout'),
                   ),
-                ),
-                const SizedBox(height: 20),
-                 Text(
-                  'Thoughts/Feelings',
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 20),
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'Enter your thoughts or feelings',
-                    fillColor: Colors.white,
-                    filled: true,
+                  const SizedBox(height: 20),
+                  Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Theme.of(context).primaryColor),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Reflection',
+                            style: GoogleFonts.lato(fontSize: 20),
+                          ),
+                          Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              children: [
+                                TextFormField(
+                                  decoration: const InputDecoration(
+                                    hintText: 'Enter your thoughts or feelings',
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.all(10),
+                                  ),
+                                  maxLines: 3,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )),
+                  SizedBox(height: 5),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Handle thoughts/feelings submission
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Theme.of(context).primaryColor,
+                    ),
+                    child: const Text('Submit Thoughts'),
                   ),
-                  maxLines: 3,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

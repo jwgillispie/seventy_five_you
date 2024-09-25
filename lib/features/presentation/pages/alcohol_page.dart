@@ -9,71 +9,58 @@ class AlcoholPage extends StatefulWidget {
 }
 
 class _AlcoholPageState extends State<AlcoholPage> {
-  double _rating = 5.0; // Initial rating value
-  bool _drankAlcohol = false; // Initial value for whether alcohol was consumed
+  double _rating = 5.0;
+  bool _avoidedAlcohol = false; // 0 for No, 1 for Yes
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Alcohol'),
-          backgroundColor: Theme.of(context).colorScheme.secondary),
+        title: const Text('Alcohol'),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
       body: Stack(
         children: [
-          // Background image or scene
-          Image.asset(
-            Theme.of(context).brightness == Brightness.dark
-                ? 'assets/images/alcohol_dark.jpg'
-                : 'assets/images/alcohol_light.jpg',
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
-          ),
-          // Journal entry form
-          Padding(
+          // Image.asset(
+          //   Theme.of(context).brightness == Brightness.dark
+          //       ? 'assets/images/alcohol_dark.jpg'
+          //       : 'assets/images/alcohol_light.jpg',
+          //   fit: BoxFit.cover,
+          //   width: double.infinity,
+          //   height: double.infinity,
+          // ),
+          Container(
+             // Semi-transparent overlay
             padding: const EdgeInsets.all(20.0),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     'How hard was it to avoid alcohol today?',
-                    style: TextStyle(fontSize: 20),
+                    style: TextStyle(fontSize: 20, color: Theme.of(context).colorScheme.onSurface),
                   ),
                   Slider(
                     value: _rating,
                     min: 1,
                     max: 10,
-                    divisions:
-                        9, // Number of divisions between min and max values
+                    divisions: 9,
                     onChanged: (value) {
                       setState(() {
                         _rating = value;
                       });
                     },
-                    label: _rating
-                        .toInt()
-                        .toString(), // Display current rating as label
+                    label:
+                        '${_rating.toInt()} : ${ratingToDifficulty(_rating)}',
                   ),
-                  Text(
-                    '${_rating.toInt()} : ${ratingToDifficulty(_rating)}',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('Did you avoid alcohol today?'),
-                      const SizedBox(width: 10),
-                      Checkbox(
-                        value: _drankAlcohol,
-                        onChanged: (value) {
-                          setState(() {
-                            _drankAlcohol = value!;
-                          });
-                        },
-                      ),
-                    ],
+                  SwitchListTile(
+                    title: Text('Did you avoid alcohol today?'),
+                    value: _avoidedAlcohol,
+                    onChanged: (bool value) {
+                      setState(() {
+                        _avoidedAlcohol = value;
+                      });
+                    },
                   ),
                 ],
               ),

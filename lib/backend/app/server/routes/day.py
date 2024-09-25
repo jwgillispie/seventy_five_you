@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
 from server.models.day_model import Day  # Import your Day model
 from typing import List
 
@@ -42,3 +42,14 @@ async def delete_day(firebase_uid: str) -> dict:
 async def get_days_by_firebase_uid(firebase_uid: str) -> List[Day]:
     days = await Day.find({"firebase_uid": firebase_uid}).to_list(length=None)
     return days
+
+@router.patch("/day/{firebase_uid}", response_model=Day)
+async def patch_day_by_firebase_uid(firebase_uid: str, updated_fields: dict = Body(...)) -> Day:
+    day = await Day.find_one({"firebase_uid": firebase_uid})
+    if day:
+        day_data = day.dict()
+        updated_day_data = {**day_data, **updated_fields}
+        await day.set(updated_day_data).save()
+        return day
+    else:
+        raise HTTPException(status_code=404, detail="Day not found")

@@ -15,7 +15,7 @@ class CalendarPage extends StatefulWidget {
 class _CalendarPageState extends State<CalendarPage> {
   late Map<DateTime, List<dynamic>> _events;
   late DateTime _selectedDay;
-  List<String> _objectives = [];
+  final List<String> _objectives = [];
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? user;
   // List to store objectives
@@ -35,7 +35,7 @@ class _CalendarPageState extends State<CalendarPage> {
     try {
       final response = await http.get(
         Uri.parse(
-            'http://10.0.2.2:8000/day/${user?.uid}/$formattedDate'), // Replace with your backend URL and Firebase UID
+            'http://localhost:8000/day/${user?.uid}/$formattedDate'), // Replace with your backend URL and Firebase UID
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -64,6 +64,7 @@ class _CalendarPageState extends State<CalendarPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calendar'),
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SingleChildScrollView(
         child: Column(
