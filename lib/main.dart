@@ -14,7 +14,7 @@ import 'package:seventy_five_hard/features/presentation/pages/w2_page.dart';
 import 'package:seventy_five_hard/features/presentation/pages/water_page.dart';
 import 'package:seventy_five_hard/features/presentation/pages/alcohol_page.dart';
 import 'package:seventy_five_hard/features/presentation/pages/error_page.dart';
-import 'package:seventy_five_hard/features/presentation/pages/profile_page.dart';
+import 'package:seventy_five_hard/features/presentation/profile/ui/profile_page.dart';
 import 'package:seventy_five_hard/firebase_options.dart';
 import 'package:seventy_five_hard/themes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

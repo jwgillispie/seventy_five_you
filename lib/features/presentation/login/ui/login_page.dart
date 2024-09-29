@@ -7,6 +7,7 @@ import 'package:seventy_five_hard/features/user_auth/firebase_auth_implementatio
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+// import 'package:seventy_five_you/lib/features/presentation/profile/ui/profile.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -135,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                               color: Theme.of(context).primaryColor,
                               fontWeight: FontWeight.bold),
                         ),
-                      )
+                      ),
                     ])
                   ],
                 ),

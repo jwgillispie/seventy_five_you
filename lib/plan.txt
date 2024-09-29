@@ -42,6 +42,13 @@ UI
         Lunch
         Diet
         Snacks
+    -- Calendar
+        - when to reset someones challenge?
+        
+            - use apple watch/whoop/biometrics
+            - ask them to say when they go to bed
+        - to retrieve objecives
+        
      
 
 

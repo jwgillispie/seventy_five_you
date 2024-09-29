@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Body
 from server.models.day_model import Day  # Import your Day model
 from typing import List
+from datetime import date
 
 router = APIRouter()
 
@@ -37,8 +38,23 @@ async def delete_day(firebase_uid: str) -> dict:
     else:
         raise HTTPException(status_code=404, detail="Day not found")
 
+# New endpoint to retrieve a specific day by firebase_uid and date
+@router.get("/day/{firebase_uid}/{date}", response_model=Day)
+async def get_day_by_firebase_uid_and_date(firebase_uid: str, date: str) -> Day:
+    # Parse the date string into a date object
+    try:
+        parsed_date = date.fromisoformat(date) # Expecting 'YYYY-MM-DD' format
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD.")
+
+    day = await Day.find_one({"firebase_uid": firebase_uid, "date": parsed_date})
+    if day:
+        return day
+    else:
+        raise HTTPException(status_code=404, detail="Day not found")
+
 # Add a new route to retrieve all days associated with a particular user ID
-@router.get("/day/{firebase_uid}/{date}", response_model=List[Day])
+@router.get("/days/{firebase_uid}", response_model=List[Day])
 async def get_days_by_firebase_uid(firebase_uid: str) -> List[Day]:
     days = await Day.find({"firebase_uid": firebase_uid}).to_list(length=None)
     return days

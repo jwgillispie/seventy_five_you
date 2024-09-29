@@ -7,6 +7,8 @@ import 'dart:convert';
 
 import 'package:seventy_five_hard/features/presentation/widgets/nav_bar.dart';
 import 'package:seventy_five_hard/features/presentation/users/bloc/user_bloc.dart';
+import 'package:seventy_five_hard/features/presentation/profile/bloc/profile_bloc.dart';
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -17,6 +19,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final ProfileBloc profileBloc = ProfileBloc();
   User? user;
   String email = '';
   String username = '';

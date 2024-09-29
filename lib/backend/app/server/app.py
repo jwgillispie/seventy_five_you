@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-
+import datetime
 from server.database import init_db
 from server.routes.user import router as UserRouter
 from server.routes.day import router as DayRouter
@@ -49,6 +49,7 @@ async def get_day_by_firebase_uid(firebase_uid: str):
 
 @app.put("/day/{firebase_uid}", response_model=Day, tags=["Day"])
 async def update_day_by_firebase_uid(firebase_uid: str, updated_fields: dict):
+    print("s")
     day = await Day.find_one({"firebase_uid": firebase_uid})
     if day:
         for key, value in updated_fields.items():
@@ -60,6 +61,9 @@ async def update_day_by_firebase_uid(firebase_uid: str, updated_fields: dict):
 @app.get("/day/{firebase_uid}/{date}", response_model=Day, tags=["Day"])
 async def get_day_by_firebase_uid_and_date(firebase_uid: str, date: str) -> Day:
     print("entered searching for date")
+    # print(formatted_date = date.strftime('%Y-%m-%d'))
+
+    print(date)
     day = await Day.find_one({"firebase_uid": firebase_uid, "date": date})
     if day:
         return day

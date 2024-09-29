@@ -4,7 +4,7 @@ import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:seventy_five_hard/features/presentation/home/ui/home_page.dart';
 import 'package:seventy_five_hard/features/presentation/pages/calendar.dart';
 import 'package:seventy_five_hard/features/presentation/pages/gallery.dart';
-import 'package:seventy_five_hard/features/presentation/pages/profile_page.dart';
+import 'package:seventy_five_hard/features/presentation/profile/ui/profile_page.dart';
 
 
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:seventy_five_hard/features/presentation/models/water_model.dart';
 import 'package:seventy_five_hard/features/presentation/widgets/nav_bar.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,8 +18,8 @@ class _CalendarPageState extends State<CalendarPage> {
   late DateTime _selectedDay;
   final List<String> _objectives = [];
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  Water? waterModel;
   User? user;
-  // List to store objectives
 
   @override
   void initState() {
@@ -31,11 +32,12 @@ class _CalendarPageState extends State<CalendarPage> {
 
   // Function to fetch objectives using HTTP GET request
   Future<void> _fetchObjectives() async {
-    String formattedDate = "${_selectedDay.year}-${_selectedDay.month}-${_selectedDay.day}";
+    String formattedDate =
+        "${_selectedDay.year}-${_selectedDay.month}-${_selectedDay.day}";
     try {
       final response = await http.get(
         Uri.parse(
-            'http://localhost:8000/day/${user?.uid}/$formattedDate'), // Replace with your backend URL and Firebase UID
+            'http://localhost:8000/day/${user?.uid}/${_selectedDay.toString().substring(0, 10)}'), // Replace with your backend URL and Firebase UID
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -43,6 +45,8 @@ class _CalendarPageState extends State<CalendarPage> {
           // Clear existing objectives
           _objectives.clear();
           // Add each field to the objectives list
+          waterModel = Water.fromJson(data);
+
           _objectives.addAll([
             'Date: ${data['date']}',
             'Water Intake: ${data['water']}',
@@ -78,6 +82,7 @@ class _CalendarPageState extends State<CalendarPage> {
               onDaySelected: (selectedDay, focusedDay) {
                 setState(() {
                   _selectedDay = selectedDay;
+                  _fetchObjectives(); // Fetch objectives when a new day is selected
                 });
               },
               eventLoader: (day) => _events[day] ?? [],
@@ -98,12 +103,15 @@ class _CalendarPageState extends State<CalendarPage> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: _objectives
-                    .map((objective) => ListTile(
-                          title: Text(objective),
-                          // You can add subtitle or other details here if available
-                        ))
-                    .toList(),
+                children: [
+                  // Check if waterModel is initialized before accessing its properties
+                  if (waterModel != null) ...[
+                    Text('Date: ${waterModel!.date}'),
+                    Text('Pee Count: ${waterModel!.peeCount}')
+                  ] else ...[
+                    const Text('No data available for this day.'),
+                  ],
+                ],
               ),
             ),
           ],
