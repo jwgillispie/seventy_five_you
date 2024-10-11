@@ -1,14 +1,14 @@
 class Alcohol {
-  final String date;
-  final String firebaseUid;
-  final bool completed;
-  final int difficulty;
+      String? date;
+      String? firebaseUid;
+      bool? completed;
+      int? difficulty;
 
   Alcohol({
-    required this.date,
-    required this.firebaseUid,
-    required this.completed,
-    required this.difficulty,
+        this.date,
+        this.firebaseUid,
+        this.completed,
+        this.difficulty,
   });
 
   factory Alcohol.fromJson(Map<String, dynamic> json) {

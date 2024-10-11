@@ -1,25 +1,27 @@
 class OutsideWorkout {
-  final String date;
-  final String firebaseUid;
-  final String description;
-  final String thoughts;
+  String? date;
+  String? firebaseUid;
+  String? description;
+  String? thoughts;
 
   OutsideWorkout({
-    required this.date,
-    required this.firebaseUid,
-    required this.description,
-    required this.thoughts,
+    this.date,
+    this.firebaseUid,
+    this.description,
+    this.thoughts,
   });
 
+  // Factory constructor for creating a new OutsideWorkout instance from a map
   factory OutsideWorkout.fromJson(Map<String, dynamic> json) {
     return OutsideWorkout(
-      date: json['date'],
-      firebaseUid: json['firebase_uid'],
-      description: json['description'],
-      thoughts: json['thoughts'],
+      date: json['date'] as String?,
+      firebaseUid: json['firebase_uid'] as String?,
+      description: json['description'] as String?,
+      thoughts: json['thoughts'] as String?,
     );
   }
-  //  to json
+
+  // Method to convert an OutsideWorkout instance to JSON
   Map<String, dynamic> toJson() {
     return {
       'date': date,

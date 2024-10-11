@@ -39,3 +39,14 @@ async def update_diet(firebase_uid: str, updated_diet_data: Diet) -> dict:
 @router.delete("/diet/{firebase_uid}", response_description="diet deleted from the database")
 async def delete_diet(firebase_uid: str) -> dict:
     diet = await Diet.find_one({"firebase_uid": firebase_uid})
+@router.put("/diet/{firebase_uid}/{date}", response_description="diet updated successfully")
+async def update_diet(firebase_uid: str, date: str, updated_diet_data: Diet) -> dict:
+    diet = await Diet.find_one({"firebase_uid": firebase_uid, "date": date})
+    if diet:
+        # Update diet fields with the provided data
+        for field, value in updated_diet_data.dict().items():
+            setattr(diet, field, value)
+        await diet.save()
+        return {"message": "diet updated successfully"}
+    else:
+        raise HTTPException(status_code=404, detail="diet not found")

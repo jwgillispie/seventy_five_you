@@ -5,6 +5,7 @@ import 'package:seventy_five_hard/features/app/splash_screen/splash_screen.dart'
 import 'package:seventy_five_hard/features/presentation/pages/calendar.dart';
 import 'package:seventy_five_hard/features/presentation/login/ui/login_page.dart';
 import 'package:seventy_five_hard/features/presentation/pages/gallery.dart';
+import 'package:seventy_five_hard/features/presentation/pages/social_page.dart';
 import 'package:seventy_five_hard/features/presentation/signup/ui/sign_up_page.dart';
 import 'package:seventy_five_hard/features/presentation/home/ui/home_page.dart';
 import 'package:seventy_five_hard/features/presentation/pages/diet_page.dart';
@@ -57,7 +58,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: SFThemes.lightTheme,
       darkTheme: SFThemes.darkTheme,
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.light,
       title: '75 Get Right',
       routes: {
         '/': (context) => SplashScreen(
@@ -77,6 +78,7 @@ class _MyAppState extends State<MyApp> {
         "/profile": (context) => ProfilePage(),
         "/calendar": (context) => CalendarPage(),
         "/gallery": (context) => GalleryPage(),
+        "/social": (context) => SocialPage(),
       },
     ));
   }

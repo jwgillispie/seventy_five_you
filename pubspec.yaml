@@ -46,6 +46,7 @@ dependencies:
   google_fonts: ^6.2.1
   image_picker: ^1.0.7
   fl_chart: ^0.66.2
+  flutter_spinkit: ^5.1.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -102,6 +103,9 @@ flutter:
     - assets/images/food2.jpeg
     - assets/images/food3.jpeg
     - assets/images/food4.jpeg
+    - assets/images/zoro.png
+    - assets/images/zoro.jpg
+    - assets/images/75LOGO.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

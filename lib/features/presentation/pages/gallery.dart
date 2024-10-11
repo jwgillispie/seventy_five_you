@@ -28,6 +28,7 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        // ignore: prefer_const_constructors
         title: Text('Gallery'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
@@ -39,13 +40,13 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
               indicatorColor: Theme.of(context).primaryColor,
               labelColor: Theme.of(context).primaryColor,
               controller: _tabController,
-              tabs: [
+              tabs: const [
                 Tab(text: 'Food', icon: Icon(Icons.fastfood)),
                 Tab(text: 'Progress', icon: Icon(Icons.ssid_chart_rounded)),
                 Tab(text: 'Workouts', icon: Icon(Icons.fitness_center)),
               ],
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Expanded(
               child: TabBarView(
                 controller: _tabController,

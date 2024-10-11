@@ -1,12 +1,8 @@
-// ignore_for_file: depend_on_referenced_packages
-
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:seventy_five_hard/features/presentation/users/bloc/user_bloc.dart';
 import 'package:seventy_five_hard/features/presentation/widgets/nav_bar.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,21 +15,21 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
   Timer? _scrollTimer;
-  int daysPassed = 0;
-  bool started = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? user;
-  String username = '';
-  String currentDate = '';
-  String displayDate = '';
   final UserBloc userBloc = UserBloc();
-  final lineItems = ['Great job', "give up and youre a bitch", 'one day at a time', 'keep going', 'youre crushing it'];
+  final List<String> lineItems = [
+    'Great job',
+    "Give up and you're a quitter",
+    'One day at a time',
+    'Keep going',
+    'You’re crushing it',
+  ];
 
   @override
   void dispose() {
     _scrollTimer?.cancel();
     _scrollController.dispose();
-    
     super.dispose();
   }
 
@@ -52,177 +48,140 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  @override
   void initState() {
     super.initState();
     user = _auth.currentUser;
-    // print("User ID: ${user?.uid}"); // Debug print
     if (user != null) {
       userBloc.add(FetchUserName(user!.uid));
     }
     _startScrolling();
-    // fetchDate();
   }
-  // Update days passed and start the timer
-  // void _updateDaysPassed() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   DateTime lastDate = DateTime.parse(prefs.getString('lastDate') ?? '');
-
-  //   DateTime currentDate = DateTime.now();
-  //   if (currentDate.difference(lastDate).inDays > 0) {
-  //     setState(() {
-  //       daysPassed += 1;
-  //     });
-  //     prefs.setString('lastDate', DateTime.now().toString());
-  //   }
-  // }
-
-  // Timer to check and update days passed every midnight
-  // void _startTimer() {
-  //   Timer.periodic(const Duration(hours: 1), (timer) {
-  //     DateTime now = DateTime.now();
-  //     if (now.hour == 0 && now.minute == 0) {
-  //       _updateDaysPassed();
-  //     }
-  //   });
-  // }
-
-// void _getCurrentUser() {
-//   User? user = FirebaseAuth.instance.currentUser;
-//   setState(() {
-//     _currentUser = user;
-//   });
-// }
-  // Future<void> fetchUsername() async {
-  //   try {
-  //     if (user != null) {
-  //       print("user not null: " + (user?.uid ?? ''));
-  //       final response = await http.get(
-  //         Uri.parse('http://10.0.2.2:8000/user/${user?.uid}'),
-  //       );
-
-  //       if (response.statusCode == 200) {
-  //         final data = jsonDecode(response.body);
-  //         final fetchedUsername = data['display_name'];
-  //         setState(() {
-  //           username = fetchedUsername;
-  //         });
-  //       } else {
-  //         setState(() {
-  //           username = 'Error retrievingggg username';
-  //         });
-  //       }
-  //     } else {
-  //       setState(() {
-  //         username = 'User not authenticated';
-  //       });
-  //     }
-  //   } catch (e) {
-  //     setState(() {
-  //       username = 'Error retrievingrrrr username';
-  //     });
-  //   }
-  // }
-
-  // Future<void> fetchDate() async {
-  //   try {
-  //     final response = await http.get(
-  //       Uri.parse('http://localhost:8000/day/${user?.uid}'),
-  //     );
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body);
-  //       setState(() {
-  //         displayDate = data['date'];
-  //       });
-  //     } else {
-  //       print("Firebase UID: ${user?.uid ?? ''}");
-  //       print('Failed to fetch date: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching date: $e');
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-    double tickerItemWidth = screenWidth / 4; // Show 6 items at once
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      // establish the bloc consumer
 
-      // based on state we can buld
+    return Scaffold(
       appBar: AppBar(
         title: BlocConsumer<UserBloc, UserState>(
           bloc: userBloc,
-          listenWhen: (previous, current) {
-            // Only listen to state changes if it's an error state
-            return current is UserError;
-          },
+          listenWhen: (previous, current) => current is UserError,
           listener: (context, state) {
-            // This will now only be triggered when listenWhen condition is true
             if (state is UserError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
               );
             }
           },
-          buildWhen: (previous, current) {
-            // Rebuild only for UserLoaded and UserInitial states
-            return current is UserLoaded || current is UserInitial;
-          },
+          buildWhen: (previous, current) =>
+              current is UserLoaded || current is UserInitial,
           builder: (context, state) {
             if (state is UserLoaded) {
-              return Text("75 ${state.username}",
-                  style: Theme.of(context).textTheme.bodyLarge);
+              return Text(
+                "75 ${state.username}",
+                style: theme.textTheme.displayMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onPrimary,
+                ),
+              );
             }
-            return Text("75 ---",
-                style: Theme.of(context).textTheme.bodyLarge);
+            return Text(
+              "75 ---",
+              style: theme.textTheme.displayMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onPrimary,
+              ),
+            );
           },
         ),
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: theme.primaryColor,
       ),
-      body: Column(
-        children: [
-          SizedBox(height: 3),
-          SizedBox(
-            height: 50,
-            child: ListView.builder(
-              scrollDirection: Axis.vertical,
-              itemCount: lineItems.length * 2,
-              controller: _scrollController,
-              itemBuilder: (context, index) {
-                final itemIndex = index % lineItems.length;
-                return _buildTickerItem(
-                    tickerItemWidth, lineItems[itemIndex], context);
-              },
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              theme.primaryColor.withOpacity(0.1),
+              theme.colorScheme.secondary.withOpacity(0.1),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          const SizedBox(height: 20),
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 2, // Number of columns in the grid
-              shrinkWrap: true,
-              children: [
-                "Diet",
-                "Outside Workout",
-                "Second Workout",
-                "Water",
-                "Alcohol",
-                "10 Pages",
-              ].map((title) {
-                return buildGridItem(context, title);
-              }).toList(),
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 50, // Height for the ticker container
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                controller: _scrollController,
+                itemCount: lineItems.length * 2, // Create continuous scrolling
+                itemBuilder: (context, index) {
+                  final itemIndex = index % lineItems.length;
+                  return _buildTickerItem(lineItems[itemIndex], context);
+                },
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2, // 2 columns in the grid
+                shrinkWrap: true,
+                children: [
+                  "Diet",
+                  "Outside Workout",
+                  "Second Workout",
+                  "Water",
+                  "Alcohol",
+                  "10 Pages",
+                ].map((title) {
+                  return _buildGridItem(context, title);
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: const NavBar(),
     );
   }
 
-  Widget buildGridItem(BuildContext context, String title) {
-    // Map words to corresponding icons
+Widget _buildTickerItem(String text, BuildContext context) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 20), // Add padding for readability
+    margin: const EdgeInsets.symmetric(horizontal: 5), // Margin between items
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+      borderRadius: BorderRadius.circular(10),  // Rounded corners for a modern look
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 5,
+          spreadRadius: 1,
+        ),
+      ],
+    ),
+    child: Center(
+      child: FittedBox(  // Ensure the text fits within the available space
+        fit: BoxFit.scaleDown,  // Scale down the text if needed
+        child: Text(
+          text,
+          style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+      ),
+    ),
+  );
+}
+
+
+  // Grid items with icon and text, styled with shadows and borders
+  Widget _buildGridItem(BuildContext context, String title) {
+    final theme = Theme.of(context);
     Map<String, IconData> iconMap = {
       "Diet": Icons.restaurant,
       "Outside Workout": Icons.directions_run,
@@ -231,78 +190,61 @@ class _HomePageState extends State<HomePage> {
       "Alcohol": Icons.no_drinks,
       "10 Pages": Icons.menu_book,
     };
-
-    // Get the icon for the given title
-    IconData? iconData =
-        iconMap.containsKey(title) ? iconMap[title] : Icons.error;
+    IconData? iconData = iconMap[title];
 
     return GestureDetector(
-      onTap: () {
-        if (title == "Outside Workout") {
-          title = "Workout 1";
-        } else if (title == "Second Workout") {
-          title = "Workout 2";
-        }
-        navigateToPage(context, title);
-      },
-      child: Container(
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor, // White background,
-          borderRadius: BorderRadius.circular(10), // Rounded corners
-          border: Border.all(color: Theme.of(context).primaryColor, width: 1), // Black border
+      onTap: () => _navigateToPage(context, title),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Icon representing the title
-            Icon(
-              iconData,
-              size: 40, // Adjust the size of the icon as needed
-              // change color if in dark mode or light mode
-              color: Theme.of(context).colorScheme.primary,
+        margin: const EdgeInsets.all(10),
+        elevation: 8,
+        shadowColor: theme.primaryColor.withOpacity(0.2),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                theme.primaryColor.withOpacity(0.1),
+                theme.colorScheme.secondary.withOpacity(0.1),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            const SizedBox(height: 10), // Spacer between icon and text
-            // Text describing the title
-            Text(
-              title,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ],
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                iconData,
+                size: 50,
+                color: theme.primaryColor,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                title,
+                style: theme.textTheme.displayMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-
-
-Widget _buildTickerItem(double width, String text, BuildContext context) {
-  return Container(
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.primary,
-    ),
-    width: width,
-    height: 50,
-    // color: Theme.of(context).colorScheme.primary,
-    child: Center(
-      child: Text(
-        text,
-        style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface),
-      ),
-    ),
-  );
-}
-  void navigateToPage(BuildContext context, String title) {
-    // Define the navigation logic based on the title
+  // Navigate to respective pages based on title
+  void _navigateToPage(BuildContext context, String title) {
     switch (title) {
       case "Diet":
         Navigator.pushNamed(context, "/diet");
         break;
-      case "Workout 1":
+      case "Outside Workout":
         Navigator.pushNamed(context, "/workout1");
         break;
-      case "Workout 2":
+      case "Second Workout":
         Navigator.pushNamed(context, "/workout2");
         break;
       case "Water":
@@ -313,8 +255,6 @@ Widget _buildTickerItem(double width, String text, BuildContext context) {
         break;
       case "10 Pages":
         Navigator.pushNamed(context, "/tenpages");
-        break;
-      default:
         break;
     }
   }

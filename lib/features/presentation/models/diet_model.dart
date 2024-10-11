@@ -1,31 +1,39 @@
 class Diet {
-  final String date;
-  final String firebaseUid;
-  final List<String> breakfast;
-  final List<String> lunch;
-  final List<String> dinner;
-  final List<String> snacks;
+  String? date;
+  String? firebaseUid;
+  List<String>? breakfast;
+  List<String>? lunch;
+  List<String>? dinner;
+  List<String>? snacks;
 
   Diet({
-    required this.date,
-    required this.firebaseUid,
-    required this.breakfast,
-    required this.lunch,
-    required this.dinner,
-    required this.snacks,
+    this.date,
+    this.firebaseUid,
+    this.breakfast,
+    this.lunch,
+    this.dinner,
+    this.snacks,
   });
 
   factory Diet.fromJson(Map<String, dynamic> json) {
     return Diet(
-      date: json['date'],
-      firebaseUid: json['firebase_uid'],
-      breakfast: List<String>.from(json['breakfast']),
-      lunch: List<String>.from(json['lunch']),
-      dinner: List<String>.from(json['dinner']),
-      snacks: List<String>.from(json['snacks']),
+      date: json['date'] as String,
+      firebaseUid: json['firebase_uid'] as String,
+      breakfast: json['breakfast'] != null
+          ? List<String>.from(json['breakfast'] as List<dynamic>)
+          : null,
+      lunch: json['lunch'] != null
+          ? List<String>.from(json['lunch'] as List<dynamic>)
+          : null,
+      dinner: json['dinner'] != null
+          ? List<String>.from(json['dinner'] as List<dynamic>)
+          : null,
+      snacks: json['snacks'] != null
+          ? List<String>.from(json['snacks'] as List<dynamic>)
+          : null,
     );
   }
-  // to json
+
   Map<String, dynamic> toJson() {
     return {
       'date': date,

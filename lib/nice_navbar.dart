@@ -38,6 +38,12 @@ class NavBar{
             inactiveColorPrimary: Theme.of(context).brightness == Brightness.light ? Colors.black87: Colors.white,
             activeColorPrimary: Theme.of(context).colorScheme.primary
         ),
+                PersistentBottomNavBarItem(
+            icon: Icon(Icons.analytics),
+            title: 'Analytics',
+            inactiveColorPrimary: Theme.of(context).brightness == Brightness.light ? Colors.black87: Colors.white,
+            activeColorPrimary: Theme.of(context).colorScheme.primary
+        ),
         PersistentBottomNavBarItem(
             icon: Icon(Icons.add_circle_outline_sharp),
             title: 'Create',

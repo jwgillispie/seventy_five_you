@@ -1,14 +1,14 @@
 class InsideWorkout {
-  final String date;
-  final String firebaseUid;
-  final String description;
-  final String thoughts;
+    String? date;
+    String? firebaseUid;
+    String? description;
+    String? thoughts;
 
   InsideWorkout({
-    required this.date,
-    required this.firebaseUid,
-    required this.description,
-    required this.thoughts,
+      this.date,
+      this.firebaseUid,
+      this.description,
+      this.thoughts,
   });
 
   factory InsideWorkout.fromJson(Map<String, dynamic> json) {

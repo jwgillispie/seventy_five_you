@@ -1,8 +1,8 @@
 class TenPages {
-  final String date;
-  final String firebaseUid;
-  final bool completed;
-  final String summary;
+     String? date;
+     String? firebaseUid;
+     bool? completed;
+     String? summary;
 
   TenPages({
     required this.date,

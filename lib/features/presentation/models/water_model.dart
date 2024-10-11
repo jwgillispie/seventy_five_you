@@ -1,21 +1,21 @@
 class Water {
-  final String date;
-  final String firebaseUid;
-  final bool completed;
-  final int peeCount;
+  String? date;
+  String? firebaseUid;
+  bool? completed;
+  int? peeCount;
 
   Water({
-    required this.date,
-    required this.firebaseUid,
-    required this.completed,
-    required this.peeCount,
+    this.date,
+    this.firebaseUid,
+    this.completed,
+    this.peeCount,
   });
 
   factory Water.fromJson(Map<String, dynamic> json) {
     return Water(
       date: json['date'],
       firebaseUid: json['firebase_uid'],
-      completed: json['completed'],
+      completed: json['water'],
       peeCount: json['pee_count'],
     );
   }
