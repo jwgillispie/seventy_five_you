@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException
 from server.database import init_db
 from server.routes.user import router as UserRouter
 from server.routes.day import router as DayRouter
+from server.models.outside_workout_model import OutsideWorkout
+
 
 app = FastAPI()
 app.include_router(UserRouter, tags=["User"], prefix="/user")
@@ -86,4 +88,3 @@ async def update_day_by_firebase_uid_and_date(firebase_uid: str, date: str, upda
         return day
     else:
         raise HTTPException(status_code=404, detail="Day not found")
-from server.models.outside_workout_model import OutsideWorkout

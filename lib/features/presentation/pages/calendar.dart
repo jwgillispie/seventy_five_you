@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:seventy_five_hard/features/presentation/login/models/workout_model.dart';
 import 'package:seventy_five_hard/features/presentation/models/alcohol_model.dart';
 import 'package:seventy_five_hard/features/presentation/models/day_model.dart';
 import 'package:seventy_five_hard/features/presentation/models/diet_model.dart';
@@ -22,8 +21,8 @@ class CalendarPage extends StatefulWidget {
 
 class _CalendarPageState extends State<CalendarPage> {
   late Map<DateTime, List<dynamic>> _events;
-  late DateTime _selectedDay;
-  final List<String> _objectives = [];
+  DateTime _selectedDay = DateTime.now(); // Track the selected day
+  DateTime _focusedDay = DateTime.now(); // Track the focused day
   final FirebaseAuth _auth = FirebaseAuth.instance;
   Water? waterModel;
   Diet? dietModel;
@@ -31,21 +30,20 @@ class _CalendarPageState extends State<CalendarPage> {
   OutsideWorkout? outsideWorkoutModel;
   TenPages? tenPagesModel;
   Alcohol? alcoholModel;
-
   User? user;
+  bool isDayEmpty = false; // Flag for empty day
 
   @override
   void initState() {
     super.initState();
     user = _auth.currentUser;
-    _selectedDay = DateTime.now();
     _events = {};
-    _fetchObjectives();
+    _fetchObjectives(); // Fetch objectives when the calendar is initialized
   }
 
+  // Fetch the objectives for the selected day
   Future<void> _fetchObjectives() async {
-    String formattedDate =
-        "${_selectedDay.year}-${_selectedDay.month}-${_selectedDay.day}";
+    String formattedDate = "${_selectedDay.year}-${_selectedDay.month}-${_selectedDay.day}";
     try {
       final response = await http.get(
         Uri.parse(
@@ -55,21 +53,39 @@ class _CalendarPageState extends State<CalendarPage> {
         final data = jsonDecode(response.body);
         setState(() {
           Day day = Day.fromJson(data);
-          _objectives.clear();
           waterModel = day.water;
           dietModel = day.diet;
           insideWorkoutModel = day.insideWorkout;
           outsideWorkoutModel = day.outsideWorkout;
           tenPagesModel = day.pages;
           alcoholModel = day.alcohol;
+          isDayEmpty = false; // Reset empty flag if objectives are found
+        });
+      } else if (response.statusCode == 404) {
+        // Handle 404 - No data for this day
+        setState(() {
+          _clearObjectives();
+          isDayEmpty = true; // Set the empty flag if no data is found
         });
       } else {
         print('Failed to fetch objectives: ${response.statusCode}');
       }
     } catch (e) {
-      print("Firebase UID: ${user?.uid ?? ''}");
-      print('Error fetching objectives: $e');
+      print("Error fetching objectives: $e");
+      setState(() {
+        isDayEmpty = true; // Mark as empty if error occurs
+      });
     }
+  }
+
+  // Clear the objectives when no data is found
+  void _clearObjectives() {
+    waterModel = null;
+    dietModel = null;
+    insideWorkoutModel = null;
+    outsideWorkoutModel = null;
+    tenPagesModel = null;
+    alcoholModel = null;
   }
 
   @override
@@ -98,15 +114,19 @@ class _CalendarPageState extends State<CalendarPage> {
             children: [
               // Calendar Widget
               TableCalendar(
-                focusedDay: _selectedDay,
+                focusedDay: _focusedDay,
                 firstDay: DateTime.utc(2023, 1, 1),
                 lastDay: DateTime.utc(2024, 12, 31),
+                selectedDayPredicate: (day) {
+                  return isSameDay(_selectedDay, day);
+                },
                 calendarFormat: CalendarFormat.month,
                 onDaySelected: (selectedDay, focusedDay) {
                   setState(() {
                     _selectedDay = selectedDay;
-                    _fetchObjectives();
+                    _focusedDay = focusedDay;
                   });
+                  _fetchObjectives(); // Fetch the objectives for the selected day
                 },
                 eventLoader: (day) => _events[day] ?? [],
                 calendarStyle: CalendarStyle(
@@ -149,11 +169,13 @@ class _CalendarPageState extends State<CalendarPage> {
               ),
               const SizedBox(height: 10),
 
-              // Objectives Display
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _buildObjectivesDisplay(context),
-              ),
+              // Check if the day is empty and display the appropriate screen
+              isDayEmpty
+                  ? _buildEmptyDayScreen(context)
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: _buildObjectivesDisplay(context),
+                    ),
             ],
           ),
         ),
@@ -162,11 +184,48 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  // Widget to display logged objectives in a slick format with unique styles and icons
+  // Widget to show an empty day screen with a message
+  Widget _buildEmptyDayScreen(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.hourglass_empty,
+              size: 100,
+              color: theme.primaryColor.withOpacity(0.7),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'No objectives logged for this day',
+              style: theme.textTheme.displayMedium?.copyWith(
+                color: theme.primaryColorDark,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'It looks like you haven\'t logged any activities for ${_selectedDay.toString().substring(0, 10)}. Select another day or start logging your activities!',
+              style: theme.textTheme.displayMedium?.copyWith(
+                color: theme.primaryColorDark.withOpacity(0.7),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Widget to display logged objectives when data is available
   Widget _buildObjectivesDisplay(BuildContext context) {
     final theme = Theme.of(context);
 
-    // Create a reusable text style for section titles
     final sectionTitleStyle = theme.textTheme.displaySmall?.copyWith(
       fontWeight: FontWeight.w600,
       color: theme.primaryColor,
@@ -260,6 +319,11 @@ class _CalendarPageState extends State<CalendarPage> {
                 label: 'Completed: ${tenPagesModel!.completed == true ? "Yes" : "No"}',
                 success: tenPagesModel!.completed == true,
               ),
+              if (tenPagesModel!.summary != null && tenPagesModel!.summary!.isNotEmpty)
+                _buildObjectiveContent(
+                  icon: Icons.notes,
+                  label: 'Summary: ${tenPagesModel!.summary}',
+                ),
             ],
             sectionTitleStyle: sectionTitleStyle,
             theme: theme,
@@ -271,8 +335,8 @@ class _CalendarPageState extends State<CalendarPage> {
             content: [
               _buildObjectiveContent(
                 icon: Icons.no_drinks,
-                label: 'Consumed: ${alcoholModel!.completed == true ? "Yes" : "No"}',
-                success: alcoholModel!.completed == false,
+                label: 'Consumed: ${alcoholModel!.completed == true ? "No" : "Yes"}',
+                success: alcoholModel!.completed == true,
               ),
             ],
             sectionTitleStyle: sectionTitleStyle,
@@ -289,7 +353,7 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  // A reusable widget to build an objective card with title, icon, and content
+  // Widget to build an objective card
   Widget _buildObjectiveCard({
     required String title,
     required IconData icon,
@@ -324,7 +388,7 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  // A reusable method to build the content of each objective with icon and conditional color
+  // Widget to build objective content with icons and text
   Widget _buildObjectiveContent({
     required IconData icon,
     required String label,

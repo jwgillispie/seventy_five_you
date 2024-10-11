@@ -17,8 +17,8 @@ class _TenPagesPageState extends State<TenPagesPage> {
   final TextEditingController _summaryController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? user;
-  Day? day; // Day object that contains the TenPages model
-  TenPages? tenPages; // TenPages object
+  Day? day;
+  TenPages? tenPages;
   DateTime today = DateTime.now();
 
   @override
@@ -39,34 +39,28 @@ class _TenPagesPageState extends State<TenPagesPage> {
     if (user == null) return;
 
     String formattedDate = today.toString().substring(0, 10);
-    print("Fetching day data for $formattedDate"); // DEBUG
     try {
-      // Fetch the Day object for the current date and user
       final response = await http.get(
         Uri.parse('http://localhost:8000/day/${user!.uid}/$formattedDate'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json; charset=utf-8'},  // Ensure UTF-8
       );
 
       if (response.statusCode == 200) {
-        // Parse the response and set the day object
         setState(() {
           day = Day.fromJson(json.decode(response.body));
-          tenPages = day!.pages; // Initialize the TenPages object from the day model
+          tenPages = day!.pages;
         });
-        print("Day data fetched successfully: ${response.body}"); // DEBUG
       } else {
-        print("Failed to fetch day data: ${response.statusCode}"); // DEBUG
+        print("Failed to fetch day data: ${response.statusCode}");
       }
     } catch (e) {
-      print("Error fetching day data: $e"); // DEBUG
+      print("Error fetching day data: $e");
     }
   }
 
   // Function to submit the summary and mark the task as completed
   Future<void> _submitTenPages() async {
-    print("Submit Ten Pages function called."); // DEBUG
     if (user == null || tenPages == null) {
-      print("Error: User or Ten Pages data is null."); // DEBUG
       return;
     }
 
@@ -76,32 +70,27 @@ class _TenPagesPageState extends State<TenPagesPage> {
 
     // Convert the updated TenPages object to JSON format
     final Map<String, dynamic> tenPagesData = tenPages!.toJson();
-    print("TenPages data after updating: $tenPagesData"); // DEBUG
 
     try {
       // Perform a PUT request to update the ten_pages entry in the backend
       final response = await http.put(
         Uri.parse('http://localhost:8000/day/${user!.uid}/${today.toString().substring(0, 10)}'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',  // Add charset=utf-8
+        },
         body: json.encode({'pages': tenPagesData}), // Updating only the ten_pages part
       );
 
-      print("Response status code: ${response.statusCode}"); // DEBUG
-      print("Response body after call: ${response.body}"); // DEBUG
-
       if (response.statusCode == 200) {
-        print("Ten Pages data updated successfully!"); // DEBUG
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Ten Pages data updated successfully!')),
         );
       } else {
-        print("Failed to update Ten Pages. Response body: ${response.body}"); // DEBUG
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to update Ten Pages.')),
         );
       }
     } catch (e) {
-      print("Error occurred while updating Ten Pages: $e"); // DEBUG
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
       );
@@ -111,9 +100,6 @@ class _TenPagesPageState extends State<TenPagesPage> {
   @override
   Widget build(BuildContext context) {
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-    String backgroundImage = isDarkTheme
-        ? 'assets/images/library_dark.jpg' // Path for dark theme image
-        : 'assets/images/library.jpg'; // Path for light theme image
 
     return Scaffold(
       appBar: AppBar(
