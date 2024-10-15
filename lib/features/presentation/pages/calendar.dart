@@ -163,7 +163,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   'Logged Objectives for ${_selectedDay.toString().substring(0, 10)}',
                   style: theme.textTheme.displayMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: theme.primaryColorDark,
+                    color: theme.primaryColor,
                   ),
                 ),
               ),
@@ -228,7 +228,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
     final sectionTitleStyle = theme.textTheme.displaySmall?.copyWith(
       fontWeight: FontWeight.w600,
-      color: theme.primaryColor,
+      color: theme.colorScheme.secondary,
     );
 
     return Column(
@@ -375,12 +375,14 @@ class _CalendarPageState extends State<CalendarPage> {
           children: [
             Row(
               children: [
-                Icon(icon, size: 28, color: theme.primaryColorDark),
+                Icon(icon, size: 28, color: theme.colorScheme.secondary),
                 const SizedBox(width: 10),
                 Text(title, style: sectionTitleStyle),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 5),
+            // add in a divider line 
+            const Divider(),
             ...content,
           ],
         ),

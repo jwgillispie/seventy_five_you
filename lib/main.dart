@@ -58,7 +58,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: SFThemes.lightTheme,
       darkTheme: SFThemes.darkTheme,
-      themeMode: ThemeMode.light,
+      themeMode: ThemeMode.dark,
       title: '75 Get Right',
       routes: {
         '/': (context) => SplashScreen(
