@@ -22,9 +22,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:seventy_five_hard/features/presentation/login/bloc/login_bloc.dart';
 import 'package:seventy_five_hard/features/presentation/signup/bloc/signup_bloc.dart';
 import 'package:seventy_five_hard/features/presentation/users/bloc/user_bloc.dart';
+
+import 'package:flutter/material.dart';
+import 'logger.dart'; // Two import statements for logger (development)
+
+
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  setupLogging();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

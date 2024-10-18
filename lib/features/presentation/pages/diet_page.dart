@@ -7,6 +7,9 @@ import 'package:seventy_five_hard/features/presentation/widgets/nav_bar.dart';
 import 'package:seventy_five_hard/features/presentation/models/diet_model.dart';
 import 'package:seventy_five_hard/features/presentation/models/day_model.dart'; // Assuming you have the Day model
 
+import 'package:seventy_five_hard/logger.dart'; // For development
+
+
 class DietPage extends StatefulWidget {
   const DietPage({Key? key}) : super(key: key);
 
@@ -24,14 +27,39 @@ class DietPageState extends State<DietPage> {
     'Breakfast': [],
     'Lunch': [],
     'Dinner': [],
-    'Snacks': []
+    'Snacks': [],
   };
+
+  // update the MealsToday
+  // void _updateMealsToday() {
+  //   if (diet != null) {
+  //       // Check and update meals for Breakfast
+  //       if (diet!.breakfast != null) {
+  //         mealsToday['Breakfast'] = diet!.breakfast ?? [];
+  //       }
+
+  //       // Check and update meals for Lunch
+  //       if (diet!.lunch != null) {
+  //         mealsToday['Lunch'] = diet!.lunch ?? [];
+  //       }
+
+  //       // Check and update meals for Dinner
+  //       if (diet!.dinner != null) {
+  //         mealsToday['Dinner'] = diet!.dinner ?? [];
+  //       }
+
+  //       // Check and update meals for Snacks
+  //       if (diet!.snacks != null) {
+  //         mealsToday['Snacks'] = diet!.snacks ?? [];
+  //       }
+  //     }
+  // }
 
   @override
   void initState() {
     super.initState();
     user = _auth.currentUser;
-    _fetchDayData(); // Fetch existing day data for this user and date
+    _fetchDayData(); // Fetch existing day data for this user and date 
   }
 
   // Fetch the current day's data from the backend
@@ -123,6 +151,7 @@ class DietPageState extends State<DietPage> {
   void _showAddMealDialog(String mealType) async {
     print("Opening Add Meal Dialog for $mealType"); // DEBUG
     TextEditingController mealController = TextEditingController();
+    bool isSubmitting = false;
 
     await showDialog(
       context: context,
@@ -143,15 +172,24 @@ class DietPageState extends State<DietPage> {
             ),
             TextButton(
               child: const Text('Add Meal'),
-              onPressed: () {
-                print("Meal added: ${mealController.text} for $mealType"); // DEBUG
-                setState(() {
-                  mealsToday[mealType]?.add(mealController.text); // Add locally for display
-                });
-                Navigator.of(context).pop();
+              onPressed: isSubmitting ? null : () { // Disable button if currently submitting
+                  isSubmitting = true;
 
-                // Call `submitMeal` after adding the meal to update the backend
-                submitMeal(mealType, mealController.text);
+                  print("Meal added: ${mealController.text} for $mealType"); // DEBUG
+                  setState(() {
+                    mealsToday[mealType]?.add(mealController.text); // Add locally for display
+                  });
+                  Navigator.of(context).pop();
+
+                  // Call `submitMeal` after adding the meal to update the backend
+                  isSubmitting = false;  // Re-enable button after submission
+                  // }).catchError((err) {
+                  //   setState(() {
+                  //     isSubmitting = false;  // Re-enable button after error
+                  //   });
+                  //   print("Error submitting meal: $err");
+                  submitMeal(mealType, mealController.text);
+                  // });
               },
             ),
           ],
@@ -176,6 +214,30 @@ class DietPageState extends State<DietPage> {
   // Widget to display the list of meals for each type
   Widget _mealList(String mealType) {
     print("Displaying meal list for $mealType"); // DEBUG
+    if (diet != null) {
+        print("in if statement"); //DEBUG
+        // Check and update meals for Breakfast
+        if (diet!.breakfast != null) {
+          mealsToday['Breakfast'] = diet!.breakfast ?? [];
+        }
+
+        // Check and update meals for Lunch
+        if (diet!.lunch != null) {
+          mealsToday['Lunch'] = diet!.lunch ?? [];
+        }
+
+        // Check and update meals for Dinner
+        if (diet!.dinner != null) {
+          mealsToday['Dinner'] = diet!.dinner ?? [];
+        }
+
+        // Check and update meals for Snacks
+        if (diet!.snacks != null) {
+          mealsToday['Snacks'] = diet!.snacks ?? [];
+        }
+    } else {
+        print("else if statement"); // DEBUG
+    };
     return Column(
       children: mealsToday[mealType]!.map((meal) {
         print("Meal: $meal for $mealType"); // DEBUG
@@ -185,6 +247,7 @@ class DietPageState extends State<DietPage> {
       }).toList(),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {

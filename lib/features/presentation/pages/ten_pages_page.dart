@@ -14,7 +14,7 @@ class TenPagesPage extends StatefulWidget {
 }
 
 class _TenPagesPageState extends State<TenPagesPage> {
-  final TextEditingController _summaryController = TextEditingController();
+    final TextEditingController _summaryController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? user;
   Day? day;
@@ -100,6 +100,10 @@ class _TenPagesPageState extends State<TenPagesPage> {
   @override
   Widget build(BuildContext context) {
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    
+    if (tenPages?.completed == true) {
+      _summaryController.text = tenPages!.summary ?? ""; // Conditionally set initial text
+    };
 
     return Scaffold(
       appBar: AppBar(
@@ -122,6 +126,7 @@ class _TenPagesPageState extends State<TenPagesPage> {
                   ),
                 ),
                 const SizedBox(height: 10),
+                
                 TextField(
                   controller: _summaryController,
                   maxLines: 5,

@@ -13,7 +13,7 @@ from server.models.outside_workout_model import OutsideWorkout
 
 
 async def init_db():
-    client = motor.motor_asyncio.AsyncIOMotorClient("mongodb+srv://giordano:5PoszeBn2ihyIhir@systemstest.tchgppx.mongodb.net/?retryWrites=true&w=majority&appName=systemsTest")
+    client = motor.motor_asyncio.AsyncIOMotorClient("mongodb+srv://issey:Dghjuyt22@systemstest.tchgppx.mongodb.net/?retryWrites=true&w=majority&appName=systemsTest")
     await init_beanie(database=client.seventy_five_hard, document_models=[User, Day, Challenge, Diet, InsideWorkout, OutsideWorkout, Water, Alcohol, TenPages])
 
 # mongodb+srv://issey:Dghjuyt22@systemstest.tchgppx.mongodb.net/?retryWrites=true&w=majority&appName=systemsTest
