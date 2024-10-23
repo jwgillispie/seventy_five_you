@@ -8,6 +8,8 @@ from .alcohol_model import Alcohol
 from .ten_pages_model import TenPages
 from .inside_workout_model import InsideWorkout
 from .outside_workout_model import OutsideWorkout
+from .reminders_model import Reminders
+
 class Day(Document):
     class Settings:
         name = "Day"
@@ -19,3 +21,4 @@ class Day(Document):
     water : Water  # Water intake amount
     alcohol : Alcohol  # Alcohol consumption status (e.g., Yes/No)
     pages : TenPages  # Number of pages read
+    user_reminders: Reminders # List of user reminders
