@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:seventy_five_hard/features/presentation/widgets/nav_bar.dart';
 import 'package:seventy_five_hard/features/presentation/models/water_model.dart';
@@ -47,7 +48,9 @@ class _WaterPageState extends State<WaterPage> {
           day = Day.fromJson(json.decode(response.body));
           water = day!.water; // Initialize the water object from the day model
           _bathroomCounter = water?.peeCount ?? 0;
-          _remainingWaterOunces = water?.completed == true ? 0 : 128; // Set water level based on completed status
+          _remainingWaterOunces = water?.completed == true
+              ? 0
+              : 128; // Set water level based on completed status
         });
         print("Day data fetched successfully: ${response.body}"); // DEBUG
       } else {
@@ -73,7 +76,8 @@ class _WaterPageState extends State<WaterPage> {
     try {
       // Send PUT request to update the water data in the backend
       final response = await http.put(
-        Uri.parse('http://localhost:8000/day/${user!.uid}/${today.toString().substring(0, 10)}'),
+        Uri.parse(
+            'http://localhost:8000/day/${user!.uid}/${today.toString().substring(0, 10)}'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'water': waterData}),
       );
@@ -113,9 +117,16 @@ class _WaterPageState extends State<WaterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hydrating'),
+        title:  Text(
+          'Hydrating',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.onPrimary,
+          ),
+        ),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Padding(
@@ -169,23 +180,32 @@ class _WaterPageState extends State<WaterPage> {
             if (_showMotivation)
               Text(
                 'Great job on staying hydrated!',
-                style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18),
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 18),
               ),
             const SizedBox(height: 20),
             // Pee Count
             Text(
               'Pee Count: $_bathroomCounter',
-              style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 24, color: Theme.of(context).colorScheme.primary),
+              style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                  fontSize: 24, color: Theme.of(context).colorScheme.primary),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 IconButton(
-                  icon: const Icon(Icons.remove),
+                  icon: Icon(
+                    Icons.remove_circle_outline,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   onPressed: _decrementPeeCount,
                 ),
                 IconButton(
-                  icon: const Icon(Icons.add),
+                  icon: Icon(
+                    Icons.add_circle_outline,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   onPressed: _incrementPeeCount,
                 ),
               ],

@@ -55,6 +55,7 @@ class _MyAppState extends State<MyApp> {
         ),
       ],
       child: MaterialApp(
+      
       debugShowCheckedModeBanner: false,
       theme: SFThemes.lightTheme,
       darkTheme: SFThemes.darkTheme,

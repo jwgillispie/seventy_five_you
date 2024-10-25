@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:seventy_five_hard/features/presentation/models/alcohol_model.dart';
@@ -44,8 +45,9 @@ class _AlcoholPageState extends State<AlcoholPage> {
         setState(() {
           alcohol = day.alcohol;
           // Set the switch value based on whether alcohol was avoided
-          _avoidedAlcohol = alcohol?.completed ?? false; 
-          _rating = alcohol?.difficulty?.toDouble() ?? 5.0; // Default difficulty
+          _avoidedAlcohol = alcohol?.completed ?? false;
+          _rating =
+              alcohol?.difficulty?.toDouble() ?? 5.0; // Default difficulty
         });
       } else {
         print("Failed to fetch alcohol data: ${response.statusCode}");
@@ -66,7 +68,8 @@ class _AlcoholPageState extends State<AlcoholPage> {
     final Map<String, dynamic> alcoholData = alcohol!.toJson();
     try {
       final response = await http.put(
-        Uri.parse('http://localhost:8000/day/${user!.uid}/${today.toString().substring(0, 10)}'),
+        Uri.parse(
+            'http://localhost:8000/day/${user!.uid}/${today.toString().substring(0, 10)}'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'alcohol': alcoholData}),
       );
@@ -92,9 +95,16 @@ class _AlcoholPageState extends State<AlcoholPage> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Alcohol'),
+        title: Text(
+          'Alcohol',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.onPrimary,
+          ),
+        ),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Stack(
@@ -123,7 +133,8 @@ class _AlcoholPageState extends State<AlcoholPage> {
                       });
                       _updateAlcoholData(); // Update backend when slider changes
                     },
-                    label: '${_rating.toInt()} : ${ratingToDifficulty(_rating)}',
+                    label:
+                        '${_rating.toInt()} : ${ratingToDifficulty(_rating)}',
                   ),
                   SwitchListTile(
                     title: const Text('Did you avoid alcohol today?'),

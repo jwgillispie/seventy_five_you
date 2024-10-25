@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart' as http;
 import 'package:seventy_five_hard/features/presentation/models/outside_workout_model.dart';
 import 'package:seventy_five_hard/features/presentation/widgets/nav_bar.dart';
 import 'package:seventy_five_hard/features/presentation/models/day_model.dart'; // Assuming you have the Day model
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
 class WorkoutOnePage extends StatefulWidget {
   const WorkoutOnePage({Key? key}) : super(key: key);
@@ -43,113 +42,75 @@ class _WorkoutOnePageState extends State<WorkoutOnePage> {
     if (user == null) return;
 
     String formattedDate = today.toString().substring(0, 10);
-    print("Fetching day data for $formattedDate"); // DEBUG
     try {
-      // Fetch the Day object for the current date and user
       final response = await http.get(
         Uri.parse('http://localhost:8000/day/${user!.uid}/$formattedDate'),
         headers: {'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 200) {
-        // Parse the response and set the day object
         setState(() {
           day = Day.fromJson(json.decode(response.body));
-          outsideWorkout = day!.outsideWorkout; // Initialize the outsideWorkout object from the day model
+          outsideWorkout = day!.outsideWorkout;
         });
-        print("Day data fetched successfully: ${response.body}"); // DEBUG
-      } else {
-        print("Failed to fetch day data: ${response.statusCode}"); // DEBUG
       }
     } catch (e) {
-      print("Error fetching day data: $e"); // DEBUG
+      print("Error fetching day data: $e");
     }
   }
 
-  // Function to submit workout description and update the backend
   Future<void> _submitWorkoutDescription() async {
-    print("Submit Workout Description function called."); // DEBUG
-    if (user == null || outsideWorkout == null) {
-      print("Error: User or outside workout is null."); // DEBUG
-      return;
-    }
+    if (user == null || outsideWorkout == null) return;
 
-    // Update the outside workout description
     outsideWorkout!.description = _workoutDescriptionController.text;
-
-    // Convert the updated outside workout object to JSON format
     final Map<String, dynamic> workoutData = outsideWorkout!.toJson();
-    print("Workout data after updating description: $workoutData"); // DEBUG
 
     try {
-      // Perform a PUT request to update the outside workout entry in the backend
       final response = await http.put(
         Uri.parse('http://localhost:8000/day/${user!.uid}/${today.toString().substring(0, 10)}'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'outside_workout': workoutData}), // Updating only the outside_workout part
+        body: json.encode({'outside_workout': workoutData}),
       );
 
-      print("Response status code: ${response.statusCode}"); // DEBUG
-      print("Response body after call: ${response.body}"); // DEBUG
-
       if (response.statusCode == 200) {
-        print("Workout description updated successfully!"); // DEBUG
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Workout description updated successfully!')),
         );
       } else {
-        print("Failed to update workout. Response body: ${response.body}"); // DEBUG
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to update workout.')),
         );
       }
     } catch (e) {
-      print("Error occurred while updating workout description: $e"); // DEBUG
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
       );
     }
   }
 
-  // Function to submit reflection and update the backend
   Future<void> _submitReflection() async {
-    print("Submit Reflection function called."); // DEBUG
-    if (user == null || outsideWorkout == null) {
-      print("Error: User or outside workout is null."); // DEBUG
-      return;
-    }
+    if (user == null || outsideWorkout == null) return;
 
-    // Update the reflection field in the outside workout
     outsideWorkout!.thoughts = _reflectionController.text;
-
-    // Convert the updated outside workout object to JSON format
     final Map<String, dynamic> workoutData = outsideWorkout!.toJson();
-    print("Workout data after updating reflection: $workoutData"); // DEBUG
 
     try {
-      // Perform a PUT request to update the outside workout entry in the backend
       final response = await http.put(
         Uri.parse('http://localhost:8000/day/${user!.uid}/${today.toString().substring(0, 10)}'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'outside_workout': workoutData}), // Updating only the outside_workout part
+        body: json.encode({'outside_workout': workoutData}),
       );
 
-      print("Response status code: ${response.statusCode}"); // DEBUG
-      print("Response body after call: ${response.body}"); // DEBUG
-
       if (response.statusCode == 200) {
-        print("Reflection updated successfully!"); // DEBUG
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Reflection updated successfully!')),
         );
       } else {
-        print("Failed to update reflection. Response body: ${response.body}"); // DEBUG
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to update reflection.')),
         );
       }
     } catch (e) {
-      print("Error occurred while updating reflection: $e"); // DEBUG
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
       );
@@ -158,98 +119,130 @@ class _WorkoutOnePageState extends State<WorkoutOnePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Workout 1',
-          style: GoogleFonts.lato(),
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.onPrimary,
+          ),
         ),
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 0,
+        backgroundColor: theme.colorScheme.primary,
+        elevation: 4,
+        shadowColor: theme.colorScheme.primary.withOpacity(0.4),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Theme.of(context).primaryColor,
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      'Workout',
-                      style: GoogleFonts.lato(fontSize: 20),
-                    ),
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: TextFormField(
-                        controller: _workoutDescriptionController,
-                        decoration: const InputDecoration(
-                          hintText: 'Enter your workout description',
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.all(10),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              _buildWorkoutCard(
+                context,
+                title: 'Workout',
+                controller: _workoutDescriptionController,
+                hintText: 'Enter your workout description',
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _submitWorkoutDescription, // Submit workout description
+                onPressed: _submitWorkoutDescription,
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: theme.colorScheme.secondary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 ),
-                child: const Text('Submit Workout'),
+                child: const Text(
+                  'Submit Workout',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
               ),
               const SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Theme.of(context).primaryColor,
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      'Reflection',
-                      style: GoogleFonts.lato(fontSize: 20),
-                    ),
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: TextFormField(
-                        controller: _reflectionController,
-                        decoration: const InputDecoration(
-                          hintText: 'Enter your thoughts or feelings',
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.all(10),
-                        ),
-                        maxLines: 3,
-                      ),
-                    ),
-                  ],
-                ),
+              _buildWorkoutCard(
+                context,
+                title: 'Reflection',
+                controller: _reflectionController,
+                hintText: 'Enter your thoughts or feelings',
+                maxLines: 5,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _submitReflection, // Submit thoughts/reflection
+                onPressed: _submitReflection,
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: theme.colorScheme.secondary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 ),
-                child: const Text('Submit Thoughts'),
+                child: const Text(
+                  'Submit Thoughts',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
               ),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: const NavBar(),
+      //bottomNavigationBar: const NavBar(),
+    );
+  }
+
+  // Helper method to build the styled workout/reflection card
+  Widget _buildWorkoutCard(
+    BuildContext context, {
+    required String title,
+    required TextEditingController controller,
+    required String hintText,
+    int maxLines = 1,
+  }) {
+    final theme = Theme.of(context);
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: theme.colorScheme.surface,
+        border: Border.all(
+          color: theme.colorScheme.primary.withOpacity(0.3),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: hintText,
+                hintStyle: TextStyle(color: theme.hintColor.withOpacity(0.7)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: theme.colorScheme.primary.withOpacity(0.5)),
+                ),
+                contentPadding: const EdgeInsets.all(16),
+              ),
+              maxLines: maxLines,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

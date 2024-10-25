@@ -9,6 +9,7 @@ import 'package:seventy_five_hard/features/presentation/models/outside_workout_m
 import 'package:seventy_five_hard/features/presentation/models/ten_pages_model.dart';
 import 'package:seventy_five_hard/features/presentation/models/water_model.dart';
 import 'package:seventy_five_hard/features/presentation/widgets/nav_bar.dart';
+import 'package:seventy_five_hard/themes.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -142,7 +143,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     ],
                   ),
                   selectedDecoration: BoxDecoration(
-                    color: theme.primaryColor,
+                    color: SFColors.navyBlue,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -163,7 +164,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   'Logged Objectives for ${_selectedDay.toString().substring(0, 10)}',
                   style: theme.textTheme.displayMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: theme.primaryColor,
+                    color: SFColors.navyBlue,
                   ),
                 ),
               ),
@@ -203,7 +204,7 @@ class _CalendarPageState extends State<CalendarPage> {
             Text(
               'No objectives logged for this day',
               style: theme.textTheme.displayMedium?.copyWith(
-                color: theme.primaryColorDark,
+                color: SFColors.navyBlue,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
@@ -212,7 +213,7 @@ class _CalendarPageState extends State<CalendarPage> {
             Text(
               'It looks like you haven\'t logged any activities for ${_selectedDay.toString().substring(0, 10)}. Select another day or start logging your activities!',
               style: theme.textTheme.displayMedium?.copyWith(
-                color: theme.primaryColorDark.withOpacity(0.7),
+                color: SFColors.navyBlue.withOpacity(0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -240,7 +241,7 @@ class _CalendarPageState extends State<CalendarPage> {
             icon: Icons.water_drop,
             content: [
               _buildObjectiveContent(
-                icon: Icons.local_drink,
+                icon: Icons.bathroom_outlined,
                 label: 'Pee Count: ${waterModel!.peeCount}',
                 success: waterModel!.peeCount! > 5,
               ),
@@ -375,14 +376,14 @@ class _CalendarPageState extends State<CalendarPage> {
           children: [
             Row(
               children: [
-                Icon(icon, size: 28, color: theme.colorScheme.secondary),
+                Icon(icon, size: 28, color: SFColors.navyBlue),
                 const SizedBox(width: 10),
-                Text(title, style: sectionTitleStyle),
+                Text(title, style: sectionTitleStyle?.copyWith(color: SFColors.navyBlue)),
               ],
             ),
             const SizedBox(height: 5),
             // add in a divider line 
-            const Divider(),
+            const Divider(color: SFColors.navyBlue,),
             ...content,
           ],
         ),
@@ -402,12 +403,12 @@ class _CalendarPageState extends State<CalendarPage> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Icon(icon, color: success ? theme.colorScheme.primary : Colors.red),
+          Icon(icon, color: success ? SFColors.navyBlue : Colors.red),
           const SizedBox(width: 10),
           Text(
             label,
             style: theme.textTheme.displaySmall?.copyWith(
-              color: success ? theme.colorScheme.primary : Colors.red,
+              color: success ? SFColors.navyBlue : Colors.red,
               fontWeight: FontWeight.w600,
             ),
           ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:seventy_five_hard/features/presentation/users/bloc/user_bloc.dart';
 import 'package:seventy_five_hard/features/presentation/widgets/nav_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:seventy_five_hard/themes.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -96,13 +97,14 @@ class _HomePageState extends State<HomePage> {
             );
           },
         ),
-        backgroundColor: theme.primaryColor,
+        backgroundColor: theme.colorScheme.primary,
       ),
       body: Container(
+        // decoration: theme.brightness == Brightness.dark ? SFDecorations.darkContainerShadow : SFDecorations.whiteContainerShadow,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              theme.primaryColor.withOpacity(0.1),
+              theme.primaryColor.withOpacity(0.3),
               theme.colorScheme.secondary.withOpacity(0.1),
             ],
             begin: Alignment.topLeft,
@@ -120,7 +122,8 @@ class _HomePageState extends State<HomePage> {
                 itemCount: lineItems.length * 2, // Create continuous scrolling
                 itemBuilder: (context, index) {
                   final itemIndex = index % lineItems.length;
-                  return _buildTickerItem(lineItems[itemIndex], context);
+                  return _buildTickerItem(
+                      lineItems[itemIndex], context, itemIndex);
                 },
               ),
             ),
@@ -148,48 +151,68 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-Widget _buildTickerItem(String text, BuildContext context) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 20), // Add padding for readability
-    margin: const EdgeInsets.symmetric(horizontal: 5), // Margin between items
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
-      borderRadius: BorderRadius.circular(10),  // Rounded corners for a modern look
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.1),
-          blurRadius: 5,
-          spreadRadius: 1,
-        ),
-      ],
-    ),
-    child: Center(
-      child: FittedBox(  // Ensure the text fits within the available space
-        fit: BoxFit.scaleDown,  // Scale down the text if needed
-        child: Text(
-          text,
-          style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontWeight: FontWeight.bold,
-              ),
+  Widget _buildTickerItem(String text, BuildContext context, int index) {
+    // List of colors to cycle through for each line item
+    final List<Color> colors = [
+      Colors.green.withOpacity(0.8),
+      Colors.blue.withOpacity(0.8),
+      Colors.red.withOpacity(0.8),
+      Colors.orange.withOpacity(0.8),
+      Colors.purple.withOpacity(0.8),
+    ];
+
+    // Get the color for the current index
+    final color = colors[index % colors.length];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: 20), // Add padding for readability
+      margin: const EdgeInsets.symmetric(horizontal: 5), // Margin between items
+      decoration: BoxDecoration(
+        color: color, // Apply the color based on the index
+        borderRadius:
+            BorderRadius.circular(10), // Rounded corners for a modern look
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 5,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Center(
+        child: FittedBox(
+          // Ensure the text fits within the available space
+          fit: BoxFit.scaleDown, // Scale down the text if needed
+          child: Text(
+            text,
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   // Grid items with icon and text, styled with shadows and borders
   Widget _buildGridItem(BuildContext context, String title) {
     final theme = Theme.of(context);
+    final bool isDarkMode = theme.brightness == Brightness.dark;
+
+    // Icon map with filled icons for dark mode and outlined for light mode
     Map<String, IconData> iconMap = {
-      "Diet": Icons.restaurant,
-      "Outside Workout": Icons.directions_run,
-      "Second Workout": Icons.fitness_center,
-      "Water": Icons.local_drink,
-      "Alcohol": Icons.no_drinks,
-      "10 Pages": Icons.menu_book,
+      "Diet": isDarkMode ? Icons.restaurant : Icons.restaurant_menu,
+      "Outside Workout":
+          isDarkMode ? Icons.directions_run : Icons.run_circle_outlined,
+      "Second Workout":
+          isDarkMode ? Icons.fitness_center : Icons.fitness_center_outlined,
+      "Water": isDarkMode ? Icons.local_drink : Icons.local_drink_outlined,
+      "Alcohol": isDarkMode ? Icons.no_drinks : Icons.no_drinks_outlined,
+      "10 Pages": isDarkMode ? Icons.menu_book : Icons.menu_book_outlined,
     };
+
     IconData? iconData = iconMap[title];
 
     return GestureDetector(
@@ -219,7 +242,8 @@ Widget _buildTickerItem(String text, BuildContext context) {
               Icon(
                 iconData,
                 size: 50,
-                color: theme.primaryColor,
+                color: theme
+                    .colorScheme.primary, // Light mode uses onPrimary color
               ),
               const SizedBox(height: 10),
               Text(

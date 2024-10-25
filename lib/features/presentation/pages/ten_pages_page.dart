@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:seventy_five_hard/features/presentation/widgets/nav_bar.dart';
 import 'package:seventy_five_hard/features/presentation/models/ten_pages_model.dart';
@@ -42,13 +43,14 @@ class _TenPagesPageState extends State<TenPagesPage> {
     try {
       final response = await http.get(
         Uri.parse('http://localhost:8000/day/${user!.uid}/$formattedDate'),
-        headers: {'Content-Type': 'application/json; charset=utf-8'},  // Ensure UTF-8
+        headers: {'Content-Type': 'application/json; charset=utf-8'},
       );
 
       if (response.statusCode == 200) {
         setState(() {
           day = Day.fromJson(json.decode(response.body));
           tenPages = day!.pages;
+          _summaryController.text = tenPages?.summary ?? "";
         });
       } else {
         print("Failed to fetch day data: ${response.statusCode}");
@@ -76,9 +78,9 @@ class _TenPagesPageState extends State<TenPagesPage> {
       final response = await http.put(
         Uri.parse('http://localhost:8000/day/${user!.uid}/${today.toString().substring(0, 10)}'),
         headers: {
-          'Content-Type': 'application/json; charset=utf-8',  // Add charset=utf-8
+          'Content-Type': 'application/json; charset=utf-8',
         },
-        body: json.encode({'pages': tenPagesData}), // Updating only the ten_pages part
+        body: json.encode({'pages': tenPagesData}),
       );
 
       if (response.statusCode == 200) {
@@ -99,74 +101,94 @@ class _TenPagesPageState extends State<TenPagesPage> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ten Pages'),
-        backgroundColor: Theme.of(context).primaryColor,
+        title: Text(
+          'Ten Pages',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.onPrimary,
+          ),
+        ),
+        backgroundColor: theme.colorScheme.primary,
+        elevation: 4,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  'Summarize what you read in the 10 pages:',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'Summarize what you read in the 10 pages:',
+                style: GoogleFonts.poppins(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
                 ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: _summaryController,
-                  maxLines: 5,
-                  decoration: InputDecoration(
-                    hintText: 'Share your thoughts on the pages you read...',
-                    hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Theme.of(context).colorScheme.surface.withOpacity(0.5),
-                    prefixIcon: Icon(Icons.book, color: Theme.of(context).primaryColor),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.primary,
-                        width: 2,
-                      ),
-                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              _buildSummaryCard(context),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _submitTenPages,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.secondary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _submitTenPages, // Submit summary and update TenPages model
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: MediaQuery.of(context).size.width * 0.2,
-                      vertical: MediaQuery.of(context).size.height * 0.02,
-                    ),
-                  ),
-                  child: const Text('Submit'),
+                child: const Text(
+                  'Submit',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
       bottomNavigationBar: const NavBar(),
+    );
+  }
+
+  // Helper method to build the styled summary card
+  Widget _buildSummaryCard(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: theme.colorScheme.surface,
+        border: Border.all(
+          color: theme.colorScheme.primary.withOpacity(0.3),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: TextFormField(
+          controller: _summaryController,
+          maxLines: 5,
+          decoration: InputDecoration(
+            hintText: 'Share your thoughts on the pages you read...',
+            hintStyle: TextStyle(color: theme.hintColor.withOpacity(0.7)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: theme.colorScheme.primary.withOpacity(0.5)),
+            ),
+            contentPadding: const EdgeInsets.all(16),
+          ),
+          style: TextStyle(
+            fontSize: 16,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
+      ),
     );
   }
 }
