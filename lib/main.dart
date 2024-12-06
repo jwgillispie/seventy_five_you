@@ -92,7 +92,7 @@ class App extends StatelessWidget {
                 child: GalleryPage(),
               ),
           "/social": (context) => MainScreenWrapper(
-                child: SocialPage(),
+                child: EnhancedSocialPage(),
               ),
         },
       ),

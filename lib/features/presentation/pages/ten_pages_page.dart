@@ -211,7 +211,7 @@ class _TenPagesPageState extends State<TenPagesPage>
             ? '🎉 Great job completing your reading goal!'
             : '📚 Progress saved! Keep reading!');
 
-        if ((tenPages!.completed ?? false )&& !_showCompletion) {
+        if ((tenPages!.completed ?? false) && !_showCompletion) {
           setState(() => _showCompletion = true);
         }
       } else {
@@ -267,145 +267,36 @@ class _TenPagesPageState extends State<TenPagesPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isLoading
-          ? _buildLoadingState()
-          : FadeTransition(
-              opacity: _fadeAnimation,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      SFColors.primary.withOpacity(0.05),
-                      Colors.white,
-                    ],
-                  ),
-                ),
-                child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  slivers: [
-                    _buildSliverHeader(),
-                    SliverPadding(
-                      padding: const EdgeInsets.all(20),
-                      sliver: SliverList(
-                        delegate: SliverChildListDelegate([
-                          _buildProgressCard(),
-                          const SizedBox(height: 24),
-                          _buildStatsGrid(),
-                          const SizedBox(height: 24),
-                          _buildBookTitleCard(),
-                          const SizedBox(height: 24),
-                          _buildReflectionCard(),
-                          const SizedBox(height: 24),
-                          if (_showCompletion) _buildAchievementsCard(),
-                          const SizedBox(height: 24),
-                          _buildSubmitButton(),
-                        ]),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-    );
-  }
-
-  Widget _buildLoadingState() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            SFColors.primary.withOpacity(0.05),
-            Colors.white,
-          ],
-        ),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(SFColors.primary),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Loading your reading progress...',
-              style: GoogleFonts.poppins(
-                color: SFColors.primary,
-                fontSize: 16,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSliverHeader() {
-    return SliverAppBar(
-      expandedHeight: 200,
-      floating: false,
-      pinned: true,
-      backgroundColor: SFColors.primary,
-      flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: SFColors.primaryGradient,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              SFColors.primary.withOpacity(0.1),
+              SFColors.background,
+            ],
           ),
-          child: Stack(
+        ),
+        child: SafeArea(
+          child: Column(
             children: [
-              // Animated book icons pattern
-              ...List.generate(5, (index) {
-                return Positioned(
-                  left: math.Random().nextDouble() *
-                      MediaQuery.of(context).size.width,
-                  top: math.Random().nextDouble() * 200,
-                  child: AnimatedBuilder(
-                    animation: _pulseController,
-                    builder: (context, child) {
-                      return Transform.scale(
-                        scale: _pulseController.value,
-                        child: Icon(
-                          Icons.auto_stories,
-                          color: Colors.white.withOpacity(0.1),
-                          size: 40 * (index + 1),
-                        ),
-                      );
-                    },
-                  ),
-                );
-              }),
-              // Title and quote
-              Align(
-                alignment: Alignment.bottomLeft,
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
+              _buildHeader(),
+              Expanded(
+                child: SingleChildScrollView(
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        '75 Hard: Daily Reading',
-                        style: GoogleFonts.poppins(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        'Day ${today.day} of 75',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          color: Colors.white.withOpacity(0.9),
-                        ),
-                      ),
+                      _buildReadingProgress(),
+                      const SizedBox(height: 24),
+                      _buildCurrentBook(),
+                      const SizedBox(height: 24),
+                      _buildNotes(),
+                      if (_showCompletion) ...[
+                        const SizedBox(height: 24),
+                        _buildAchievements(),
+                      ],
+                      const SizedBox(height: 24),
+                      _buildSaveButton(),
                     ],
                   ),
                 ),
@@ -417,19 +308,145 @@ class _TenPagesPageState extends State<TenPagesPage>
     );
   }
 
-  Widget _buildProgressCard() {
+  Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF4CAF50), Color(0xFF81C784)],
+          colors: SFColors.primaryGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
+        ),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
+        boxShadow: [
+          BoxShadow(
+            color: SFColors.primary.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Daily Reading',
+                    style: GoogleFonts.orbitron(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Day ${today.difference(DateTime(2024, 1, 1)).inDays + 1} of 75',
+                    style: GoogleFonts.inter(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+              _buildProgressRing(),
+            ],
+          ),
+          const SizedBox(height: 20),
+          _buildReadingStats(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressRing() {
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: [
+            Colors.white.withOpacity(0.2),
+            Colors.white.withOpacity(0.1),
+          ],
+        ),
+      ),
+      child: Center(
+        child: Text(
+          '${(_currentPage * 10).toInt()}%',
+          style: GoogleFonts.orbitron(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReadingStats() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildStatItem('Pages', '$_currentPage/10', Icons.menu_book),
+        _buildStatItem('Streak', '7 days', Icons.local_fire_department),
+        _buildStatItem('Books', '3', Icons.library_books),
+      ],
+    );
+  }
+
+  Widget _buildStatItem(String label, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white, size: 20),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: GoogleFonts.inter(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              Text(
+                label,
+                style: GoogleFonts.inter(
+                  color: Colors.white.withOpacity(0.8),
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReadingProgress() {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: SFColors.primaryGradient,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: SFColors.primary.withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -441,9 +458,9 @@ class _TenPagesPageState extends State<TenPagesPage>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Reading Progress',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
+                'Today\'s Progress',
+                style: GoogleFonts.inter(
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -456,10 +473,10 @@ class _TenPagesPageState extends State<TenPagesPage>
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  '$_currentPage/10 Pages',
-                  style: GoogleFonts.poppins(
+                  '$_currentPage/10',
+                  style: GoogleFonts.inter(
                     fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
@@ -467,53 +484,29 @@ class _TenPagesPageState extends State<TenPagesPage>
             ],
           ),
           const SizedBox(height: 20),
-          Stack(
-            children: [
-              // Background track
-              Container(
-                height: 20,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              // Animated progress
-              AnimatedBuilder(
-                animation: _progressAnimation,
-                builder: (context, child) {
-                  return FractionallySizedBox(
-                    widthFactor: _progressAnimation.value,
-                    child: Container(
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: _currentPage / 10,
+              backgroundColor: Colors.white.withOpacity(0.2),
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+              minHeight: 10,
+            ),
           ),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [0, 5, 10].map((count) {
+            children: [0, 5, 10].map((pages) {
               return ElevatedButton(
-                onPressed: () => _updatePageCount(count),
+                onPressed: () => _updatePageCount(pages),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _currentPage == count
+                  backgroundColor: _currentPage == pages
                       ? Colors.white
-                      : Colors.white.withOpacity(0.3),
-                  foregroundColor: _currentPage == count
-                      ? const Color(0xFF4CAF50)
-                      : Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                      : Colors.white.withOpacity(0.2),
+                  foregroundColor:
+                      _currentPage == pages ? SFColors.primary : Colors.white,
                 ),
-                child: Text('$count Pages'),
+                child: Text('$pages pages'),
               );
             }).toList(),
           ),
@@ -522,80 +515,16 @@ class _TenPagesPageState extends State<TenPagesPage>
     );
   }
 
-  Widget _buildStatsGrid() {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 1.0,
-      ),
-      itemCount: _readingStats.length,
-      itemBuilder: (context, index) {
-        final stat = _readingStats[index];
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: stat['color'].withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  stat['icon'],
-                  color: stat['color'],
-                  size: 24,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                stat['value'],
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: SFColors.textPrimary,
-                ),
-              ),
-              Text(
-                stat['title'],
-                textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  color: SFColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildBookTitleCard() {
+  Widget _buildCurrentBook() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: SFColors.primary.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -604,33 +533,24 @@ class _TenPagesPageState extends State<TenPagesPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.book, color: SFColors.primary),
-              const SizedBox(width: 12),
-              Text(
-                'Book Details',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: SFColors.primary,
-                ),
-              ),
-            ],
+          Text(
+            'Current Book',
+            style: GoogleFonts.orbitron(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: SFColors.primary,
+            ),
           ),
           const SizedBox(height: 20),
           TextFormField(
             controller: _bookTitleController,
             decoration: InputDecoration(
               hintText: 'What are you reading?',
-              hintStyle: TextStyle(color: Colors.grey[400]),
-              filled: true,
-              fillColor: Colors.grey[50],
+              prefixIcon: Icon(Icons.auto_stories, color: SFColors.primary),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
+                borderSide: BorderSide(color: SFColors.primary),
               ),
-              prefixIcon: const Icon(Icons.auto_stories),
             ),
           ),
         ],
@@ -638,15 +558,16 @@ class _TenPagesPageState extends State<TenPagesPage>
     );
   }
 
-  Widget _buildReflectionCard() {
+  Widget _buildNotes() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: SFColors.primary.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -655,32 +576,23 @@ class _TenPagesPageState extends State<TenPagesPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.edit_note, color: SFColors.primary),
-              const SizedBox(width: 12),
-              Text(
-                'Reading Notes',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: SFColors.primary,
-                ),
-              ),
-            ],
+          Text(
+            'Reading Notes',
+            style: GoogleFonts.orbitron(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: SFColors.primary,
+            ),
           ),
           const SizedBox(height: 20),
           TextFormField(
             controller: _summaryController,
-            maxLines: 6,
+            maxLines: 5,
             decoration: InputDecoration(
               hintText: 'Share your thoughts and key takeaways...',
-              hintStyle: TextStyle(color: Colors.grey[400]),
-              filled: true,
-              fillColor: Colors.grey[50],
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
+                borderSide: BorderSide(color: SFColors.primary),
               ),
             ),
           ),
@@ -689,36 +601,32 @@ class _TenPagesPageState extends State<TenPagesPage>
     );
   }
 
-  Widget _buildAchievementsCard() {
+  Widget _buildAchievements() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: const LinearGradient(
+          colors: SFColors.primaryGradient,
+        ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: SFColors.primary.withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.emoji_events, color: SFColors.primary),
-              const SizedBox(width: 12),
-              Text(
-                'Achievements',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: SFColors.primary,
-                ),
-              ),
-            ],
+          Text(
+            'Reading Milestones',
+            style: GoogleFonts.orbitron(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 20),
           ListView.builder(
@@ -728,44 +636,36 @@ class _TenPagesPageState extends State<TenPagesPage>
             itemBuilder: (context, index) {
               final achievement = _achievements[index];
               return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  color: achievement['color'].withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(15),
                 ),
                 child: Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: achievement['color'],
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        achievement['icon'],
-                        color: Colors.white,
-                        size: 24,
-                      ),
+                    Icon(
+                      achievement['icon'],
+                      color: Colors.white,
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 15),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             achievement['title'],
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.inter(
                               fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: SFColors.textPrimary,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
                           ),
                           Text(
                             achievement['description'],
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.inter(
                               fontSize: 14,
-                              color: SFColors.textSecondary,
+                              color: Colors.white.withOpacity(0.8),
                             ),
                           ),
                         ],
@@ -774,7 +674,7 @@ class _TenPagesPageState extends State<TenPagesPage>
                     if (achievement['earned'])
                       const Icon(
                         Icons.check_circle,
-                        color: Color(0xFF4CAF50),
+                        color: Colors.white,
                       ),
                   ],
                 ),
@@ -786,41 +686,27 @@ class _TenPagesPageState extends State<TenPagesPage>
     );
   }
 
-  Widget _buildSubmitButton() {
-    return SizedBox(
+  Widget _buildSaveButton() {
+    return Container(
+      margin: const EdgeInsets.all(20),
       width: double.infinity,
+      height: 56,
       child: ElevatedButton(
         onPressed: _isSaving ? null : _submitData,
         style: ElevatedButton.styleFrom(
           backgroundColor: SFColors.primary,
-          padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(15),
           ),
-          elevation: 0,
         ),
         child: _isSaving
-            ? const SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
+            ? const CircularProgressIndicator(color: Colors.white)
+            : Text(
+                'Save Progress',
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.check_circle_outline),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Save Progress',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
               ),
       ),
     );

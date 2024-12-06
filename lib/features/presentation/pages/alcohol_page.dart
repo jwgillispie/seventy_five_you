@@ -781,47 +781,296 @@ class _AlcoholPageState extends State<AlcoholPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isLoading
-          ? _buildLoadingState()
-          : Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    SFColors.primary.withOpacity(0.05),
-                    Colors.white,
-                  ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              SFColors.primary.withOpacity(0.1),
+              SFColors.background,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _buildCommitmentCard(),
+                      const SizedBox(height: 24),
+                      _buildProgressGrid(),
+                      const SizedBox(height: 24),
+                      _buildDailyCheckIn(),
+                      if (_showStreak) ...[
+                        const SizedBox(height: 24),
+                        _buildStreakCard(),
+                      ],
+                      const SizedBox(height: 24),
+                      _buildAchievements(),
+                    ],
+                  ),
                 ),
               ),
-              child: SafeArea(
-                child: CustomScrollView(
-                  slivers: [
-                    _buildSliverHeader(),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          children: [
-                            _buildStrengthMeter(),
-                            const SizedBox(height: 24),
-                            _buildBenefitsGrid(),
-                            const SizedBox(height: 24),
-                            _buildDailyCheckIn(),
-                            const SizedBox(height: 24),
-                            _buildAchievements(),
-                            if (_showStreak) ...[
-                              const SizedBox(height: 24),
-                              _buildStreakCard(),
-                            ],
-                          ],
-                        ),
-                      ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: SFColors.primaryGradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
+        boxShadow: [
+          BoxShadow(
+            color: SFColors.primary.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Alcohol-Free',
+                    style: GoogleFonts.orbitron(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                  ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Day ${today.difference(DateTime(2024, 1, 1)).inDays + 1} of 75',
+                    style: GoogleFonts.inter(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+              _buildProgressRing(),
+            ],
+          ),
+          const SizedBox(height: 20),
+          _buildStats(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressRing() {
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: [
+            Colors.white.withOpacity(0.2),
+            Colors.white.withOpacity(0.1),
+          ],
+        ),
+      ),
+      child: Center(
+        child: Text(
+          '${(_avoidedAlcohol ? 100 : 0)}%',
+          style: GoogleFonts.orbitron(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStats() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildStatItem('Streak', '7 Days', Icons.local_fire_department),
+        _buildStatItem('Money Saved', '\$120', Icons.savings),
+        _buildStatItem('Completed', '45/75', Icons.check_circle),
+      ],
+    );
+  }
+
+  Widget _buildStatItem(String label, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white, size: 20),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: GoogleFonts.inter(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
+              Text(
+                label,
+                style: GoogleFonts.inter(
+                  color: Colors.white.withOpacity(0.8),
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCommitmentCard() {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: SFColors.primaryGradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: SFColors.primary.withOpacity(0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.star,
+            color: Colors.white,
+            size: 40,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Your Commitment to Health',
+            style: GoogleFonts.inter(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Every day alcohol-free is a victory for your mind and body',
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              color: Colors.white.withOpacity(0.9),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressGrid() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 15,
+          mainAxisSpacing: 15,
+          childAspectRatio: 1.1,
+        ),
+        itemCount: _benefitsData.length,
+        itemBuilder: (context, index) {
+          final benefit = _benefitsData[index];
+          return _buildBenefitCard(benefit);
+        },
+      ),
+    );
+  }
+
+  Widget _buildBenefitCard(Map<String, dynamic> benefit) {
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: SFColors.primary.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: benefit['color'].withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              benefit['icon'],
+              color: benefit['color'],
+              size: 30,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            benefit['title'],
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: SFColors.textPrimary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: benefit['progress'],
+              backgroundColor: Colors.grey[200],
+              valueColor: AlwaysStoppedAnimation<Color>(benefit['color']),
+              minHeight: 6,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -25,7 +25,7 @@ class NewNavBar extends StatelessWidget {
       ),
       _createTabConfig(
         context: context,
-        screen: SocialPage(),
+        screen: EnhancedSocialPage(),
         icon: Icons.people_outline,
         activeIcon: Icons.people,
         title: "Community",

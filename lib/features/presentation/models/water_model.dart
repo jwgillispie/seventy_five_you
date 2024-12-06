@@ -26,6 +26,7 @@ class Water {
       'firebase_uid': firebaseUid,
       'completed': completed,
       'pee_count': peeCount,
+
     };
   }
 }

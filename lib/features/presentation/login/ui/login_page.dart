@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:seventy_five_hard/features/presentation/home/ui/home_page.dart';
 import 'package:seventy_five_hard/features/presentation/login/bloc/login_bloc.dart';
+import 'package:seventy_five_hard/features/presentation/login/repos/login_repository.dart';
 import 'package:seventy_five_hard/features/presentation/widgets/form_container_widget.dart';
 import 'package:seventy_five_hard/features/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -18,6 +19,7 @@ class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
+
 class _LoginPageState extends State<LoginPage> {
   final _isLoading = false;
   final FirebaseAuthService _auth = FirebaseAuthService();
@@ -39,6 +41,8 @@ class _LoginPageState extends State<LoginPage> {
       listener: (context, state) {
         if (state is LoginSuccessState) {
           Fluttertoast.showToast(msg: "Login successful");
+          loginBloc.add(LoginNavigateToHomeEvent(
+              firebaseUid: FirebaseAuth.instance.currentUser!.uid));
           NavigationService.navigateToHome(context);
         } else if (state is LoginFailureState) {
           Fluttertoast.showToast(msg: state.message);
@@ -67,10 +71,8 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              "Login",
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)
-            ),
+            const Text("Login",
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
             const SizedBox(height: 30),
             FormContainerWidget(
               controller: _emailController,
@@ -135,17 +137,30 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _handleLogin() {
+  void _handleLogin() async {
     loginBloc.add(LoginButtonPressedEvent(
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
     ));
 
+    // Wait for authentication to complete
+    await Future.delayed(const Duration(seconds: 2));
+
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
+      // Create new day object
+      final loginRepo = LoginRepository();
+      final dayExists = await loginRepo.checkIfDayExists(user.uid);
+
+      if (!dayExists) {
+        await loginRepo.createNewDay(user.uid);
+      }
+
       loginBloc.add(LoginNavigateToHomeEvent(firebaseUid: user.uid));
     } else {
-      Fluttertoast.showToast(msg: 'User not logged in. Please try again.');
+      if (mounted) {
+        Fluttertoast.showToast(msg: 'User not logged in. Please try again.');
+      }
     }
   }
 }

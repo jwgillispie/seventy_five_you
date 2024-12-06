@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:seventy_five_hard/features/presentation/models/alcohol_model.dart';
 import 'package:seventy_five_hard/features/presentation/models/day_model.dart';
@@ -88,103 +89,190 @@ class _CalendarPageState extends State<CalendarPage> {
     tenPagesModel = null;
     alcoholModel = null;
   }
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Calendar'),
-        backgroundColor: theme.primaryColor,
-      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              theme.primaryColor.withOpacity(0.2),
-              theme.colorScheme.secondary.withOpacity(0.2),
-            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
+            colors: [
+              SFColors.primary.withOpacity(0.1),
+              SFColors.background,
+            ],
           ),
         ),
-        child: SingleChildScrollView(
+        child: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Calendar Widget
-              TableCalendar(
-                focusedDay: _focusedDay,
-                firstDay: DateTime.utc(2023, 1, 1),
-                lastDay: DateTime.utc(2024, 12, 31),
-                selectedDayPredicate: (day) {
-                  return isSameDay(_selectedDay, day);
-                },
-                calendarFormat: CalendarFormat.month,
-                onDaySelected: (selectedDay, focusedDay) {
-                  setState(() {
-                    _selectedDay = selectedDay;
-                    _focusedDay = focusedDay;
-                  });
-                  _fetchObjectives(); // Fetch the objectives for the selected day
-                },
-                eventLoader: (day) => _events[day] ?? [],
-                calendarStyle: CalendarStyle(
-                  todayDecoration: BoxDecoration(
-                    color: theme.colorScheme.secondary.withOpacity(0.5),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: theme.colorScheme.secondary.withOpacity(0.4),
-                        blurRadius: 10,
-                        spreadRadius: 1,
-                      ),
-                    ],
-                  ),
-                  selectedDecoration: BoxDecoration(
-                    color: SFColors.secondary,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: theme.primaryColor.withOpacity(0.4),
-                        blurRadius: 10,
-                        spreadRadius: 1,
-                      ),
+              _buildHeader(),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _buildCalendar(),
+                      const SizedBox(height: 20),
+                      isDayEmpty
+                          ? _buildEmptyDayScreen(context)
+                          : Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: _buildObjectivesDisplay(context),
+                            ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-
-              // Title
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  'Logged Objectives for ${_selectedDay.toString().substring(0, 10)}',
-                  style: theme.textTheme.displayMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: SFColors.secondary,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              // Check if the day is empty and display the appropriate screen
-              isDayEmpty
-                  ? _buildEmptyDayScreen(context)
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: _buildObjectivesDisplay(context),
-                    ),
             ],
           ),
         ),
       ),
-      // bottomNavigationBar: const NavBar(),
     );
   }
 
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: SFColors.primaryGradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
+        boxShadow: [
+          BoxShadow(
+            color: SFColors.primary.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Progress Calendar',
+                    style: GoogleFonts.orbitron(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Track Your Journey',
+                    style: GoogleFonts.inter(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Icon(
+                  Icons.calendar_today,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+Widget _buildCalendar() {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: SFColors.primary.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: TableCalendar(
+        focusedDay: _focusedDay,
+        firstDay: DateTime.utc(2024, 1, 1),
+        lastDay: DateTime.utc(2024, 12, 31),
+        selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+        onDaySelected: (selectedDay, focusedDay) {
+          setState(() {
+            _selectedDay = selectedDay;
+            _focusedDay = focusedDay;
+          });
+          _fetchObjectives();
+        },
+        headerStyle: HeaderStyle(
+          titleTextStyle: GoogleFonts.orbitron(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: SFColors.primary,
+          ),
+          formatButtonVisible: false,
+          leftChevronIcon: Icon(Icons.chevron_left, color: SFColors.primary),
+          rightChevronIcon: Icon(Icons.chevron_right, color: SFColors.primary),
+        ),
+        calendarStyle: CalendarStyle(
+          todayDecoration: BoxDecoration(
+            color: SFColors.primary.withOpacity(0.8),
+            shape: BoxShape.circle,
+          ),
+          selectedDecoration: BoxDecoration(
+            color: SFColors.secondary,
+            shape: BoxShape.circle,
+          ),
+          todayTextStyle: const TextStyle(color: Colors.white),
+          selectedTextStyle: const TextStyle(color: Colors.white),
+          defaultTextStyle: TextStyle(color: SFColors.textPrimary),
+          outsideTextStyle: TextStyle(color: SFColors.textSecondary),
+          weekendTextStyle: TextStyle(color: SFColors.textPrimary),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildObjectiveContent({
+    required IconData icon,
+    required String label,
+    bool success = true,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon, color: success ? SFColors.secondary : Colors.red),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                color: success ? SFColors.secondary : Colors.red,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
   // Widget to show an empty day screen with a message
   Widget _buildEmptyDayScreen(BuildContext context) {
     final theme = Theme.of(context);
@@ -354,7 +442,6 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  // Widget to build an objective card
   Widget _buildObjectiveCard({
     required String title,
     required IconData icon,
@@ -362,58 +449,75 @@ class _CalendarPageState extends State<CalendarPage> {
     required TextStyle? sectionTitleStyle,
     required ThemeData theme,
   }) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      elevation: 5,
+    return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
-      shadowColor: theme.primaryColor.withOpacity(0.2),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: SFColors.primary.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(icon, size: 28, color: SFColors.secondary),
-                const SizedBox(width: 10),
-                Text(title, style: sectionTitleStyle?.copyWith(color: SFColors.secondary)),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: SFColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: SFColors.primary),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  title,
+                  style: GoogleFonts.orbitron(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: SFColors.primary,
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 5),
-            // add in a divider line 
-            const Divider(color: SFColors.secondary,),
+            const Divider(height: 20),
             ...content,
           ],
         ),
       ),
     );
   }
+}  // Widget to build objective content with icons and text
+  // Widget _buildObjectiveContent({
+  //   required IconData icon,
+  //   required String label,
+  //   bool success = true,
+  // }) {
+  //   final theme = Theme.of(context);
 
-  // Widget to build objective content with icons and text
-  Widget _buildObjectiveContent({
-    required IconData icon,
-    required String label,
-    bool success = true,
-  }) {
-    final theme = Theme.of(context);
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 4),
+  //     child: Row(
+  //       children: [
+  //         Icon(icon, color: success ? SFColors.secondary : Colors.red),
+  //         const SizedBox(width: 10),
+  //         Text(
+  //           label,
+  //           style: theme.textTheme.displaySmall?.copyWith(
+  //             color: success ? SFColors.secondary : Colors.red,
+  //             fontWeight: FontWeight.w600,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Icon(icon, color: success ? SFColors.secondary : Colors.red),
-          const SizedBox(width: 10),
-          Text(
-            label,
-            style: theme.textTheme.displaySmall?.copyWith(
-              color: success ? SFColors.secondary : Colors.red,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

@@ -14,7 +14,9 @@ class DietPage extends StatefulWidget {
   DietPageState createState() => DietPageState();
 }
 
-class DietPageState extends State<DietPage> {
+class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  final cardAnimations = <String, Animation<double>>{};
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? user;
   Day? day;
@@ -48,9 +50,32 @@ class DietPageState extends State<DietPage> {
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    
+    // Create staggered animations for each meal card
+    mealCategories.keys.toList().asMap().forEach((index, meal) {
+      cardAnimations[meal] = CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(
+          index * 0.1, // Stagger start times
+          1.0,
+          curve: Curves.easeInOut,
+        ),
+      );
+    });
+    
+    _animationController.forward();
+    super.initState();
     user = _auth.currentUser;
     _fetchDayData();
   }
+
+
+
+
 
   Future<void> _fetchDayData() async {
     if (user == null) return;
@@ -61,6 +86,8 @@ class DietPageState extends State<DietPage> {
         Uri.parse('http://localhost:8000/day/${user!.uid}/$formattedDate'),
         headers: {'Content-Type': 'application/json'},
       );
+
+      if (!mounted) return; // Add check before setState
 
       if (response.statusCode == 200) {
         setState(() {
@@ -77,18 +104,9 @@ class DietPageState extends State<DietPage> {
         _showErrorSnackBar("Failed to fetch data");
       }
     } catch (e) {
+      if (!mounted) return;
       _showErrorSnackBar("Error: $e");
     }
-  }
-
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red.shade800,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
   }
 
   Future<void> submitMeal(String mealType, String newMeal) async {
@@ -127,16 +145,6 @@ class DietPageState extends State<DietPage> {
     } catch (e) {
       _showErrorSnackBar('Error: $e');
     }
-  }
-
-  void _showSuccessSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green.shade800,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
   }
 
   void _showAddMealDialog(String mealType) {
@@ -251,88 +259,193 @@ class DietPageState extends State<DietPage> {
           end: Alignment.bottomRight,
           colors: [
             theme.colorScheme.primary,
-            theme.colorScheme.primary.withOpacity(0.8),
+            theme.colorScheme.secondary,
           ],
         ),
-        borderRadius: const BorderRadius.vertical(
-          bottom: Radius.circular(30),
-        ),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Diet Tracker',
-            style: GoogleFonts.orbitron(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+          Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Diet Tracker',
+                    style: GoogleFonts.orbitron(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Track your nutrition journey',
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              _buildProgressRing(theme),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Track your nutrition journey',
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              color: Colors.white.withOpacity(0.9),
-            ),
+          const SizedBox(height: 20),
+          _buildNutritionSummary(theme),
+        ],
+      ),
+    );
+  }
+    Widget _buildProgressRing(ThemeData theme) {
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: [
+            theme.colorScheme.secondary,
+            theme.colorScheme.primary,
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withOpacity(0.3),
+            blurRadius: 10,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          '80%',
+          style: GoogleFonts.orbitron(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNutritionSummary(ThemeData theme) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildNutrientItem('Protein', '75g', Icons.fitness_center, theme),
+        _buildNutrientItem('Carbs', '200g', Icons.grain, theme),
+        _buildNutrientItem('Fats', '55g', Icons.opacity, theme),
+      ],
+    );
+  }
+
+  Widget _buildNutrientItem(String label, String value, IconData icon, ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white, size: 20),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: GoogleFonts.inter(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              Text(
+                label,
+                style: GoogleFonts.inter(
+                  color: Colors.white.withOpacity(0.8),
+                  fontSize: 12,
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
+
   Widget _buildMealCard(String mealType, ThemeData theme) {
     final category = mealCategories[mealType]!;
     final meals = category['meals'] as List<String>;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      elevation: 4,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              theme.cardColor,
-              theme.cardColor.withOpacity(0.95),
-            ],
+    return ScaleTransition(
+      scale: cardAnimations[mealType]!,
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 8,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                theme.cardColor,
+                theme.cardColor.withOpacity(0.95),
+              ],
+            ),
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(8),
+          child: Column(
+            children: [
+              Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: category['gradient'],
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(20),
+                  ),
                 ),
-                child: Icon(
-                  category['icon'],
-                  color: Colors.white,
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      category['icon'],
+                      color: Colors.white,
+                    ),
+                  ),
+                  title: Text(
+                    mealType,
+                    style: GoogleFonts.inter(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.add_circle, color: Colors.white),
+                    onPressed: () => _showAddMealDialog(mealType),
+                  ),
                 ),
               ),
-              title: Text(
-                mealType,
-                style: GoogleFonts.inter(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              trailing: IconButton(
-                icon: const Icon(Icons.add_circle_outline),
-                onPressed: () => _showAddMealDialog(mealType),
-              ),
-            ),
             const Divider(),
             ListView.builder(
               shrinkWrap: true,
@@ -359,6 +472,7 @@ class DietPageState extends State<DietPage> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
@@ -401,7 +515,8 @@ class DietPageState extends State<DietPage> {
 
   Widget _buildStatsBar(ThemeData theme) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      height: 60, // Fixed height
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: theme.cardColor,
         boxShadow: [
@@ -417,7 +532,8 @@ class DietPageState extends State<DietPage> {
         children: [
           _buildStatItem('1,850', 'Calories', Icons.local_fire_department,
               Colors.orange, theme),
-          _buildStatItem('75g', 'Protein', Icons.fitness_center, Colors.blue, theme),
+          _buildStatItem(
+              '75g', 'Protein', Icons.fitness_center, Colors.blue, theme),
           _buildStatItem(
               '4/5', 'Meals', Icons.restaurant_menu, Colors.green, theme),
         ],
@@ -425,25 +541,53 @@ class DietPageState extends State<DietPage> {
     );
   }
 
-  Widget _buildStatItem(String value, String label, IconData icon, Color color,
-      ThemeData theme) {
-    return Column(
+  Widget _buildStatItem(
+      String value, String label, IconData icon, Color color, ThemeData theme) {
+    return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: color),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          label,
-          style: theme.textTheme.bodySmall,
+        Icon(icon, color: color, size: 20),
+        const SizedBox(width: 4),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(value,
+                style: GoogleFonts.inter(
+                    fontSize: 14, fontWeight: FontWeight.bold)),
+            Text(label,
+                style: theme.textTheme.bodySmall?.copyWith(fontSize: 12)),
+          ],
         ),
       ],
     );
   }
+  // Update SnackBar methods to position above stats bar
+void _showErrorSnackBar(String message) {
+  if (!mounted) return;
+  
+  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red.shade800,
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 80), // Position above stats bar
+    ),
+  );
+}
+
+void _showSuccessSnackBar(String message) {
+  if (!mounted) return;
+  
+  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.green.shade800,
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 80), // Position above stats bar
+    ),
+  );
+}
 }
