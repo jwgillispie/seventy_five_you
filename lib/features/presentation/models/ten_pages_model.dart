@@ -22,7 +22,7 @@ class TenPages {
       firebaseUid: json['firebase_uid'],
       completed: json['completed'],
       summary: json['summary'],
-      bookTitle: json['book_title'],
+      bookTitle: json['bookTitle'],
       pagesRead: json['pagesRead'],
     );
   }
@@ -33,7 +33,8 @@ class TenPages {
       'completed': completed,
       'summary': summary,
       // page read 
-      'pagesRead': pagesRead
+      'pagesRead': pagesRead,
+      'book_title': bookTitle,
 
     };
   }

@@ -56,7 +56,6 @@ class Day {
       'alcohol': alcohol?.toJson(),
       'pages': pages?.toJson(),
       'completed': completed,
-      
     };
   }
 }
