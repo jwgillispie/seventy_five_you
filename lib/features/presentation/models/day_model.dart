@@ -6,54 +6,44 @@ import 'package:seventy_five_hard/features/presentation/models/ten_pages_model.d
 import 'package:seventy_five_hard/features/presentation/models/water_model.dart';
 
 class Day {
-  final String date;
-  final String firebaseUid;
-  final Diet? diet;
-   OutsideWorkout? outsideWorkout;
-  final InsideWorkout? insideWorkout;
   final Water? water;
-  final Alcohol? alcohol;
+  final Diet? diet;
+  final InsideWorkout? insideWorkout;
+  final OutsideWorkout? outsideWorkout;
   final TenPages? pages;
-        bool? completed = false;
+  final Alcohol? alcohol;
+  final String? date;
+  final String? firebaseUid;
+  final bool? completed;
 
 
   Day({
-    required this.date,
-    required this.firebaseUid,
-    this.diet,
-    this.outsideWorkout,
-    this.insideWorkout,
     this.water,
-    this.alcohol,
+    this.diet,
+    this.insideWorkout,
+    this.outsideWorkout,
     this.pages,
+    this.alcohol,
+    this.date,
+    this.firebaseUid,
     this.completed,
   });
 
   factory Day.fromJson(Map<String, dynamic> json) {
     return Day(
-      date: json['date'] as String,
-      firebaseUid: json['firebase_uid'] as String,
-      diet: json['diet'] != null
-          ? Diet.fromJson(json['diet'] as Map<String, dynamic>)
-          : null,
-      outsideWorkout: json['outside_workout'] != null
-          ? OutsideWorkout.fromJson(json['outside_workout'] as Map<String, dynamic>)
-          : null,
-      insideWorkout: json['inside_workout'] != null
-          ? InsideWorkout.fromJson(json['inside_workout'] as Map<String, dynamic>)
-          : null,
-      water: json['water'] != null
-          ? Water.fromJson(json['water'] as Map<String, dynamic>)
-          : null,
-      alcohol: json['alcohol'] != null
-          ? Alcohol.fromJson(json['alcohol'] as Map<String, dynamic>)
-          : null,
-      pages: json['pages'] != null
-          ? TenPages.fromJson(json['pages'] as Map<String, dynamic>)
-          : null,
-      completed: json['completed'] as bool,
+      water: json['water'] != null ? Water.fromJson(json['water']) : null,
+      diet: json['diet'] != null ? Diet.fromJson(json['diet']) : null,
+      insideWorkout: json['inside_workout'] != null ? InsideWorkout.fromJson(json['inside_workout']) : null,
+      outsideWorkout: json['outside_workout'] != null ? OutsideWorkout.fromJson(json['outside_workout']) : null,
+      pages: json['pages'] != null ? TenPages.fromJson(json['pages']) : null,
+      alcohol: json['alcohol'] != null ? Alcohol.fromJson(json['alcohol']) : null,
+      date: json['date'],
+      firebaseUid: json['firebase_uid'],
+      completed: json['completed'],
     );
   }
+
+
 
   Map<String, dynamic> toJson() {
     return {
@@ -66,6 +56,7 @@ class Day {
       'alcohol': alcohol?.toJson(),
       'pages': pages?.toJson(),
       'completed': completed,
+      
     };
   }
 }

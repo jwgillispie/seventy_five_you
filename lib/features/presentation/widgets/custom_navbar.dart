@@ -1,6 +1,8 @@
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:flutter/material.dart';
 import 'package:seventy_five_hard/themes.dart';
+
+
 class CustomNavBar extends StatelessWidget {
   final NavBarConfig navBarConfig;
   final NavBarDecoration navBarDecoration;

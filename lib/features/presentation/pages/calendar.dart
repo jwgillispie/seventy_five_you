@@ -45,7 +45,8 @@ class _CalendarPageState extends State<CalendarPage> {
 
   // Fetch the objectives for the selected day
   Future<void> _fetchObjectives() async {
-    String formattedDate = "${_selectedDay.year}-${_selectedDay.month}-${_selectedDay.day}";
+    String formattedDate =
+        "${_selectedDay.year}-${_selectedDay.month}-${_selectedDay.day}";
     try {
       final response = await http.get(
         Uri.parse(
@@ -88,7 +89,9 @@ class _CalendarPageState extends State<CalendarPage> {
     outsideWorkoutModel = null;
     tenPagesModel = null;
     alcoholModel = null;
-  } @override
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -115,7 +118,8 @@ class _CalendarPageState extends State<CalendarPage> {
                       isDayEmpty
                           ? _buildEmptyDayScreen(context)
                           : Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
                               child: _buildObjectivesDisplay(context),
                             ),
                     ],
@@ -257,7 +261,7 @@ class _CalendarPageState extends State<CalendarPage> {
       child: Row(
         children: [
           Icon(
-            icon, 
+            icon,
             color: success ? SFColors.primary : const Color(0xFFB23B3B),
             size: 20,
           ),
@@ -347,7 +351,8 @@ class _CalendarPageState extends State<CalendarPage> {
             content: [
               _buildObjectiveContent(
                 icon: Icons.breakfast_dining,
-                label: 'Breakfast: ${dietModel!.breakfast?.join(", ") ?? "N/A"}',
+                label:
+                    'Breakfast: ${dietModel!.breakfast?.join(", ") ?? "N/A"}',
               ),
               _buildObjectiveContent(
                 icon: Icons.lunch_dining,
@@ -408,10 +413,12 @@ class _CalendarPageState extends State<CalendarPage> {
             content: [
               _buildObjectiveContent(
                 icon: Icons.menu_book,
-                label: 'Completed: ${tenPagesModel!.completed == true ? "Yes" : "No"}',
-                success: tenPagesModel!.completed == true,
+                label:
+                    'Completed: ${tenPagesModel?.completed ?? false ? "Yes" : "No"}',
+                success: tenPagesModel?.completed ?? false,
               ),
-              if (tenPagesModel!.summary != null && tenPagesModel!.summary!.isNotEmpty)
+              if (tenPagesModel?.summary != null &&
+                  tenPagesModel!.summary!.isNotEmpty)
                 _buildObjectiveContent(
                   icon: Icons.notes,
                   label: 'Summary: ${tenPagesModel!.summary}',
@@ -427,8 +434,9 @@ class _CalendarPageState extends State<CalendarPage> {
             content: [
               _buildObjectiveContent(
                 icon: Icons.no_drinks,
-                label: 'Consumed: ${alcoholModel!.completed == true ? "No" : "Yes"}',
-                success: alcoholModel!.completed == true,
+                label:
+                    'Consumed: ${alcoholModel?.completed ?? false ? "No" : "Yes"}',
+                success: alcoholModel?.completed ?? false,
               ),
             ],
             sectionTitleStyle: sectionTitleStyle,
@@ -498,7 +506,6 @@ class _CalendarPageState extends State<CalendarPage> {
       ),
     );
   }
-
 }  // Widget to build objective content with icons and text
   // Widget _buildObjectiveContent({
   //   required IconData icon,
