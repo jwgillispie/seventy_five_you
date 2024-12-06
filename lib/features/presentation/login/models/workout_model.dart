@@ -6,6 +6,8 @@ class Workout {
   String workoutType;
   String description;
   String thoughts;
+  bool completed = false;
+
 
   Workout({
     this.date = '',
@@ -14,6 +16,8 @@ class Workout {
     this.workoutType = '',
     this.description = '',
     this.thoughts = '',
+    this.completed = false,
+
   });
 
   factory Workout.fromJson(Map<String, dynamic> json) {
@@ -24,6 +28,7 @@ class Workout {
       workoutType: json['workout_type'] ?? '',
       description: json['description'] ?? '',
       thoughts: json['thoughts'] ?? '',
+      completed: json['completed'] ?? false,
     );
   }
 
@@ -34,6 +39,7 @@ class Workout {
       'workout_type': workoutType,
       'description': description,
       'thoughts': thoughts,
+      'completed': completed,
     };
   }
 }

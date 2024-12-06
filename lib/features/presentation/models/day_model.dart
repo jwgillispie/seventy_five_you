@@ -14,6 +14,8 @@ class Day {
   final Water? water;
   final Alcohol? alcohol;
   final TenPages? pages;
+        bool? completed = false;
+
 
   Day({
     required this.date,
@@ -24,6 +26,7 @@ class Day {
     this.water,
     this.alcohol,
     this.pages,
+    this.completed,
   });
 
   factory Day.fromJson(Map<String, dynamic> json) {
@@ -48,6 +51,7 @@ class Day {
       pages: json['pages'] != null
           ? TenPages.fromJson(json['pages'] as Map<String, dynamic>)
           : null,
+      completed: json['completed'] as bool,
     );
   }
 
@@ -61,6 +65,7 @@ class Day {
       'water': water?.toJson(),
       'alcohol': alcohol?.toJson(),
       'pages': pages?.toJson(),
+      'completed': completed,
     };
   }
 }

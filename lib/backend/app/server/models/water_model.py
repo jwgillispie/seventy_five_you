@@ -9,6 +9,8 @@ class Water(Document):
     firebase_uid : str
     completed: bool 
     pee_count: int
+    completed: bool
+
 
 
     

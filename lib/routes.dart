@@ -12,6 +12,7 @@ import 'package:seventy_five_hard/features/presentation/pages/water_page.dart';
 import 'package:seventy_five_hard/features/presentation/pages/alcohol_page.dart';
 import 'package:seventy_five_hard/features/presentation/pages/ten_pages_page.dart';
 import 'package:seventy_five_hard/features/presentation/pages/error_page.dart';
+import 'package:seventy_five_hard/features/presentation/widgets/new_navbar.dart';
 
 class Routes {
   static const String splashScreen = '/';
@@ -36,26 +37,29 @@ class Routes {
       case signUp:
         return MaterialPageRoute(builder: (_) => const SignUpPage());
       case home:
-        return MaterialPageRoute(builder: (_) => const HomePage());
       case diet:
-        return MaterialPageRoute(builder: (_) => const DietPage());
       case workout1:
-        return MaterialPageRoute(builder: (_) => const WorkoutOnePage());
       case workout2:
-        return MaterialPageRoute(builder: (_) => const WorkoutTwoPage());
       case water:
-        return MaterialPageRoute(builder: (_) => const WaterPage());
       case alcohol:
-        return MaterialPageRoute(builder: (_) => const AlcoholPage());
       case tenPages:
-        return MaterialPageRoute(builder: (_) => const TenPagesPage());
       case profile:
-        return MaterialPageRoute(builder: (_) => const ProfilePage());
       case calendar:
-        return MaterialPageRoute(builder: (_) => const CalendarPage());
+        // For authenticated routes, return the NavBar which handles internal navigation
+        return MaterialPageRoute(
+          builder: (_) => NewNavBar(),
+          settings: settings,
+        );
       default:
-        // If there is no such named route, return an error page or a default page
         return MaterialPageRoute(builder: (_) => const ErrorPage());
     }
+  }
+
+  // Helper method to determine if a route requires authentication
+  static bool isAuthenticatedRoute(String? routeName) {
+    return routeName != null &&
+        routeName != splashScreen &&
+        routeName != login &&
+        routeName != signUp;
   }
 }

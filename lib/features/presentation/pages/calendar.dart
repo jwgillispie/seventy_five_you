@@ -143,7 +143,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     ],
                   ),
                   selectedDecoration: BoxDecoration(
-                    color: SFColors.navyBlue,
+                    color: SFColors.secondary,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -164,7 +164,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   'Logged Objectives for ${_selectedDay.toString().substring(0, 10)}',
                   style: theme.textTheme.displayMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: SFColors.navyBlue,
+                    color: SFColors.secondary,
                   ),
                 ),
               ),
@@ -181,7 +181,7 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
         ),
       ),
-      bottomNavigationBar: const NavBar(),
+      // bottomNavigationBar: const NavBar(),
     );
   }
 
@@ -204,7 +204,7 @@ class _CalendarPageState extends State<CalendarPage> {
             Text(
               'No objectives logged for this day',
               style: theme.textTheme.displayMedium?.copyWith(
-                color: SFColors.navyBlue,
+                color: SFColors.secondary,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
@@ -213,7 +213,7 @@ class _CalendarPageState extends State<CalendarPage> {
             Text(
               'It looks like you haven\'t logged any activities for ${_selectedDay.toString().substring(0, 10)}. Select another day or start logging your activities!',
               style: theme.textTheme.displayMedium?.copyWith(
-                color: SFColors.navyBlue.withOpacity(0.7),
+                color: SFColors.secondary.withOpacity(0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -376,14 +376,14 @@ class _CalendarPageState extends State<CalendarPage> {
           children: [
             Row(
               children: [
-                Icon(icon, size: 28, color: SFColors.navyBlue),
+                Icon(icon, size: 28, color: SFColors.secondary),
                 const SizedBox(width: 10),
-                Text(title, style: sectionTitleStyle?.copyWith(color: SFColors.navyBlue)),
+                Text(title, style: sectionTitleStyle?.copyWith(color: SFColors.secondary)),
               ],
             ),
             const SizedBox(height: 5),
             // add in a divider line 
-            const Divider(color: SFColors.navyBlue,),
+            const Divider(color: SFColors.secondary,),
             ...content,
           ],
         ),
@@ -403,12 +403,12 @@ class _CalendarPageState extends State<CalendarPage> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Icon(icon, color: success ? SFColors.navyBlue : Colors.red),
+          Icon(icon, color: success ? SFColors.secondary : Colors.red),
           const SizedBox(width: 10),
           Text(
             label,
             style: theme.textTheme.displaySmall?.copyWith(
-              color: success ? SFColors.navyBlue : Colors.red,
+              color: success ? SFColors.secondary : Colors.red,
               fontWeight: FontWeight.w600,
             ),
           ),

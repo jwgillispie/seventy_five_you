@@ -3,6 +3,7 @@ class Alcohol {
       String? firebaseUid;
       bool? completed;
       int? difficulty;
+      
 
   Alcohol({
         this.date,

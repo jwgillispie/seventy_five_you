@@ -9,4 +9,8 @@ class TenPages(Document):
     firebase_uid : str
     completed: bool
     summary: str
+    bookTitle: str
+    completed: bool
+    pagesRead: int
+
     

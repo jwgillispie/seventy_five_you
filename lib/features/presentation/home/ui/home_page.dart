@@ -1,9 +1,15 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:seventy_five_hard/features/presentation/users/bloc/user_bloc.dart';
-import 'package:seventy_five_hard/features/presentation/widgets/nav_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:seventy_five_hard/features/presentation/outside_workout/ui/w1_page.dart';
+import 'package:seventy_five_hard/features/presentation/pages/alcohol_page.dart';
+import 'package:seventy_five_hard/features/presentation/pages/diet_page.dart';
+import 'package:seventy_five_hard/features/presentation/pages/ten_pages_page.dart';
+import 'package:seventy_five_hard/features/presentation/pages/w2_page.dart';
+import 'package:seventy_five_hard/features/presentation/pages/water_page.dart';
+import 'package:seventy_five_hard/features/presentation/users/bloc/user_bloc.dart';
 import 'package:seventy_five_hard/themes.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,41 +19,24 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
+  late AnimationController _animationController;
   Timer? _scrollTimer;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? user;
   final UserBloc userBloc = UserBloc();
-  final List<String> lineItems = [
-    'Great job',
-    "Give up and you're a quitter",
-    'One day at a time',
-    'Keep going',
-    'You’re crushing it',
+  
+  final List<String> motivationalMessages = [
+    '💪 EMBRACE THE CHALLENGE',
+    '🔥 NO EXCUSES TODAY',
+    '⚡ UNLEASH YOUR POTENTIAL',
+    '🌟 MAKE IT HAPPEN',
+    '🏃 KEEP PUSHING FORWARD',
+    '💫 BELIEVE IN YOURSELF',
+    '🎯 STAY FOCUSED',
+    '⭐ YOU\'RE CRUSHING IT',
   ];
-
-  @override
-  void dispose() {
-    _scrollTimer?.cancel();
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _startScrolling() {
-    _scrollTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
-      _scrolllineItems();
-    });
-  }
-
-  void _scrolllineItems() {
-    if (_scrollController.hasClients) {
-      final double maxWidth = _scrollController.position.maxScrollExtent;
-      final double currentOffset = _scrollController.offset;
-      final double newOffset = (currentOffset) % (maxWidth);
-      _scrollController.jumpTo(newOffset + 1);
-    }
-  }
 
   @override
   void initState() {
@@ -56,230 +45,349 @@ class _HomePageState extends State<HomePage> {
     if (user != null) {
       userBloc.add(FetchUserName(user!.uid));
     }
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
     _startScrolling();
+    _animationController.forward();
   }
 
   @override
+  void dispose() {
+    _scrollTimer?.cancel();
+    _scrollController.dispose();
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _startScrolling() {
+    _scrollTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
+      if (_scrollController.hasClients) {
+        double newOffset = _scrollController.offset + 1;
+        if (newOffset >= _scrollController.position.maxScrollExtent) {
+          newOffset = 0;
+        }
+        _scrollController.jumpTo(newOffset);
+      }
+    });
+  }
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    double screenWidth = MediaQuery.of(context).size.width;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: BlocConsumer<UserBloc, UserState>(
-          bloc: userBloc,
-          listenWhen: (previous, current) => current is UserError,
-          listener: (context, state) {
-            if (state is UserError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
-            }
-          },
-          buildWhen: (previous, current) =>
-              current is UserLoaded || current is UserInitial,
-          builder: (context, state) {
-            if (state is UserLoaded) {
-              return Text(
-                "75 ${state.username}",
-                style: theme.textTheme.displayMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onPrimary,
-                ),
-              );
-            }
-            return Text(
-              "75 ---",
-              style: theme.textTheme.displayMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onPrimary,
-              ),
-            );
-          },
-        ),
-        backgroundColor: theme.colorScheme.primary,
-      ),
       body: Container(
-        // decoration: theme.brightness == Brightness.dark ? SFDecorations.darkContainerShadow : SFDecorations.whiteContainerShadow,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              theme.primaryColor.withOpacity(0.3),
-              theme.colorScheme.secondary.withOpacity(0.1),
-            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
+            colors: isDark 
+                ? [
+                    const Color(0xFF1A1F25),
+                    const Color(0xFF2A2F35),
+                  ]
+                : [
+                    Colors.white,
+                    const Color(0xFFF5F7FA),
+                  ],
           ),
         ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildAppBar(theme),
+              _buildMotivationalTicker(theme),
+              const SizedBox(height: 20),
+              _buildDailyProgress(theme),
+              const SizedBox(height: 20),
+              Expanded(
+                child: _buildChallengeGrid(theme),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppBar(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary.withOpacity(0.1),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
+      ),
+      child: BlocConsumer<UserBloc, UserState>(
+        bloc: userBloc,
+        listener: (context, state) {
+          if (state is UserError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          }
+        },
+        builder: (context, state) {
+          String username = state is UserLoaded ? state.username : "Warrior";
+          return Column(
+            children: [
+              Text(
+                "DAY ${DateTime.now().difference(DateTime(2024, 1, 1)).inDays + 1}",
+                style: GoogleFonts.orbitron(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Let's Crush It, $username!",
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+ Widget _buildMotivationalTicker(ThemeData theme) {
+    return SizedBox(
+      height: 60,
+      child: ListView.builder(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        itemCount: motivationalMessages.length * 10, // Increased for smoother looping
+        itemBuilder: (context, index) {
+          final itemIndex = index % motivationalMessages.length;
+          return _buildMotivationalItem(
+            motivationalMessages[itemIndex],
+            theme,
+            itemIndex,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildMotivationalItem(String message, ThemeData theme, int index) {
+    final colors = [
+      theme.colorScheme.primary,
+      theme.colorScheme.secondary,
+      theme.colorScheme.tertiary ?? theme.colorScheme.primary,
+    ];
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            colors[index % colors.length],
+            colors[(index + 1) % colors.length],
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: colors[index % colors.length].withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          message,
+          style: GoogleFonts.inter(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
+  }
+  Widget _buildDailyProgress(ThemeData theme) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: theme.colorScheme.primary.withOpacity(0.2),
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            "TODAY'S PROGRESS",
+            style: GoogleFonts.orbitron(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildProgressItem("2/6", "Tasks\nComplete", theme),
+              _buildProgressItem("33%", "Day\nProgress", theme),
+              _buildProgressItem("🔥 3", "Day\nStreak", theme),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressItem(String value, String label, ThemeData theme) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: theme.textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onBackground.withOpacity(0.7),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildChallengeGrid(ThemeData theme) {
+    final challenges = [
+      {"title": "Diet", "icon": Icons.restaurant, "color": Colors.green},
+      {"title": "Outside Workout", "icon": Icons.directions_run, "color": Colors.blue},
+      {"title": "Second Workout", "icon": Icons.fitness_center, "color": Colors.orange},
+      {"title": "Water", "icon": Icons.water_drop, "color": Colors.cyan},
+      {"title": "Alcohol", "icon": Icons.no_drinks, "color": Colors.red},
+      {"title": "10 Pages", "icon": Icons.menu_book, "color": Colors.purple},
+    ];
+
+    return GridView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 1.1,
+        crossAxisSpacing: 15,
+        mainAxisSpacing: 15,
+      ),
+      itemCount: challenges.length,
+      itemBuilder: (context, index) {
+        final challenge = challenges[index];
+        return _buildChallengeCard(
+          title: challenge["title"] as String,
+          icon: challenge["icon"] as IconData,
+          color: challenge["color"] as Color,
+          theme: theme,
+        );
+      },
+    );
+  }
+
+  Widget _buildChallengeCard({
+    required String title,
+    required IconData icon,
+    required Color color,
+    required ThemeData theme,
+  }) {
+    return GestureDetector(
+      onTap: () => _navigateToPage(context, title),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              color.withOpacity(0.2),
+              color.withOpacity(0.1),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: color.withOpacity(0.3),
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Icon(
+              icon,
+              size: 40,
+              color: color,
+            ),
             const SizedBox(height: 10),
-            SizedBox(
-              height: 50, // Height for the ticker container
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                controller: _scrollController,
-                itemCount: lineItems.length * 2, // Create continuous scrolling
-                itemBuilder: (context, index) {
-                  final itemIndex = index % lineItems.length;
-                  return _buildTickerItem(
-                      lineItems[itemIndex], context, itemIndex);
-                },
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onBackground,
               ),
             ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2, // 2 columns in the grid
-                shrinkWrap: true,
-                children: [
-                  "Diet",
-                  "Outside Workout",
-                  "Second Workout",
-                  "Water",
-                  "Alcohol",
-                  "10 Pages",
-                ].map((title) {
-                  return _buildGridItem(context, title);
-                }).toList(),
+            const SizedBox(height: 5),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                "Tap to Start",
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: const NavBar(),
     );
   }
-
-  Widget _buildTickerItem(String text, BuildContext context, int index) {
-    // List of colors to cycle through for each line item
-    final List<Color> colors = [
-      Colors.green.withOpacity(0.8),
-      Colors.blue.withOpacity(0.8),
-      Colors.red.withOpacity(0.8),
-      Colors.orange.withOpacity(0.8),
-      Colors.purple.withOpacity(0.8),
-    ];
-
-    // Get the color for the current index
-    final color = colors[index % colors.length];
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-          horizontal: 20), // Add padding for readability
-      margin: const EdgeInsets.symmetric(horizontal: 5), // Margin between items
-      decoration: BoxDecoration(
-        color: color, // Apply the color based on the index
-        borderRadius:
-            BorderRadius.circular(10), // Rounded corners for a modern look
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 5,
-            spreadRadius: 1,
-          ),
-        ],
-      ),
-      child: Center(
-        child: FittedBox(
-          // Ensure the text fits within the available space
-          fit: BoxFit.scaleDown, // Scale down the text if needed
-          child: Text(
-            text,
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Grid items with icon and text, styled with shadows and borders
-  Widget _buildGridItem(BuildContext context, String title) {
-    final theme = Theme.of(context);
-    final bool isDarkMode = theme.brightness == Brightness.dark;
-
-    // Icon map with filled icons for dark mode and outlined for light mode
-    Map<String, IconData> iconMap = {
-      "Diet": isDarkMode ? Icons.restaurant : Icons.restaurant_menu,
-      "Outside Workout":
-          isDarkMode ? Icons.directions_run : Icons.run_circle_outlined,
-      "Second Workout":
-          isDarkMode ? Icons.fitness_center : Icons.fitness_center_outlined,
-      "Water": isDarkMode ? Icons.local_drink : Icons.local_drink_outlined,
-      "Alcohol": isDarkMode ? Icons.no_drinks : Icons.no_drinks_outlined,
-      "10 Pages": isDarkMode ? Icons.menu_book : Icons.menu_book_outlined,
+  void _navigateToPage(BuildContext context, String title) {
+    // Instead of navigation, use a callback or state management
+    // to show these pages within the same tab
+    final content = switch(title) {
+      "Diet" => const DietPage(),
+      "Outside Workout" => const WorkoutOnePage(),
+      "Second Workout" => const WorkoutTwoPage(),
+      "Water" => const WaterPage(),
+      "Alcohol" => const AlcoholPage(),
+      "10 Pages" => const TenPagesPage(),
+      _ => null
     };
 
-    IconData? iconData = iconMap[title];
-
-    return GestureDetector(
-      onTap: () => _navigateToPage(context, title),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+    if (content != null) {
+      Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute(
+          builder: (context) => content,
         ),
-        margin: const EdgeInsets.all(10),
-        elevation: 8,
-        shadowColor: theme.primaryColor.withOpacity(0.2),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                theme.primaryColor.withOpacity(0.1),
-                theme.colorScheme.secondary.withOpacity(0.1),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                iconData,
-                size: 50,
-                color: theme
-                    .colorScheme.primary, // Light mode uses onPrimary color
-              ),
-              const SizedBox(height: 10),
-              Text(
-                title,
-                style: theme.textTheme.displayMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Navigate to respective pages based on title
-  void _navigateToPage(BuildContext context, String title) {
-    switch (title) {
-      case "Diet":
-        Navigator.pushNamed(context, "/diet");
-        break;
-      case "Outside Workout":
-        Navigator.pushNamed(context, "/workout1");
-        break;
-      case "Second Workout":
-        Navigator.pushNamed(context, "/workout2");
-        break;
-      case "Water":
-        Navigator.pushNamed(context, "/water");
-        break;
-      case "Alcohol":
-        Navigator.pushNamed(context, "/alcohol");
-        break;
-      case "10 Pages":
-        Navigator.pushNamed(context, "/tenpages");
-        break;
+      );
     }
   }
 }

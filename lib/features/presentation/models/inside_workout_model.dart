@@ -3,12 +3,15 @@ class InsideWorkout {
     String? firebaseUid;
     String? description;
     String? thoughts;
+          bool? completed = false;
+
 
   InsideWorkout({
       this.date,
       this.firebaseUid,
       this.description,
       this.thoughts,
+      this.completed,
   });
 
   factory InsideWorkout.fromJson(Map<String, dynamic> json) {
@@ -17,6 +20,7 @@ class InsideWorkout {
       firebaseUid: json['firebase_uid'],
       description: json['description'],
       thoughts: json['thoughts'],
+      completed: json['completed'],
     );
   }
   // to json
@@ -26,6 +30,7 @@ class InsideWorkout {
       'firebase_uid': firebaseUid,
       'description': description,
       'thoughts': thoughts,
+      'completed': completed,
     };
   }
 }

@@ -98,6 +98,8 @@ class SignupRepository {
       firebaseUid: firebaseUid,
       completed: false,
       summary: 'defaultSummary',
+      bookTitle: 'defaultBookTitle',
+      pagesRead: 0,
     );
     Diet defaultDiet = Diet(
         date: formattedDate,

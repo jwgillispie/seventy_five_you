@@ -17,6 +17,7 @@ class Water {
       firebaseUid: json['firebase_uid'],
       completed: json['water'],
       peeCount: json['pee_count'],
+      
     );
   }
   Map<String, dynamic> toJson() {

@@ -5,6 +5,8 @@ class Diet {
   List<String>? lunch;
   List<String>? dinner;
   List<String>? snacks;
+        bool? completed = false;
+
 
   Diet({
     this.date,
@@ -13,6 +15,8 @@ class Diet {
     this.lunch,
     this.dinner,
     this.snacks,
+    this.completed,
+    
   });
 
   factory Diet.fromJson(Map<String, dynamic> json) {
@@ -31,6 +35,7 @@ class Diet {
       snacks: json['snacks'] != null
           ? List<String>.from(json['snacks'] as List<dynamic>)
           : null,
+      completed: json['completed'] as bool,
     );
   }
 
@@ -42,6 +47,7 @@ class Diet {
       'lunch': lunch,
       'dinner': dinner,
       'snacks': snacks,
+      'completed': completed,
     };
   }
 }

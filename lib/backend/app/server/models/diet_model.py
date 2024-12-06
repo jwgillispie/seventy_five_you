@@ -11,6 +11,7 @@ class Diet(Document):
     lunch : List[str]  # List of lunch entries
     dinner : List[str]  # List of dinner entries
     snacks : List[str]  # List of snack entries
+    completed: bool
     
 
     

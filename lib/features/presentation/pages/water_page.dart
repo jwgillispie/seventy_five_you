@@ -3,9 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:seventy_five_hard/features/presentation/widgets/nav_bar.dart';
-import 'package:seventy_five_hard/features/presentation/models/water_model.dart';
-import 'package:seventy_five_hard/features/presentation/models/day_model.dart';
+import 'package:seventy_five_hard/themes.dart';
+import '../models/water_model.dart';
+import '../models/day_model.dart';
+import 'dart:math' as math;
 
 class WaterPage extends StatefulWidget {
   const WaterPage({super.key});
@@ -14,29 +15,63 @@ class WaterPage extends StatefulWidget {
   _WaterPageState createState() => _WaterPageState();
 }
 
-class _WaterPageState extends State<WaterPage> {
+class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
   double _remainingWaterOunces = 128.0;
   int _bathroomCounter = 0;
   bool _showMotivation = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  late AnimationController _waveController;
+  late Animation<double> _waveAnimation;
+
   User? user;
-  Day? day; // Day object that contains the Water model
-  Water? water; // Water model object
+  Day? day;
+  Water? water;
   DateTime today = DateTime.now();
+  bool _isLoading = false;
+
+  final List<String> _motivationalQuotes = [
+    "Stay hydrated, stay strong! 💪",
+    "Every sip brings you closer to your goal! 🎯",
+    "Hydration is key to success! 🔑",
+    "You're crushing it! Keep drinking! 🌊",
+    "Water is fuel for champions! 🏆"
+  ];
+
+  String get _randomQuote {
+    return _motivationalQuotes[
+        math.Random().nextInt(_motivationalQuotes.length)];
+  }
 
   @override
   void initState() {
     super.initState();
     user = _auth.currentUser;
-    _fetchDayData(); // Fetch existing day data for this user and date
+
+    // Wave Animation Controller
+    _waveController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    )..repeat();
+
+    // Wave Animation
+    _waveAnimation = Tween<double>(begin: 0.0, end: 2 * math.pi).animate(
+      CurvedAnimation(parent: _waveController, curve: Curves.linear),
+    );
+
+    _fetchDayData();
   }
 
-  // Fetch the current day's data from the backend
+  @override
+  void dispose() {
+    _waveController.dispose();
+    super.dispose();
+  }
+
   Future<void> _fetchDayData() async {
     if (user == null) return;
+    setState(() => _isLoading = true);
 
     String formattedDate = today.toString().substring(0, 10);
-    print("Fetching day data for $formattedDate"); // DEBUG
     try {
       final response = await http.get(
         Uri.parse('http://localhost:8000/day/${user!.uid}/$formattedDate'),
@@ -46,35 +81,29 @@ class _WaterPageState extends State<WaterPage> {
       if (response.statusCode == 200) {
         setState(() {
           day = Day.fromJson(json.decode(response.body));
-          water = day!.water; // Initialize the water object from the day model
+          water = day!.water;
           _bathroomCounter = water?.peeCount ?? 0;
-          _remainingWaterOunces = water?.completed == true
-              ? 0
-              : 128; // Set water level based on completed status
+          _remainingWaterOunces = water?.completed == true ? 0 : 128;
+          _showMotivation = water?.completed == true;
         });
-        print("Day data fetched successfully: ${response.body}"); // DEBUG
       } else {
-        print("Failed to fetch day data: ${response.statusCode}"); // DEBUG
+        _showErrorSnackBar('Failed to load hydration data');
       }
     } catch (e) {
-      print("Error fetching day data: $e"); // DEBUG
+      _showErrorSnackBar('Error loading data');
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
-  // Update water and send data to backend
   Future<void> _updateWaterData() async {
     if (user == null || water == null) return;
 
-    // Mark the water task as completed if the remaining water is 0
     water!.completed = _remainingWaterOunces == 0;
     water!.peeCount = _bathroomCounter;
-
-    // Convert water data to JSON
     final Map<String, dynamic> waterData = water!.toJson();
-    print("Water data to send to backend: $waterData"); // DEBUG
 
     try {
-      // Send PUT request to update the water data in the backend
       final response = await http.put(
         Uri.parse(
             'http://localhost:8000/day/${user!.uid}/${today.toString().substring(0, 10)}'),
@@ -82,16 +111,15 @@ class _WaterPageState extends State<WaterPage> {
         body: json.encode({'water': waterData}),
       );
 
-      print("Response status code: ${response.statusCode}"); // DEBUG
-      print("Response body after update: ${response.body}"); // DEBUG
-
       if (response.statusCode == 200) {
-        print("Water data updated successfully!"); // DEBUG
+        if (_remainingWaterOunces == 0) {
+          _showSuccessSnackBar('Daily water goal achieved! 🎉');
+        }
       } else {
-        print("Failed to update water data: ${response.body}"); // DEBUG
+        _showErrorSnackBar('Failed to update progress');
       }
     } catch (e) {
-      print("Error updating water data: $e"); // DEBUG
+      _showErrorSnackBar('Error saving progress');
     }
   }
 
@@ -100,120 +128,493 @@ class _WaterPageState extends State<WaterPage> {
       _remainingWaterOunces = newValue;
       _showMotivation = newValue == 0;
     });
-    _updateWaterData(); // Update backend with new water data
+    _updateWaterData();
   }
 
   void _incrementPeeCount() {
     setState(() => _bathroomCounter++);
-    _updateWaterData(); // Update backend with new pee count
+    _updateWaterData();
   }
 
   void _decrementPeeCount() {
     if (_bathroomCounter > 0) {
       setState(() => _bathroomCounter--);
-      _updateWaterData(); // Update backend with new pee count
+      _updateWaterData();
     }
+  }
+
+  void _addWater(double ounces) {
+    double newValue = math.max(0, _remainingWaterOunces - ounces);
+    _updateWaterLevel(newValue);
+  }
+
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Row(
+        children: [
+          const Icon(Icons.check_circle, color: Colors.white),
+          const SizedBox(width: 8),
+          Expanded(child: Text(message)),
+        ],
+      ),
+      backgroundColor: SFColors.success,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    ));
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Row(
+        children: [
+          const Icon(Icons.error_outline, color: Colors.white),
+          const SizedBox(width: 8),
+          Expanded(child: Text(message)),
+        ],
+      ),
+      backgroundColor: SFColors.error,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title:  Text(
-          'Hydrating',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w600,
-            color: theme.colorScheme.onPrimary,
-          ),
+      body: _isLoading
+          ? _buildLoadingState()
+          : Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    SFColors.primary.withOpacity(0.05),
+                    Colors.white,
+                  ],
+                ),
+              ),
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _buildHeader(),
+                      _buildWaterBottle(),
+                      const SizedBox(height: 24),
+                      _buildQuickActions(),
+                      const SizedBox(height: 24),
+                      _buildBathroomTracker(),
+                      if (_showMotivation) ...[
+                        const SizedBox(height: 24),
+                        _buildMotivationCard(),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            SFColors.primary.withOpacity(0.05),
+            Colors.white,
+          ],
         ),
-        backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Water Level Slider
-                RotatedBox(
-                  quarterTurns: 3,
-                  child: Slider(
-                    value: _remainingWaterOunces,
-                    min: 0,
-                    max: 128,
-                    divisions: 128,
-                    onChanged: _updateWaterLevel,
-                    activeColor: Theme.of(context).primaryColor,
-                  ),
-                ),
-                const SizedBox(width: 20),
-                // Water Gallon Representation
-                Container(
-                  height: 200,
-                  width: 80,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.blueAccent),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: FractionallySizedBox(
-                      heightFactor: _remainingWaterOunces / 128.0,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.blueAccent,
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(12),
-                            bottomRight: Radius.circular(12),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+          children: [
+            const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(SFColors.primary),
             ),
-            const SizedBox(height: 30),
-            if (_showMotivation)
-              Text(
-                'Great job on staying hydrated!',
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18),
-              ),
-            const SizedBox(height: 20),
-            // Pee Count
+            const SizedBox(height: 16),
             Text(
-              'Pee Count: $_bathroomCounter',
-              style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  fontSize: 24, color: Theme.of(context).colorScheme.primary),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(
-                    Icons.remove_circle_outline,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  onPressed: _decrementPeeCount,
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.add_circle_outline,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  onPressed: _incrementPeeCount,
-                ),
-              ],
+              'Loading your hydration tracker...',
+              style: GoogleFonts.poppins(
+                color: SFColors.primary,
+                fontSize: 16,
+              ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: const NavBar(),
     );
   }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '75 Hard: Hydration',
+                style: GoogleFonts.poppins(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: SFColors.primary,
+                ),
+              ),
+              Text(
+                'Day ${today.day}',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: SFColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: SFColors.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              '${(128 - _remainingWaterOunces).toInt()} / 128 oz',
+              style: GoogleFonts.poppins(
+                color: SFColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWaterBottle() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: AspectRatio(
+        aspectRatio: 0.4,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: SFColors.primary.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              // Water Wave Animation
+              AnimatedBuilder(
+                animation: _waveAnimation,
+                builder: (context, child) {
+                  return ClipPath(
+                    clipper: WaveClipper(
+                      animation: _waveAnimation.value,
+                      fillPercentage: _remainingWaterOunces / 128.0,
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            SFColors.primary.withOpacity(0.6),
+                            SFColors.primary,
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              // Measurement Lines
+              ...List.generate(5, (index) {
+                return Positioned(
+                  left: 0,
+                  top: (index + 1) *
+                      (MediaQuery.of(context).size.height * 0.4) /
+                      6,
+                  child: Container(
+                    width: 20,
+                    height: 2,
+                    color: Colors.grey.withOpacity(0.3),
+                  ),
+                );
+              }),
+              // Slider
+              Positioned(
+                right: -70,
+                top: 0,
+                bottom: 0,
+                child: RotatedBox(
+                  quarterTurns: 3,
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.height * 0.4,
+                    child: Slider(
+                      value: _remainingWaterOunces,
+                      min: 0,
+                      max: 128,
+                      divisions: 128,
+                      onChanged: _updateWaterLevel,
+                      activeColor: SFColors.primary,
+                      inactiveColor: SFColors.primary.withOpacity(0.2),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickActions() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildQuickActionButton(
+            icon: Icons.water_drop,
+            label: '8 oz',
+            onPressed: () => _addWater(8),
+          ),
+          _buildQuickActionButton(
+            icon: Icons.water_drop,
+            label: '16 oz',
+            onPressed: () => _addWater(16),
+          ),
+          _buildQuickActionButton(
+            icon: Icons.water_drop,
+            label: '32 oz',
+            onPressed: () => _addWater(32),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: SFColors.primary),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                color: SFColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBathroomTracker() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.water_drop,
+                color: SFColors.primary,
+                size: 24,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Bathroom Visits',
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: SFColors.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildCounterButton(
+                icon: Icons.remove,
+                onPressed: _decrementPeeCount,
+              ),
+              const SizedBox(width: 20),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                decoration: BoxDecoration(
+                  color: SFColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  _bathroomCounter.toString(),
+                  style: GoogleFonts.poppins(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: SFColors.primary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 20),
+              _buildCounterButton(
+                icon: Icons.add,
+                onPressed: _incrementPeeCount,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCounterButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            border: Border.all(color: SFColors.primary),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            icon,
+            color: SFColors.primary,
+            size: 24,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMotivationCard() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: SFColors.primaryGradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: SFColors.primary.withOpacity(0.2),
+            spreadRadius: 0,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          const Icon(
+            Icons.emoji_events,
+            color: Colors.white,
+            size: 40,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            _randomQuote,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class WaveClipper extends CustomClipper<Path> {
+  final double animation;
+  final double fillPercentage;
+
+  WaveClipper({
+    required this.animation,
+    required this.fillPercentage,
+  });
+
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    final baseHeight = size.height * (1 - fillPercentage);
+
+    path.moveTo(0, size.height);
+    path.lineTo(0, baseHeight);
+
+    // Create wave effect
+    for (var i = 0.0; i <= size.width; i++) {
+      path.lineTo(
+        i,
+        baseHeight + math.sin((i / size.width * 2 * math.pi) + animation) * 10,
+      );
+    }
+
+    path.lineTo(size.width, size.height);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(WaveClipper oldClipper) =>
+      animation != oldClipper.animation ||
+      fillPercentage != oldClipper.fillPercentage;
 }

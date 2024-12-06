@@ -9,7 +9,8 @@ class OutsideWorkout(Document):
     firebase_uid : str
     description : str  # Description of the workout
     thoughts: str  # Thoughts on the workout
-    
+    completed: bool
+   
 
 
 

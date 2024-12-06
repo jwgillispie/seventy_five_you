@@ -9,6 +9,7 @@ class Alcohol {
     this.firebaseUid = '',
     this.completed = false,
     this.difficulty = 0,
+    
   });
 
   factory Alcohol.fromJson(Map<String, dynamic> json) {

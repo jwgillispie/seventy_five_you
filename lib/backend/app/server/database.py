@@ -20,4 +20,4 @@ async def init_db():
 # mongodb+srv://jozman:k7HdZpXuTUonbQoC@systemstest.tchgppx.mongodb.net/seventy_five_hard?retryWrites=true&w=majority
 
 
-# mongodb+srv://giordano:5PoszeBn2ihyIhir@systemstest.tchgppx.mongodb.net/?retryWrites=true&w=majority&appName=systemsTest
+# mongodb+srv://giordano:5PoszeBn2ihyIhir@systemstest.tchgppx.mongodb.net/?retryWrites=true&w=majority&appName=systemsTes
