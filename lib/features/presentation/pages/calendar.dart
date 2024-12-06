@@ -88,8 +88,7 @@ class _CalendarPageState extends State<CalendarPage> {
     outsideWorkoutModel = null;
     tenPagesModel = null;
     alcoholModel = null;
-  }
-  @override
+  } @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -98,7 +97,7 @@ class _CalendarPageState extends State<CalendarPage> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              SFColors.primary.withOpacity(0.1),
+              SFColors.surface,
               SFColors.background,
             ],
           ),
@@ -134,15 +133,15 @@ class _CalendarPageState extends State<CalendarPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: SFColors.primaryGradient,
+        gradient: LinearGradient(
+          colors: [SFColors.neutral, SFColors.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
-            color: SFColors.primary.withOpacity(0.3),
+            color: SFColors.neutral.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -161,14 +160,14 @@ class _CalendarPageState extends State<CalendarPage> {
                     style: GoogleFonts.orbitron(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: SFColors.surface,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Track Your Journey',
                     style: GoogleFonts.inter(
-                      color: Colors.white.withOpacity(0.9),
+                      color: SFColors.surface.withOpacity(0.9),
                       fontSize: 16,
                     ),
                   ),
@@ -177,12 +176,12 @@ class _CalendarPageState extends State<CalendarPage> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: SFColors.surface.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Icon(
                   Icons.calendar_today,
-                  color: Colors.white,
+                  color: SFColors.surface,
                   size: 24,
                 ),
               ),
@@ -193,15 +192,15 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-Widget _buildCalendar() {
+  Widget _buildCalendar() {
     return Container(
       margin: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: SFColors.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.primary.withOpacity(0.1),
+            color: SFColors.neutral.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -223,23 +222,23 @@ Widget _buildCalendar() {
           titleTextStyle: GoogleFonts.orbitron(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: SFColors.primary,
+            color: SFColors.neutral,
           ),
           formatButtonVisible: false,
-          leftChevronIcon: Icon(Icons.chevron_left, color: SFColors.primary),
-          rightChevronIcon: Icon(Icons.chevron_right, color: SFColors.primary),
+          leftChevronIcon: Icon(Icons.chevron_left, color: SFColors.neutral),
+          rightChevronIcon: Icon(Icons.chevron_right, color: SFColors.neutral),
         ),
         calendarStyle: CalendarStyle(
           todayDecoration: BoxDecoration(
-            color: SFColors.primary.withOpacity(0.8),
+            color: SFColors.neutral.withOpacity(0.8),
             shape: BoxShape.circle,
           ),
           selectedDecoration: BoxDecoration(
-            color: SFColors.secondary,
+            color: SFColors.tertiary,
             shape: BoxShape.circle,
           ),
-          todayTextStyle: const TextStyle(color: Colors.white),
-          selectedTextStyle: const TextStyle(color: Colors.white),
+          todayTextStyle: TextStyle(color: SFColors.surface),
+          selectedTextStyle: TextStyle(color: SFColors.surface),
           defaultTextStyle: TextStyle(color: SFColors.textPrimary),
           outsideTextStyle: TextStyle(color: SFColors.textSecondary),
           weekendTextStyle: TextStyle(color: SFColors.textPrimary),
@@ -257,14 +256,18 @@ Widget _buildCalendar() {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Icon(icon, color: success ? SFColors.secondary : Colors.red),
+          Icon(
+            icon, 
+            color: success ? SFColors.primary : const Color(0xFFB23B3B),
+            size: 20,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               label,
               style: GoogleFonts.inter(
                 fontSize: 14,
-                color: success ? SFColors.secondary : Colors.red,
+                color: success ? SFColors.primary : const Color(0xFFB23B3B),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -273,10 +276,8 @@ Widget _buildCalendar() {
       ),
     );
   }
-  // Widget to show an empty day screen with a message
-  Widget _buildEmptyDayScreen(BuildContext context) {
-    final theme = Theme.of(context);
 
+  Widget _buildEmptyDayScreen(BuildContext context) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 20),
@@ -286,22 +287,24 @@ Widget _buildCalendar() {
             Icon(
               Icons.hourglass_empty,
               size: 100,
-              color: theme.primaryColor.withOpacity(0.7),
+              color: SFColors.tertiary.withOpacity(0.7),
             ),
             const SizedBox(height: 20),
             Text(
               'No objectives logged for this day',
-              style: theme.textTheme.displayMedium?.copyWith(
-                color: SFColors.secondary,
+              style: GoogleFonts.inter(
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
+                color: SFColors.tertiary,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
             Text(
               'It looks like you haven\'t logged any activities for ${_selectedDay.toString().substring(0, 10)}. Select another day or start logging your activities!',
-              style: theme.textTheme.displayMedium?.copyWith(
-                color: SFColors.secondary.withOpacity(0.7),
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                color: SFColors.tertiary.withOpacity(0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -452,11 +455,11 @@ Widget _buildCalendar() {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: SFColors.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.primary.withOpacity(0.1),
+            color: SFColors.neutral.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -472,10 +475,10 @@ Widget _buildCalendar() {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: SFColors.primary.withOpacity(0.1),
+                    color: SFColors.neutral.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: SFColors.primary),
+                  child: Icon(icon, color: SFColors.neutral),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -483,7 +486,7 @@ Widget _buildCalendar() {
                   style: GoogleFonts.orbitron(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: SFColors.primary,
+                    color: SFColors.neutral,
                   ),
                 ),
               ],
@@ -495,6 +498,7 @@ Widget _buildCalendar() {
       ),
     );
   }
+
 }  // Widget to build objective content with icons and text
   // Widget _buildObjectiveContent({
   //   required IconData icon,

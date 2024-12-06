@@ -15,8 +15,7 @@ class TenPagesPage extends StatefulWidget {
   State<TenPagesPage> createState() => _TenPagesPageState();
 }
 
-class _TenPagesPageState extends State<TenPagesPage>
-    with TickerProviderStateMixin {
+class _TenPagesPageState extends State<TenPagesPage> with TickerProviderStateMixin {
   final TextEditingController _summaryController = TextEditingController();
   final TextEditingController _bookTitleController = TextEditingController();
   final TextEditingController _pageCountController = TextEditingController();
@@ -51,19 +50,19 @@ class _TenPagesPageState extends State<TenPagesPage>
       'title': 'Current Streak',
       'value': '7 Days',
       'icon': Icons.local_fire_department,
-      'color': Color(0xFFFF6B6B),
+      'color': SFColors.neutral,
     },
     {
       'title': 'Pages Read',
       'value': '70',
       'icon': Icons.menu_book,
-      'color': Color(0xFF4ECDC4),
+      'color': SFColors.primary,
     },
     {
       'title': 'Books Started',
       'value': '3',
       'icon': Icons.library_books,
-      'color': Color(0xFFFFBE0B),
+      'color': SFColors.tertiary,
     },
   ];
 
@@ -72,21 +71,21 @@ class _TenPagesPageState extends State<TenPagesPage>
       'title': 'First Book',
       'description': 'Started your reading journey',
       'icon': Icons.auto_stories,
-      'color': Color(0xFF4CAF50),
+      'color': SFColors.primary,
       'earned': true,
     },
     {
       'title': '7-Day Streak',
       'description': 'Read consistently for a week',
       'icon': Icons.workspace_premium,
-      'color': Color(0xFF9B5DE5),
+      'color': SFColors.tertiary,
       'earned': true,
     },
     {
       'title': 'Quick Notes',
       'description': 'Made detailed reading notes',
       'icon': Icons.rate_review,
-      'color': Color(0xFF00B4D8),
+      'color': SFColors.neutral,
       'earned': false,
     },
   ];
@@ -96,25 +95,21 @@ class _TenPagesPageState extends State<TenPagesPage>
     super.initState();
     user = _auth.currentUser;
 
-    // Main animation controller
     _mainController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
 
-    // Pulse animation controller
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
 
-    // Progress animation controller
     _progressController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     );
 
-    // Animations
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _mainController, curve: Curves.easeInOut),
     );
@@ -238,12 +233,12 @@ class _TenPagesPageState extends State<TenPagesPage>
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Row(
         children: [
-          const Icon(Icons.check_circle, color: Colors.white),
+          Icon(Icons.check_circle, color: SFColors.surface),
           const SizedBox(width: 8),
           Expanded(child: Text(message)),
         ],
       ),
-      backgroundColor: SFColors.success,
+      backgroundColor: SFColors.primary,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     ));
@@ -253,12 +248,12 @@ class _TenPagesPageState extends State<TenPagesPage>
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Row(
         children: [
-          const Icon(Icons.error_outline, color: Colors.white),
+          Icon(Icons.error_outline, color: SFColors.surface),
           const SizedBox(width: 8),
           Expanded(child: Text(message)),
         ],
       ),
-      backgroundColor: SFColors.error,
+      backgroundColor: const Color(0xFFB23B3B),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     ));
@@ -273,7 +268,7 @@ class _TenPagesPageState extends State<TenPagesPage>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              SFColors.primary.withOpacity(0.1),
+              SFColors.surface,
               SFColors.background,
             ],
           ),
@@ -312,15 +307,15 @@ class _TenPagesPageState extends State<TenPagesPage>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: SFColors.primaryGradient,
+        gradient: LinearGradient(
+          colors: [SFColors.neutral, SFColors.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
-            color: SFColors.primary.withOpacity(0.3),
+            color: SFColors.neutral.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -339,14 +334,14 @@ class _TenPagesPageState extends State<TenPagesPage>
                     style: GoogleFonts.orbitron(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: SFColors.surface,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Day ${today.difference(DateTime(2024, 1, 1)).inDays + 1} of 75',
                     style: GoogleFonts.inter(
-                      color: Colors.white.withOpacity(0.9),
+                      color: SFColors.surface.withOpacity(0.9),
                       fontSize: 16,
                     ),
                   ),
@@ -370,8 +365,8 @@ class _TenPagesPageState extends State<TenPagesPage>
         shape: BoxShape.circle,
         gradient: LinearGradient(
           colors: [
-            Colors.white.withOpacity(0.2),
-            Colors.white.withOpacity(0.1),
+            SFColors.surface.withOpacity(0.2),
+            SFColors.surface.withOpacity(0.1),
           ],
         ),
       ),
@@ -381,7 +376,7 @@ class _TenPagesPageState extends State<TenPagesPage>
           style: GoogleFonts.orbitron(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: SFColors.surface,
           ),
         ),
       ),
@@ -403,12 +398,12 @@ class _TenPagesPageState extends State<TenPagesPage>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: SFColors.surface.withOpacity(0.1),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.white, size: 20),
+          Icon(icon, color: SFColors.surface, size: 20),
           const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -416,7 +411,7 @@ class _TenPagesPageState extends State<TenPagesPage>
               Text(
                 value,
                 style: GoogleFonts.inter(
-                  color: Colors.white,
+                  color: SFColors.surface,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -424,7 +419,7 @@ class _TenPagesPageState extends State<TenPagesPage>
               Text(
                 label,
                 style: GoogleFonts.inter(
-                  color: Colors.white.withOpacity(0.8),
+                  color: SFColors.surface.withOpacity(0.8),
                   fontSize: 12,
                 ),
               ),
@@ -434,19 +429,18 @@ class _TenPagesPageState extends State<TenPagesPage>
       ),
     );
   }
-
-  Widget _buildReadingProgress() {
+Widget _buildReadingProgress() {
     return Container(
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: SFColors.primaryGradient,
+        gradient: LinearGradient(
+          colors: [SFColors.neutral, SFColors.tertiary],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.primary.withOpacity(0.2),
+            color: SFColors.neutral.withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -462,14 +456,13 @@ class _TenPagesPageState extends State<TenPagesPage>
                 style: GoogleFonts.inter(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: SFColors.surface,
                 ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: SFColors.surface.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -477,7 +470,7 @@ class _TenPagesPageState extends State<TenPagesPage>
                   style: GoogleFonts.inter(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: SFColors.surface,
                   ),
                 ),
               ),
@@ -488,8 +481,8 @@ class _TenPagesPageState extends State<TenPagesPage>
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
               value: _currentPage / 10,
-              backgroundColor: Colors.white.withOpacity(0.2),
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+              backgroundColor: SFColors.surface.withOpacity(0.2),
+              valueColor: AlwaysStoppedAnimation<Color>(SFColors.surface),
               minHeight: 10,
             ),
           ),
@@ -501,10 +494,10 @@ class _TenPagesPageState extends State<TenPagesPage>
                 onPressed: () => _updatePageCount(pages),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _currentPage == pages
-                      ? Colors.white
-                      : Colors.white.withOpacity(0.2),
+                      ? SFColors.surface
+                      : SFColors.surface.withOpacity(0.2),
                   foregroundColor:
-                      _currentPage == pages ? SFColors.primary : Colors.white,
+                      _currentPage == pages ? SFColors.neutral : SFColors.surface,
                 ),
                 child: Text('$pages pages'),
               );
@@ -520,11 +513,11 @@ class _TenPagesPageState extends State<TenPagesPage>
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: SFColors.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.primary.withOpacity(0.1),
+            color: SFColors.neutral.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -538,7 +531,7 @@ class _TenPagesPageState extends State<TenPagesPage>
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: SFColors.primary,
+              color: SFColors.neutral,
             ),
           ),
           const SizedBox(height: 20),
@@ -546,10 +539,10 @@ class _TenPagesPageState extends State<TenPagesPage>
             controller: _bookTitleController,
             decoration: InputDecoration(
               hintText: 'What are you reading?',
-              prefixIcon: Icon(Icons.auto_stories, color: SFColors.primary),
+              prefixIcon: Icon(Icons.auto_stories, color: SFColors.neutral),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: SFColors.primary),
+                borderSide: BorderSide(color: SFColors.neutral),
               ),
             ),
           ),
@@ -563,11 +556,11 @@ class _TenPagesPageState extends State<TenPagesPage>
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: SFColors.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.primary.withOpacity(0.1),
+            color: SFColors.neutral.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -581,7 +574,7 @@ class _TenPagesPageState extends State<TenPagesPage>
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: SFColors.primary,
+              color: SFColors.neutral,
             ),
           ),
           const SizedBox(height: 20),
@@ -592,7 +585,7 @@ class _TenPagesPageState extends State<TenPagesPage>
               hintText: 'Share your thoughts and key takeaways...',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: SFColors.primary),
+                borderSide: BorderSide(color: SFColors.neutral),
               ),
             ),
           ),
@@ -606,13 +599,13 @@ class _TenPagesPageState extends State<TenPagesPage>
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: SFColors.primaryGradient,
+        gradient: LinearGradient(
+          colors: [SFColors.neutral, SFColors.tertiary],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.primary.withOpacity(0.2),
+            color: SFColors.neutral.withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -625,7 +618,7 @@ class _TenPagesPageState extends State<TenPagesPage>
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: SFColors.surface,
             ),
           ),
           const SizedBox(height: 20),
@@ -639,14 +632,14 @@ class _TenPagesPageState extends State<TenPagesPage>
                 margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                  color: SFColors.surface.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       achievement['icon'],
-                      color: Colors.white,
+                      color: SFColors.surface,
                     ),
                     const SizedBox(width: 15),
                     Expanded(
@@ -658,23 +651,23 @@ class _TenPagesPageState extends State<TenPagesPage>
                             style: GoogleFonts.inter(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: SFColors.surface,
                             ),
                           ),
                           Text(
                             achievement['description'],
                             style: GoogleFonts.inter(
                               fontSize: 14,
-                              color: Colors.white.withOpacity(0.8),
+                              color: SFColors.surface.withOpacity(0.8),
                             ),
                           ),
                         ],
                       ),
                     ),
                     if (achievement['earned'])
-                      const Icon(
+                      Icon(
                         Icons.check_circle,
-                        color: Colors.white,
+                        color: SFColors.surface,
                       ),
                   ],
                 ),
@@ -694,18 +687,19 @@ class _TenPagesPageState extends State<TenPagesPage>
       child: ElevatedButton(
         onPressed: _isSaving ? null : _submitData,
         style: ElevatedButton.styleFrom(
-          backgroundColor: SFColors.primary,
+          backgroundColor: SFColors.neutral,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
         ),
         child: _isSaving
-            ? const CircularProgressIndicator(color: Colors.white)
+            ? CircularProgressIndicator(color: SFColors.surface)
             : Text(
                 'Save Progress',
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: SFColors.surface,
                 ),
               ),
       ),

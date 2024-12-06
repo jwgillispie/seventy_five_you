@@ -87,8 +87,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
     Fluttertoast.showToast(msg: 'User has been signed out');
   }
-
-  @override
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -97,7 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              SFColors.primary.withOpacity(0.1),
+              SFColors.surface,
               SFColors.background,
             ],
           ),
@@ -136,8 +135,8 @@ class _ProfilePageState extends State<ProfilePage> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            SFColors.primary.withOpacity(0.05),
-            Colors.white,
+            SFColors.neutral.withOpacity(0.05),
+            SFColors.surface,
           ],
         ),
       ),
@@ -145,14 +144,14 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(SFColors.primary),
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(SFColors.neutral),
             ),
             const SizedBox(height: 16),
             Text(
               'Loading your profile...',
               style: GoogleFonts.inter(
-                color: SFColors.primary,
+                color: SFColors.neutral,
                 fontSize: 16,
               ),
             ),
@@ -166,15 +165,15 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: SFColors.primaryGradient,
+        gradient: LinearGradient(
+          colors: [SFColors.neutral, SFColors.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
-            color: SFColors.primary.withOpacity(0.3),
+            color: SFColors.neutral.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -193,14 +192,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: GoogleFonts.orbitron(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: SFColors.surface,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     '75 Hard Warrior',
                     style: GoogleFonts.inter(
-                      color: Colors.white.withOpacity(0.9),
+                      color: SFColors.surface.withOpacity(0.9),
                       fontSize: 16,
                     ),
                   ),
@@ -224,15 +223,15 @@ class _ProfilePageState extends State<ProfilePage> {
         shape: BoxShape.circle,
         gradient: LinearGradient(
           colors: [
-            Colors.white.withOpacity(0.2),
-            Colors.white.withOpacity(0.1),
+            SFColors.surface.withOpacity(0.2),
+            SFColors.surface.withOpacity(0.1),
           ],
         ),
       ),
-      child: const Center(
+      child: Center(
         child: Icon(
           Icons.person,
-          color: Colors.white,
+          color: SFColors.surface,
           size: 40,
         ),
       ),
@@ -254,12 +253,12 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: SFColors.surface.withOpacity(0.1),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.white, size: 20),
+          Icon(icon, color: SFColors.surface, size: 20),
           const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,7 +266,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Text(
                 value,
                 style: GoogleFonts.inter(
-                  color: Colors.white,
+                  color: SFColors.surface,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -275,7 +274,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Text(
                 label,
                 style: GoogleFonts.inter(
-                  color: Colors.white.withOpacity(0.8),
+                  color: SFColors.surface.withOpacity(0.8),
                   fontSize: 12,
                 ),
               ),
@@ -290,11 +289,11 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: SFColors.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.primary.withOpacity(0.1),
+            color: SFColors.neutral.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -311,13 +310,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: GoogleFonts.orbitron(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: SFColors.primary,
+                  color: SFColors.neutral,
                 ),
               ),
               IconButton(
                 icon: Icon(
                   _editMode ? Icons.close : Icons.edit,
-                  color: SFColors.primary,
+                  color: SFColors.neutral,
                 ),
                 onPressed: () => setState(() => _editMode = !_editMode),
               ),
@@ -325,6 +324,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(height: 20),
           TextFormField(
+            style: GoogleFonts.inter(color: SFColors.neutral),
             initialValue: _username,
             enabled: _editMode,
             decoration: _buildInputDecoration('Username', Icons.person),
@@ -332,6 +332,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(height: 16),
           TextFormField(
+            style: GoogleFonts.inter(color: SFColors.neutral),
             initialValue: _email,
             enabled: false,
             decoration: _buildInputDecoration('Email', Icons.email),
@@ -347,11 +348,11 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: SFColors.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.primary.withOpacity(0.1),
+            color: SFColors.neutral.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -365,22 +366,25 @@ class _ProfilePageState extends State<ProfilePage> {
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: SFColors.primary,
+              color: SFColors.neutral,
             ),
           ),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: _isSubmitting ? null : () => _editProfile(_username),
             style: ElevatedButton.styleFrom(
-              backgroundColor: SFColors.primary,
+              backgroundColor: SFColors.neutral,
               minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
             ),
             child: _isSubmitting
-                ? const CircularProgressIndicator(color: Colors.white)
-                : const Text('Save Changes'),
+                ? CircularProgressIndicator(color: SFColors.surface)
+                : Text(
+                    'Save Changes',
+                    style: TextStyle(color: SFColors.surface),
+                  ),
           ),
         ],
       ),
@@ -392,12 +396,15 @@ class _ProfilePageState extends State<ProfilePage> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.red.shade400, Colors.red.shade600],
+          colors: [
+            SFColors.neutral, 
+            const Color(0xFFB23B3B), // Keep error color for danger zone
+          ],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.red.withOpacity(0.2),
+            color: SFColors.neutral.withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -411,15 +418,15 @@ class _ProfilePageState extends State<ProfilePage> {
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: SFColors.surface,
             ),
           ),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: _signOut,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.red,
+              backgroundColor: SFColors.surface,
+              foregroundColor: const Color(0xFFB23B3B),
               minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
@@ -435,18 +442,18 @@ class _ProfilePageState extends State<ProfilePage> {
   InputDecoration _buildInputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: SFColors.primary),
+      prefixIcon: Icon(icon, color: SFColors.neutral),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: SFColors.primary),
+        borderSide: BorderSide(color: SFColors.neutral),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: SFColors.primary.withOpacity(0.2)),
+        borderSide: BorderSide(color: SFColors.neutral.withOpacity(0.2)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: SFColors.primary, width: 2),
+        borderSide: BorderSide(color: SFColors.neutral, width: 2),
       ),
     );
   }

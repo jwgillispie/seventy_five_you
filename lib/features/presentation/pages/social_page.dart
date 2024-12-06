@@ -10,7 +10,7 @@ class Challenge {
   final int count;
 
   Challenge({
-    required this.id, 
+    required this.id,
     required this.icon,
     required this.name,
     required this.count,
@@ -24,14 +24,14 @@ class EnhancedSocialPage extends StatefulWidget {
   _EnhancedSocialPageState createState() => _EnhancedSocialPageState();
 }
 
-class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTickerProviderStateMixin {
+class _EnhancedSocialPageState extends State<EnhancedSocialPage>
+    with SingleTickerProviderStateMixin {
   int? selectedChallenge;
   int? expandedPost;
-    final List<Post> posts = samplePosts; // Add this line
+  final List<Post> posts = samplePosts; // Add this line
 
   late AnimationController _animationController;
   // get user from
-
 
   final List<Challenge> challenges = [
     Challenge(id: 1, icon: Icons.directions_run, name: 'Workout 1', count: 45),
@@ -62,7 +62,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: SFColors.primaryGradient,
+          colors: [SFColors.neutral, SFColors.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -75,7 +75,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
             style: GoogleFonts.orbitron(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: SFColors.surface,
             ),
           ),
           const SizedBox(height: 8),
@@ -83,7 +83,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
             "Share Your Journey",
             style: GoogleFonts.inter(
               fontSize: 16,
-              color: Colors.white.withOpacity(0.9),
+              color: SFColors.surface.withOpacity(0.9),
             ),
           ),
         ],
@@ -95,7 +95,18 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
-      decoration: SFDecorations.whiteContainerShadow,
+      decoration: BoxDecoration(
+        color: SFColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: SFColors.neutral.withOpacity(0.1),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -110,7 +121,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
                   color: SFColors.textPrimary,
                 ),
               ),
-              Icon(Icons.military_tech, color: SFColors.warning),
+              Icon(Icons.military_tech, color: SFColors.tertiary),
             ],
           ),
           const SizedBox(height: 16),
@@ -123,17 +134,20 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
                   onTap: () => setState(() => selectedChallenge = challenge.id),
                   child: Container(
                     margin: const EdgeInsets.only(right: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      gradient: isSelected ? 
-                        LinearGradient(colors: SFColors.primaryGradient) : null,
-                      color: isSelected ? null : Colors.grey[50],
+                      gradient: isSelected
+                          ? LinearGradient(
+                              colors: [SFColors.neutral, SFColors.tertiary])
+                          : null,
+                      color: isSelected ? null : SFColors.background,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: isSelected ? 
-                            SFColors.primary.withOpacity(0.2) :
-                            Colors.grey.withOpacity(0.1),
+                          color: isSelected
+                              ? SFColors.neutral.withOpacity(0.2)
+                              : SFColors.neutral.withOpacity(0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -143,7 +157,9 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
                       children: [
                         Icon(
                           challenge.icon,
-                          color: isSelected ? Colors.white : SFColors.textSecondary,
+                          color: isSelected
+                              ? SFColors.surface
+                              : SFColors.textSecondary,
                         ),
                         const SizedBox(width: 8),
                         Column(
@@ -152,16 +168,18 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
                             Text(
                               challenge.name,
                               style: TextStyle(
-                                color: isSelected ? Colors.white : SFColors.textPrimary,
+                                color: isSelected
+                                    ? SFColors.surface
+                                    : SFColors.textPrimary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             Text(
                               '${challenge.count} posts',
                               style: TextStyle(
-                                color: isSelected ? 
-                                  Colors.white.withOpacity(0.8) : 
-                                  SFColors.textSecondary,
+                                color: isSelected
+                                    ? SFColors.surface.withOpacity(0.8)
+                                    : SFColors.textSecondary,
                                 fontSize: 12,
                               ),
                             ),
@@ -181,10 +199,21 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
 
   Widget _buildPost(Post post) {
     final isExpanded = expandedPost == post.id;
-    
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: SFDecorations.cardDecoration,
+      decoration: BoxDecoration(
+        color: SFColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: SFColors.neutral.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
         children: [
           Padding(
@@ -205,9 +234,10 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
                         children: [
                           Text(
                             "JOZO",
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
+                              color: SFColors.textPrimary,
                             ),
                           ),
                           Row(
@@ -215,7 +245,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
                               Icon(
                                 Icons.local_fire_department,
                                 size: 14,
-                                color: SFColors.warning,
+                                color: SFColors.primary,
                               ),
                               const SizedBox(width: 4),
                               Text(
@@ -263,7 +293,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
                                 end: Alignment.bottomCenter,
                                 colors: [
                                   Colors.transparent,
-                                  Colors.black.withOpacity(0.7),
+                                  SFColors.neutral.withOpacity(0.7),
                                 ],
                               ),
                             ),
@@ -274,9 +304,10 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
                                     borderRadius: BorderRadius.circular(4),
                                     child: LinearProgressIndicator(
                                       value: post.progress / 100,
-                                      backgroundColor: Colors.white24,
+                                      backgroundColor:
+                                          SFColors.surface.withOpacity(0.3),
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                        SFColors.success,
+                                        SFColors.primary,
                                       ),
                                     ),
                                   ),
@@ -284,8 +315,8 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
                                 const SizedBox(width: 8),
                                 Text(
                                   '${post.progress}%',
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: TextStyle(
+                                    color: SFColors.surface,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -298,7 +329,10 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
                   ),
                 ],
                 const SizedBox(height: 12),
-                Text(post.content),
+                Text(
+                  post.content,
+                  style: TextStyle(color: SFColors.textPrimary),
+                ),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -308,13 +342,13 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
                         _buildActionButton(
                           icon: Icons.favorite,
                           count: post.likes,
-                          color: SFColors.error,
+                          color: SFColors.neutral,
                         ),
                         const SizedBox(width: 16),
                         _buildActionButton(
                           icon: Icons.chat_bubble_outline,
                           count: post.comments.length,
-                          color: SFColors.primary,
+                          color: SFColors.tertiary,
                         ),
                       ],
                     ),
@@ -324,7 +358,8 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
                         color: SFColors.textSecondary,
                       ),
                       onPressed: () => setState(() {
-                        expandedPost = (isExpanded ? null : post.id) as int?;
+                        expandedPost =
+                            isExpanded ? null : int.tryParse(post.id) ?? 0;
                       }),
                     ),
                   ],
@@ -362,7 +397,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: SFColors.background,
         borderRadius: const BorderRadius.vertical(
           bottom: Radius.circular(16),
         ),
@@ -370,15 +405,16 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage> with SingleTick
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Comments',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
+              color: SFColors.textPrimary,
             ),
           ),
           const SizedBox(height: 12),
-          // Add comment list here
+          // Comments list would go here
         ],
       ),
     );

@@ -14,7 +14,8 @@ class DietPage extends StatefulWidget {
   DietPageState createState() => DietPageState();
 }
 
-class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin {
+class DietPageState extends State<DietPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   final cardAnimations = <String, Animation<double>>{};
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -27,22 +28,22 @@ class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin 
   final Map<String, Map<String, dynamic>> mealCategories = {
     'Breakfast': {
       'icon': Icons.wb_sunny,
-      'gradient': const [Color(0xFFFF8C00), Color(0xFFFFD700)],
+      'gradient': [SFColors.primary, SFColors.secondary],
       'meals': <String>[],
     },
     'Lunch': {
       'icon': Icons.restaurant,
-      'gradient': const [Color(0xFF4169E1), Color(0xFF00CED1)],
+      'gradient': [SFColors.tertiary, SFColors.secondary],
       'meals': <String>[],
     },
     'Dinner': {
       'icon': Icons.nightlight_round,
-      'gradient': const [Color(0xFF8A2BE2), Color(0xFFFF69B4)],
+      'gradient': [SFColors.neutral, SFColors.tertiary],
       'meals': <String>[],
     },
     'Snacks': {
       'icon': Icons.cookie,
-      'gradient': const [Color(0xFF32CD32), Color(0xFF98FB98)],
+      'gradient': [SFColors.secondary, SFColors.background],
       'meals': <String>[],
     }
   };
@@ -54,7 +55,7 @@ class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin 
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    
+
     // Create staggered animations for each meal card
     mealCategories.keys.toList().asMap().forEach((index, meal) {
       cardAnimations[meal] = CurvedAnimation(
@@ -66,16 +67,12 @@ class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin 
         ),
       );
     });
-    
+
     _animationController.forward();
     super.initState();
     user = _auth.currentUser;
     _fetchDayData();
   }
-
-
-
-
 
   Future<void> _fetchDayData() async {
     if (user == null) return;
@@ -257,15 +254,12 @@ class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin 
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primary,
-            theme.colorScheme.secondary,
-          ],
+          colors: [SFColors.primary, SFColors.secondary],
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.primary.withOpacity(0.3),
+            color: SFColors.primary.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -283,7 +277,7 @@ class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin 
                     style: GoogleFonts.orbitron(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: SFColors.surface,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -291,7 +285,7 @@ class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin 
                     'Track your nutrition journey',
                     style: GoogleFonts.inter(
                       fontSize: 16,
-                      color: Colors.white.withOpacity(0.9),
+                      color: SFColors.surface.withOpacity(0.9),
                     ),
                   ),
                 ],
@@ -306,7 +300,8 @@ class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin 
       ),
     );
   }
-    Widget _buildProgressRing(ThemeData theme) {
+
+  Widget _buildProgressRing(ThemeData theme) {
     return Container(
       width: 80,
       height: 80,
@@ -350,7 +345,8 @@ class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin 
     );
   }
 
-  Widget _buildNutrientItem(String label, String value, IconData icon, ThemeData theme) {
+  Widget _buildNutrientItem(
+      String label, String value, IconData icon, ThemeData theme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -385,7 +381,6 @@ class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin 
       ),
     );
   }
-
 
   Widget _buildMealCard(String mealType, ThemeData theme) {
     final category = mealCategories[mealType]!;
@@ -446,33 +441,33 @@ class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin 
                   ),
                 ),
               ),
-            const Divider(),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: meals.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  leading: const Icon(Icons.restaurant_menu),
-                  title: Text(
-                    meals[index],
-                    style: GoogleFonts.inter(),
-                  ),
-                  subtitle: Text(
-                    DateTime.now()
-                        .subtract(Duration(minutes: index * 30))
-                        .toString()
-                        .substring(11, 16),
-                    style: TextStyle(
-                      color: theme.textTheme.bodySmall?.color,
+              const Divider(),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: meals.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: const Icon(Icons.restaurant_menu),
+                    title: Text(
+                      meals[index],
+                      style: GoogleFonts.inter(),
                     ),
-                  ),
-                );
-              },
-            ),
-          ],
+                    subtitle: Text(
+                      DateTime.now()
+                          .subtract(Duration(minutes: index * 30))
+                          .toString()
+                          .substring(11, 16),
+                      style: TextStyle(
+                        color: theme.textTheme.bodySmall?.color,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -487,10 +482,15 @@ class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin 
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              theme.scaffoldBackgroundColor,
-              theme.scaffoldBackgroundColor.withOpacity(0.9),
-            ],
+            colors: theme.brightness == Brightness.dark
+                ? [
+                    SFColors.neutral.withOpacity(0.9),
+                    SFColors.tertiary,
+                  ]
+                : [
+                    SFColors.surface,
+                    SFColors.background,
+                  ],
           ),
         ),
         child: SafeArea(
@@ -515,13 +515,13 @@ class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin 
 
   Widget _buildStatsBar(ThemeData theme) {
     return Container(
-      height: 60, // Fixed height
+      height: 60,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: theme.cardColor,
+        color: SFColors.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: SFColors.neutral.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -531,11 +531,11 @@ class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin 
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildStatItem('1,850', 'Calories', Icons.local_fire_department,
-              Colors.orange, theme),
+              SFColors.primary, theme),
           _buildStatItem(
-              '75g', 'Protein', Icons.fitness_center, Colors.blue, theme),
+              '75g', 'Protein', Icons.fitness_center, SFColors.tertiary, theme),
           _buildStatItem(
-              '4/5', 'Meals', Icons.restaurant_menu, Colors.green, theme),
+              '4/5', 'Meals', Icons.restaurant_menu, SFColors.secondary, theme),
         ],
       ),
     );
@@ -554,7 +554,9 @@ class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin 
           children: [
             Text(value,
                 style: GoogleFonts.inter(
-                    fontSize: 14, fontWeight: FontWeight.bold)),
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: SFColors.textSecondary)),
             Text(label,
                 style: theme.textTheme.bodySmall?.copyWith(fontSize: 12)),
           ],
@@ -562,32 +564,30 @@ class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin 
       ],
     );
   }
-  // Update SnackBar methods to position above stats bar
-void _showErrorSnackBar(String message) {
-  if (!mounted) return;
-  
-  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.red.shade800,
-      behavior: SnackBarBehavior.floating,
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 80), // Position above stats bar
-    ),
-  );
-}
 
-void _showSuccessSnackBar(String message) {
-  if (!mounted) return;
-  
-  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.green.shade800,
-      behavior: SnackBarBehavior.floating,
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 80), // Position above stats bar
-    ),
-  );
-}
+  void _showErrorSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: const Color(0xFFB23B3B),
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.fromLTRB(20, 0, 20, 80),
+      ),
+    );
+  }
+
+  void _showSuccessSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: SFColors.primary,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.fromLTRB(20, 0, 20, 80),
+      ),
+    );
+  }
 }

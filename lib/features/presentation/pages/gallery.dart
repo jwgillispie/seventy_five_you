@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:seventy_five_hard/themes.dart';
 
 class GalleryPage extends StatefulWidget {
   const GalleryPage({super.key});
@@ -8,32 +9,32 @@ class GalleryPage extends StatefulWidget {
   _GalleryPageState createState() => _GalleryPageState();
 }
 
-class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStateMixin {
+class _GalleryPageState extends State<GalleryPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final ScrollController _scrollController = ScrollController();
   int _currentIndex = 0;
-
+// Update the categories list in the state class:
   final List<Map<String, dynamic>> _categories = [
     {
       "title": "Meals",
       "icon": Icons.restaurant,
-      "color": Colors.green,
-      "gradient": const [Color(0xFF66BB6A), Color(0xFF43A047)]
+      "color": SFColors.primary, // Green - 4daa57
+      "gradient": [SFColors.primary, SFColors.secondary] // 4daa57 to b5dda4
     },
     {
       "title": "Progress",
       "icon": Icons.trending_up,
-      "color": Colors.blue,
-      "gradient": const [Color(0xFF42A5F5), Color(0xFF1E88E5)]
+      "color": SFColors.neutral, // Purple - 754668
+      "gradient": [SFColors.neutral, SFColors.tertiary] // 754668 to 587d71
     },
     {
       "title": "Workouts",
       "icon": Icons.fitness_center,
-      "color": Colors.orange,
-      "gradient": const [Color(0xFFFFB74D), Color(0xFFFFA726)]
+      "color": SFColors.tertiary, // Sage - 587d71
+      "gradient": [SFColors.tertiary, SFColors.primary] // 587d71 to 4daa57
     }
   ];
-
   @override
   void initState() {
     super.initState();
@@ -54,9 +55,6 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -64,39 +62,44 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: isDark 
-                  ? [const Color(0xFF1A1F25), const Color(0xFF2A2F35)]
-                  : [Colors.white, const Color(0xFFF5F7FA)],
+              colors: [
+                SFColors.surface,
+                SFColors.background,
+              ],
             ),
           ),
           child: SafeArea(
             child: Column(
               children: [
-                _buildHeader(theme),
+                _buildHeader(),
                 const SizedBox(height: 20),
-                _buildTabs(theme),
+                _buildTabs(),
                 Expanded(
-                  child: _buildTabContent(theme),
+                  child: _buildTabContent(),
                 ),
               ],
             ),
           ),
         ),
-        floatingActionButton: _buildFAB(theme),
+        floatingActionButton: _buildFAB(),
       ),
     );
   }
 
-Widget _buildHeader(ThemeData theme) {
-    // Add MediaQuery to get the status bar height
+  Widget _buildHeader() {
     final statusBarHeight = MediaQuery.of(context).viewPadding.top;
 
     return SafeArea(
       child: Container(
         padding: EdgeInsets.fromLTRB(20, 20 + statusBarHeight, 20, 20),
         decoration: BoxDecoration(
-          color: theme.colorScheme.primary.withOpacity(0.1),
-          borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
+          gradient: LinearGradient(
+            colors: [SFColors.neutral, SFColors.tertiary],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius:
+              const BorderRadius.vertical(bottom: Radius.circular(30)),
         ),
         child: Column(
           children: [
@@ -108,13 +111,13 @@ Widget _buildHeader(ThemeData theme) {
                   style: GoogleFonts.orbitron(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.primary,
+                    color: SFColors.surface,
                   ),
                 ),
                 IconButton(
                   icon: Icon(
                     Icons.search,
-                    color: theme.colorScheme.primary,
+                    color: SFColors.surface,
                   ),
                   onPressed: () {},
                 ),
@@ -123,8 +126,9 @@ Widget _buildHeader(ThemeData theme) {
             const SizedBox(height: 8),
             Text(
               "Capture Your Progress",
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onBackground.withOpacity(0.7),
+              style: GoogleFonts.inter(
+                color: SFColors.surface.withOpacity(0.9),
+                fontSize: 16,
               ),
             ),
           ],
@@ -133,38 +137,15 @@ Widget _buildHeader(ThemeData theme) {
     );
   }
 
-
-  Widget _buildStatItem(String value, String label, ThemeData theme) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: theme.textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.primary,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onBackground.withOpacity(0.7),
-          ),
-        ),
-      ],
-    );
-  }
-
- Widget _buildTabs(ThemeData theme) {
+  Widget _buildTabs() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: SFColors.surface,
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: theme.shadowColor.withOpacity(0.1),
+            color: SFColors.neutral.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -172,8 +153,8 @@ Widget _buildHeader(ThemeData theme) {
       ),
       child: TabBar(
         controller: _tabController,
-        labelColor: theme.colorScheme.primary,
-        unselectedLabelColor: theme.colorScheme.onSurface.withOpacity(0.5),
+        labelColor: SFColors.surface,
+        unselectedLabelColor: SFColors.textSecondary,
         indicatorSize: TabBarIndicatorSize.tab,
         padding: EdgeInsets.zero,
         labelPadding: EdgeInsets.zero,
@@ -183,17 +164,18 @@ Widget _buildHeader(ThemeData theme) {
             colors: _categories[_currentIndex]["gradient"],
           ),
         ),
-        tabs: _categories.map((category) => _buildTab(
-          category["icon"],
-          category["title"],
-          _categories.indexOf(category) == _currentIndex,
-          theme,
-        )).toList(),
+        tabs: _categories
+            .map((category) => _buildTab(
+                  category["icon"],
+                  category["title"],
+                  _categories.indexOf(category) == _currentIndex,
+                ))
+            .toList(),
       ),
     );
   }
 
-  Widget _buildTab(IconData icon, String label, bool isSelected, ThemeData theme) {
+  Widget _buildTab(IconData icon, String label, bool isSelected) {
     return Tab(
       height: 56,
       child: Container(
@@ -206,6 +188,7 @@ Widget _buildHeader(ThemeData theme) {
             Icon(
               icon,
               size: isSelected ? 22 : 18,
+              color: isSelected ? SFColors.surface : SFColors.textSecondary,
             ),
             const SizedBox(width: 4),
             Flexible(
@@ -214,6 +197,7 @@ Widget _buildHeader(ThemeData theme) {
                 style: GoogleFonts.inter(
                   fontSize: isSelected ? 13 : 11,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                  color: isSelected ? SFColors.surface : SFColors.textSecondary,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -223,14 +207,16 @@ Widget _buildHeader(ThemeData theme) {
       ),
     );
   }
-  Widget _buildTabContent(ThemeData theme) {
+
+  Widget _buildTabContent() {
     return TabBarView(
       controller: _tabController,
-      children: _categories.map((category) => _buildPhotoGrid(theme, category)).toList(),
+      children:
+          _categories.map((category) => _buildPhotoGrid(category)).toList(),
     );
   }
 
-  Widget _buildPhotoGrid(ThemeData theme, Map<String, dynamic> category) {
+  Widget _buildPhotoGrid(Map<String, dynamic> category) {
     return GridView.builder(
       padding: const EdgeInsets.all(20),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -240,29 +226,29 @@ Widget _buildHeader(ThemeData theme) {
         mainAxisSpacing: 15,
       ),
       itemCount: 6,
-      itemBuilder: (context, index) => _buildPhotoCard(index, theme, category),
+      itemBuilder: (context, index) => _buildPhotoCard(index, category),
     );
   }
 
-  Widget _buildPhotoCard(int index, ThemeData theme, Map<String, dynamic> category) {
+  Widget _buildPhotoCard(int index, Map<String, dynamic> category) {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            category["color"].withOpacity(0.1),
-            category["color"].withOpacity(0.05),
+            SFColors.surface,
+            SFColors.background,
           ],
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: category["color"].withOpacity(0.2),
+          color: (category["color"] as Color),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: category["color"].withOpacity(0.1),
+            color: (category["color"] as Color).withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -290,7 +276,7 @@ Widget _buildHeader(ThemeData theme) {
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
-                    Colors.black.withOpacity(0.7),
+                    (category["color"] as Color).withOpacity(0.9),
                   ],
                 ),
                 borderRadius: const BorderRadius.vertical(
@@ -304,14 +290,14 @@ Widget _buildHeader(ThemeData theme) {
                   Text(
                     '${category["title"]} ${index + 1}',
                     style: GoogleFonts.inter(
-                      color: Colors.white,
+                      color: SFColors.surface,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     DateTime.now().toString().substring(0, 10),
                     style: GoogleFonts.inter(
-                      color: Colors.white70,
+                      color: SFColors.surface.withOpacity(0.7),
                       fontSize: 12,
                     ),
                   ),
@@ -324,15 +310,21 @@ Widget _buildHeader(ThemeData theme) {
     );
   }
 
-  Widget _buildFAB(ThemeData theme) {
+  // Update the FAB to use category colors consistently
+  Widget _buildFAB() {
+    final category = _categories[_currentIndex];
     return FloatingActionButton.extended(
       onPressed: () {},
-      backgroundColor: _categories[_currentIndex]["color"],
-      icon: Icon(_categories[_currentIndex]["icon"]),
+      backgroundColor: category["color"],
+      icon: Icon(
+        category["icon"],
+        color: SFColors.surface,
+      ),
       label: Text(
-        'Add ${_categories[_currentIndex]["title"]}',
+        'Add ${category["title"]}',
         style: GoogleFonts.inter(
           fontWeight: FontWeight.bold,
+          color: SFColors.surface,
         ),
       ),
     );

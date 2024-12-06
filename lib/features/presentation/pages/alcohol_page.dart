@@ -41,34 +41,32 @@ class _AlcoholPageState extends State<AlcoholPage>
     "Money Saved 💰",
     "Better Sleep 😴",
   ];
-
   final List<Map<String, dynamic>> _benefitsData = [
     {
       'title': 'Mental Clarity',
       'icon': Icons.psychology,
-      'color': Color(0xFF4ECDC4),
+      'color': SFColors.primary,
       'progress': 0.85,
     },
     {
       'title': 'Energy Level',
       'icon': Icons.bolt,
-      'color': Color(0xFFFFBE0B),
+      'color': SFColors.secondary,
       'progress': 0.75,
     },
     {
       'title': 'Sleep Quality',
       'icon': Icons.nightlight_round,
-      'color': Color(0xFF9B5DE5),
+      'color': SFColors.tertiary,
       'progress': 0.90,
     },
     {
       'title': 'Money Saved',
       'icon': Icons.savings,
-      'color': Color(0xFF00B4D8),
+      'color': SFColors.neutral,
       'progress': 1.0,
     },
   ];
-
   Widget _buildBenefitsGrid() {
     return GridView.builder(
       shrinkWrap: true,
@@ -251,12 +249,12 @@ class _AlcoholPageState extends State<AlcoholPage>
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Row(
         children: [
-          const Icon(Icons.check_circle, color: Colors.white),
+          Icon(Icons.check_circle, color: SFColors.surface),
           const SizedBox(width: 8),
           Expanded(child: Text(message)),
         ],
       ),
-      backgroundColor: SFColors.success,
+      backgroundColor: SFColors.primary,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     ));
@@ -266,16 +264,17 @@ class _AlcoholPageState extends State<AlcoholPage>
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Row(
         children: [
-          const Icon(Icons.error_outline, color: Colors.white),
+          Icon(Icons.error_outline, color: SFColors.surface),
           const SizedBox(width: 8),
           Expanded(child: Text(message)),
         ],
       ),
-      backgroundColor: SFColors.error,
+      backgroundColor: const Color(0xFFB23B3B),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     ));
   }
+
 
   Widget _buildSliverHeader() {
     return SliverAppBar(
@@ -542,90 +541,83 @@ class _AlcoholPageState extends State<AlcoholPage>
       ],
     );
   }
-
-  Widget _buildDailyCheckIn() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.verified,
+Widget _buildDailyCheckIn() {
+  return Container(
+    padding: const EdgeInsets.all(24),
+    decoration: BoxDecoration(
+      color: SFColors.surface,
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [
+        BoxShadow(
+          color: SFColors.neutral.withOpacity(0.1),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.verified, color: SFColors.primary, size: 28),
+            const SizedBox(width: 12),
+            Text(
+              'Daily Check-in',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
                 color: SFColors.primary,
-                size: 28,
               ),
-              const SizedBox(width: 12),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: SFColors.primary.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
               Text(
-                'Daily Check-in',
+                'Alcohol-Free Today?',
                 style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: SFColors.primary,
+                  fontSize: 16,
+                  color: SFColors.textPrimary,
+                ),
+              ),
+              Transform.scale(
+                scale: 1.2,
+                child: Switch(
+                  value: _avoidedAlcohol,
+                  onChanged: (value) {
+                    setState(() {
+                      _avoidedAlcohol = value;
+                      _showStreak = value;
+                      if (value) {
+                        _slideController.forward();
+                      }
+                    });
+                    _updateAlcoholData();
+                  },
+                  activeColor: SFColors.primary,
+                  activeTrackColor: SFColors.primary.withOpacity(0.4),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 24),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: SFColors.primary.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Alcohol-Free Today?',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    color: SFColors.textPrimary,
-                  ),
-                ),
-                Transform.scale(
-                  scale: 1.2,
-                  child: Switch(
-                    value: _avoidedAlcohol,
-                    onChanged: (value) {
-                      setState(() {
-                        _avoidedAlcohol = value;
-                        _showStreak = value;
-                        if (value) {
-                          _slideController.forward();
-                        }
-                      });
-                      _updateAlcoholData();
-                    },
-                    activeColor: SFColors.primary,
-                    activeTrackColor: SFColors.primary.withOpacity(0.4),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        ),
+        if (_avoidedAlcohol) ...[
           const SizedBox(height: 16),
-          if (_avoidedAlcohol) ...[
-            const SizedBox(height: 16),
-            _buildDifficultySlider(),
-          ],
+          _buildDifficultySlider(),
         ],
-      ),
-    );
-  }
-
+      ],
+    ),
+  );
+}
   Widget _buildAchievements() {
     return Container(
       padding: const EdgeInsets.all(24),
@@ -786,10 +778,15 @@ class _AlcoholPageState extends State<AlcoholPage>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              SFColors.primary.withOpacity(0.1),
-              SFColors.background,
-            ],
+            colors: Theme.of(context).brightness == Brightness.dark
+                ? [
+                    SFColors.neutral.withOpacity(0.9),
+                    SFColors.tertiary,
+                  ]
+                : [
+                    SFColors.surface,
+                    SFColors.background,
+                  ],
           ),
         ),
         child: SafeArea(
@@ -826,15 +823,15 @@ class _AlcoholPageState extends State<AlcoholPage>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: SFColors.primaryGradient,
+        gradient: LinearGradient(
+          colors: [SFColors.neutral, SFColors.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
-            color: SFColors.primary.withOpacity(0.3),
+            color: SFColors.neutral.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -853,14 +850,14 @@ class _AlcoholPageState extends State<AlcoholPage>
                     style: GoogleFonts.orbitron(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: SFColors.surface,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Day ${today.difference(DateTime(2024, 1, 1)).inDays + 1} of 75',
                     style: GoogleFonts.inter(
-                      color: Colors.white.withOpacity(0.9),
+                      color: SFColors.surface.withOpacity(0.9),
                       fontSize: 16,
                     ),
                   ),
@@ -884,8 +881,8 @@ class _AlcoholPageState extends State<AlcoholPage>
         shape: BoxShape.circle,
         gradient: LinearGradient(
           colors: [
-            Colors.white.withOpacity(0.2),
-            Colors.white.withOpacity(0.1),
+            SFColors.surface.withOpacity(0.2),
+            SFColors.surface.withOpacity(0.1),
           ],
         ),
       ),
@@ -895,9 +892,63 @@ class _AlcoholPageState extends State<AlcoholPage>
           style: GoogleFonts.orbitron(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: SFColors.surface,
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildBenefitCard(Map<String, dynamic> benefit) {
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: SFColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: SFColors.neutral.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: (benefit['color'] as Color).withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              benefit['icon'],
+              color: benefit['color'],
+              size: 30,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            benefit['title'],
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: SFColors.textPrimary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: benefit['progress'],
+              backgroundColor: SFColors.background,
+              valueColor: AlwaysStoppedAnimation<Color>(benefit['color']),
+              minHeight: 6,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1016,60 +1067,6 @@ class _AlcoholPageState extends State<AlcoholPage>
           final benefit = _benefitsData[index];
           return _buildBenefitCard(benefit);
         },
-      ),
-    );
-  }
-
-  Widget _buildBenefitCard(Map<String, dynamic> benefit) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: SFColors.primary.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: benefit['color'].withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              benefit['icon'],
-              color: benefit['color'],
-              size: 30,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            benefit['title'],
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: SFColors.textPrimary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: benefit['progress'],
-              backgroundColor: Colors.grey[200],
-              valueColor: AlwaysStoppedAnimation<Color>(benefit['color']),
-              minHeight: 6,
-            ),
-          ),
-        ],
       ),
     );
   }

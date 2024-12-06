@@ -2,26 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SFColors {
-  static const Color primary = Color(0xFF047E55);
-  static const Color secondary = Color(0xFF48BF84);
-  static const Color tertiary = Color(0xFF5A7D9A);
-  static const Color success = Color(0xFF2E7D32);
-  static const Color warning = Color(0xFFBF9648);
+  static const Color primary = Color(0xFF4DAA57);    // Green
+  static const Color secondary = Color(0xFFB5DDA4);  // Light green
+  static const Color tertiary = Color(0xFF587D71);   // Sage
+  static const Color neutral = Color(0xFF754668);    // Purple
+  static const Color background = Color(0xFFF9ECCC); // Cream
+  static const Color surface = Colors.white;
+  static const Color textPrimary = Color(0xFF754668);
+  static const Color textSecondary = Color(0xFF587D71);
+  // error, success, warning, info
   static const Color error = Color(0xFFB23B3B);
-  static const Color info = Color(0xFF0288D1);
-  static const Color background = Color(0xFFF5F7F6);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color textPrimary = Color(0xFF2C3E50);
-  static const Color textSecondary = Color(0xFF718096);
+  static const Color success = Color(0xFF4DAA57);
+  static const Color warning = Color(0xFFE9A74A);
+  static const Color info = Color(0xFF4DAA57);
   
   static const List<Color> primaryGradient = [
-    Color(0xFF047E55),
-    Color(0xFF48BF84),
-  ];
-  
-  static const List<Color> secondaryGradient = [
-    Color(0xFF5A7D9A),
-    Color(0xFF89A7C4),
+    Color(0xFF4DAA57),
+    Color(0xFFB5DDA4),
   ];
 }
 
@@ -31,7 +28,7 @@ class SFDecorations {
     borderRadius: BorderRadius.circular(12),
     boxShadow: [
       BoxShadow(
-        color: Colors.grey.withOpacity(0.15),
+        color: SFColors.neutral.withOpacity(0.1),
         spreadRadius: 2,
         blurRadius: 10,
         offset: const Offset(0, 4),
@@ -70,7 +67,7 @@ class SFDecorations {
     borderRadius: BorderRadius.circular(16),
     boxShadow: [
       BoxShadow(
-        color: Colors.grey.withOpacity(0.1),
+        color: SFColors.neutral.withOpacity(0.08),
         spreadRadius: 1,
         blurRadius: 8,
         offset: const Offset(0, 2),
@@ -108,7 +105,7 @@ class SFThemes {
         tertiary: SFColors.tertiary,
         surface: SFColors.surface,
         background: SFColors.background,
-        error: SFColors.error,
+        error: Color(0xFFB23B3B),
         onPrimary: Colors.white,
         onSecondary: Colors.white,
         onSurface: SFColors.textPrimary,
@@ -162,18 +159,18 @@ class SFThemes {
 
   static ThemeData get darkTheme {
     return lightTheme.copyWith(
-      scaffoldBackgroundColor: const Color(0xFF121212),
+      scaffoldBackgroundColor: const Color(0xFF1A1A1A),
       brightness: Brightness.dark,
       
-      colorScheme: const ColorScheme.dark(
+      colorScheme: ColorScheme.dark(
         primary: SFColors.primary,
         secondary: SFColors.secondary,
         tertiary: SFColors.tertiary,
-        surface: Color(0xFF1E1E1E),
-        background: Color(0xFF121212),
-        error: SFColors.error,
+        surface: const Color(0xFF2A2A2A),
+        background: const Color(0xFF1A1A1A),
+        error: const Color(0xFFB23B3B),
         onPrimary: Colors.white,
-        onSecondary: Colors.white,
+        onSecondary: SFColors.textPrimary,
         onSurface: Colors.white,
         onBackground: Colors.white,
       ),
@@ -204,18 +201,8 @@ class SFThemes {
         fontWeight: FontWeight.w600,
         color: textColor,
       )),
-      headlineLarge: _safeGoogleFont('Inter', TextStyle(
-        fontSize: 22,
-        fontWeight: FontWeight.w600,
-        color: textColor,
-      )),
       headlineMedium: _safeGoogleFont('Inter', TextStyle(
         fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: textColor,
-      )),
-      headlineSmall: _safeGoogleFont('Inter', TextStyle(
-        fontSize: 18,
         fontWeight: FontWeight.w600,
         color: textColor,
       )),
@@ -225,10 +212,6 @@ class SFThemes {
       )),
       bodyMedium: _safeGoogleFont('Inter', TextStyle(
         fontSize: 14,
-        color: mutedColor,
-      )),
-      bodySmall: _safeGoogleFont('Inter', TextStyle(
-        fontSize: 12,
         color: mutedColor,
       )),
     );

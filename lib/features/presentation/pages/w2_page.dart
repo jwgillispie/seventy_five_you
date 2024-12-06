@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:seventy_five_hard/themes.dart';
 
 class WorkoutTwoPage extends StatefulWidget {
   const WorkoutTwoPage({Key? key}) : super(key: key);
@@ -27,28 +28,30 @@ class _WorkoutTwoPageState extends State<WorkoutTwoPage>
   bool _isSubmitting = false;
   int _selectedWorkoutType = 0;
 
+
   final List<Map<String, dynamic>> workoutTypes = [
     {
       'name': 'Strength',
       'icon': Icons.fitness_center,
-      'gradient': [Color(0xFF047E55), Color(0xFF48BF84)],
+      'gradient': [SFColors.primary, SFColors.secondary],
     },
     {
       'name': 'Cardio',
       'icon': Icons.directions_run,
-      'gradient': [Color(0xFF5A7D9A), Color(0xFF89A7C4)],
+      'gradient': [SFColors.tertiary, SFColors.neutral],
     },
     {
       'name': 'HIIT',
       'icon': Icons.timer,
-      'gradient': [Color(0xFF2E7D32), Color(0xFF4CAF50)],
+      'gradient': [SFColors.primary, SFColors.tertiary],
     },
     {
       'name': 'Yoga',
       'icon': Icons.self_improvement,
-      'gradient': [Color(0xFFBF9648), Color(0xFFDFB668)],
+      'gradient': [SFColors.neutral, SFColors.secondary],
     },
   ];
+
 
   final List<String> _workoutPrompts = [
     'What exercises did you perform?',
@@ -83,7 +86,6 @@ class _WorkoutTwoPageState extends State<WorkoutTwoPage>
     _animationController.dispose();
     super.dispose();
   }
-
   Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -91,17 +93,12 @@ class _WorkoutTwoPageState extends State<WorkoutTwoPage>
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            workoutTypes[_selectedWorkoutType]['gradient']?[0] ?? Colors.blue,
-            workoutTypes[_selectedWorkoutType]['gradient']?[1] ?? Colors.green,
-          ],
+          colors: workoutTypes[_selectedWorkoutType]['gradient'],
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
-            color: workoutTypes[_selectedWorkoutType]['gradient']?[0]
-                    ?.withOpacity(0.3) ??
-                Colors.grey.withOpacity(0.3),
+            color: (workoutTypes[_selectedWorkoutType]['gradient'][0] as Color).withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -120,14 +117,14 @@ class _WorkoutTwoPageState extends State<WorkoutTwoPage>
                     style: GoogleFonts.orbitron(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: SFColors.surface,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Day 2 of 75',
                     style: GoogleFonts.inter(
-                      color: Colors.white.withOpacity(0.9),
+                      color: SFColors.surface.withOpacity(0.9),
                       fontSize: 16,
                     ),
                   ),
@@ -160,17 +157,16 @@ class _WorkoutTwoPageState extends State<WorkoutTwoPage>
               margin: const EdgeInsets.only(right: 16),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: isSelected
-                      ? type['gradient'] ?? [Colors.blue, Colors.green]
-                      : [Colors.grey.shade200, Colors.grey.shade400],
+                  colors: isSelected 
+                      ? type['gradient']
+                      : [SFColors.background, SFColors.background],
                 ),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
                     color: isSelected
-                        ? (type['gradient']?[0]?.withOpacity(0.3) ??
-                            Colors.grey.withOpacity(0.3))
-                        : Colors.grey.withOpacity(0.1),
+                        ? (type['gradient'][0] as Color).withOpacity(0.3)
+                        : SFColors.neutral.withOpacity(0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -181,14 +177,14 @@ class _WorkoutTwoPageState extends State<WorkoutTwoPage>
                 children: [
                   Icon(
                     type['icon'],
-                    color: isSelected ? Colors.white : Colors.grey,
+                    color: isSelected ? SFColors.surface : SFColors.textSecondary,
                     size: 32,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     type['name'],
                     style: GoogleFonts.inter(
-                      color: isSelected ? Colors.white : Colors.black,
+                      color: isSelected ? SFColors.surface : SFColors.textPrimary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -230,8 +226,7 @@ class _WorkoutTwoPageState extends State<WorkoutTwoPage>
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: workoutTypes[_selectedWorkoutType]['gradient'] ??
-                    [Colors.blue, Colors.green],
+                colors: workoutTypes[_selectedWorkoutType]['gradient'],
               ),
               borderRadius: BorderRadius.circular(16),
             ),
@@ -239,7 +234,7 @@ class _WorkoutTwoPageState extends State<WorkoutTwoPage>
               child: Text(
                 _workoutPrompts[index],
                 style: GoogleFonts.poppins(
-                  color: Colors.white,
+                  color: SFColors.surface,
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
@@ -256,11 +251,11 @@ class _WorkoutTwoPageState extends State<WorkoutTwoPage>
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: SFColors.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: SFColors.neutral.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -274,7 +269,7 @@ class _WorkoutTwoPageState extends State<WorkoutTwoPage>
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: SFColors.textPrimary,
             ),
           ),
           const SizedBox(height: 16),
@@ -284,7 +279,7 @@ class _WorkoutTwoPageState extends State<WorkoutTwoPage>
             decoration: InputDecoration(
               hintText: 'Describe your workout...',
               filled: true,
-              fillColor: Colors.grey[100],
+              fillColor: SFColors.background,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -313,25 +308,42 @@ class _WorkoutTwoPageState extends State<WorkoutTwoPage>
       ],
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            TabBar(
-              controller: _tabController,
-              tabs: const [
-                Tab(text: 'Workout'),
-                Tab(text: 'Reflection'),
-              ],
-            ),
-            Expanded(
-              child: _buildContent(context),
-            ),
-          ],
+      body: Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: Theme.of(context).brightness == Brightness.dark
+                ? [
+                    SFColors.neutral.withOpacity(0.9),
+                    SFColors.tertiary,
+                  ]
+                : [
+                    SFColors.surface,
+                    SFColors.background,
+                  ],
+          ),
+        ),
+
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(context),
+              TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'Workout'),
+                  Tab(text: 'Reflection'),
+                ],
+              ),
+              Expanded(
+                child: _buildContent(context),
+              ),
+            ],
+          ),
         ),
       ),
     );

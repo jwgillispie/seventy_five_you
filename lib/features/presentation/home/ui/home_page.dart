@@ -85,12 +85,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             end: Alignment.bottomRight,
             colors: isDark 
                 ? [
-                    const Color(0xFF1A1F25),
-                    const Color(0xFF2A2F35),
+                    SFColors.neutral.withOpacity(0.9),
+                    SFColors.tertiary,
                   ]
                 : [
-                    Colors.white,
-                    const Color(0xFFF5F7FA),
+                    SFColors.surface,
+                    SFColors.background,
                   ],
           ),
         ),
@@ -102,9 +102,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               const SizedBox(height: 20),
               _buildDailyProgress(theme),
               const SizedBox(height: 20),
-              Expanded(
-                child: _buildChallengeGrid(theme),
-              ),
+              Expanded(child: _buildChallengeGrid(theme)),
             ],
           ),
         ),
@@ -112,7 +110,36 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     );
   }
 
-  Widget _buildAppBar(ThemeData theme) {
+  Widget _buildChallengeGrid(ThemeData theme) {
+    final challenges = [
+      {"title": "Diet", "icon": Icons.restaurant, "color": SFColors.primary},
+      {"title": "Outside Workout", "icon": Icons.directions_run, "color": SFColors.tertiary},
+      {"title": "Second Workout", "icon": Icons.fitness_center, "color": SFColors.neutral},
+      {"title": "Water", "icon": Icons.water_drop, "color": SFColors.secondary},
+      {"title": "Alcohol", "icon": Icons.no_drinks, "color": const Color(0xFFB23B3B)},
+      {"title": "10 Pages", "icon": Icons.menu_book, "color": SFColors.neutral.withOpacity(0.8)},
+    ];
+
+    return GridView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 1.1,
+        crossAxisSpacing: 15,
+        mainAxisSpacing: 15,
+      ),
+      itemCount: challenges.length,
+      itemBuilder: (context, index) {
+        final challenge = challenges[index];
+        return _buildChallengeCard(
+          title: challenge["title"] as String,
+          icon: challenge["icon"] as IconData,
+          color: challenge["color"] as Color,
+          theme: theme,
+        );
+      },
+    );
+  }  Widget _buildAppBar(ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -172,12 +199,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       ),
     );
   }
-
   Widget _buildMotivationalItem(String message, ThemeData theme, int index) {
     final colors = [
-      theme.colorScheme.primary,
-      theme.colorScheme.secondary,
-      theme.colorScheme.tertiary ?? theme.colorScheme.primary,
+      SFColors.primary,
+      SFColors.secondary,
+      SFColors.tertiary,
     ];
 
     return Container(
@@ -205,7 +231,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         child: Text(
           message,
           style: GoogleFonts.inter(
-            color: Colors.white,
+            color: SFColors.surface,
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
@@ -213,6 +239,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       ),
     );
   }
+
   Widget _buildDailyProgress(ThemeData theme) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -270,36 +297,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     );
   }
 
-  Widget _buildChallengeGrid(ThemeData theme) {
-    final challenges = [
-      {"title": "Diet", "icon": Icons.restaurant, "color": Colors.green},
-      {"title": "Outside Workout", "icon": Icons.directions_run, "color": Colors.blue},
-      {"title": "Second Workout", "icon": Icons.fitness_center, "color": Colors.orange},
-      {"title": "Water", "icon": Icons.water_drop, "color": Colors.cyan},
-      {"title": "Alcohol", "icon": Icons.no_drinks, "color": Colors.red},
-      {"title": "10 Pages", "icon": Icons.menu_book, "color": Colors.purple},
-    ];
 
-    return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 1.1,
-        crossAxisSpacing: 15,
-        mainAxisSpacing: 15,
-      ),
-      itemCount: challenges.length,
-      itemBuilder: (context, index) {
-        final challenge = challenges[index];
-        return _buildChallengeCard(
-          title: challenge["title"] as String,
-          icon: challenge["icon"] as IconData,
-          color: challenge["color"] as Color,
-          theme: theme,
-        );
-      },
-    );
-  }
 
   Widget _buildChallengeCard({
     required String title,
