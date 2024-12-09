@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from server.database import init_db
 from server.routes.user import router as UserRouter
 from server.routes.day import router as DayRouter
-from server.models.outside_workout_model import OutsideWorkout
+# from server.models.outside_workout_model import OutsideWorkout
 
 
 app = FastAPI()

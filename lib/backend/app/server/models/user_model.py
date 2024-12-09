@@ -3,6 +3,8 @@ from pydantic import EmailStr, Field
 from typing import Optional, List
 from beanie import PydanticObjectId
 from .day_model import Day
+from .reminder_model import Reminder
+
 class User(Document):
     class Settings:
         collection = "User"  # Specify the collection name for the User model
@@ -11,4 +13,5 @@ class User(Document):
     display_name: Optional[str]
     first_name: Optional[str]
     last_name: Optional[str]
-    days: Optional[List[Day]] 
+    days: Optional[List[Day]]
+    reminders: Optional[List[Reminder]]
