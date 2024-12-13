@@ -8,8 +8,9 @@ class Water(Document):
     date : str  # Date of the day
     firebase_uid : str
     completed: bool 
-    pee_count: int
+    peeCount: int
     completed: bool
+    ouncesDrunk: int
 
 
 

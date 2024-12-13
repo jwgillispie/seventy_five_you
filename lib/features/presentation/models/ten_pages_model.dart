@@ -34,7 +34,7 @@ class TenPages {
       'summary': summary,
       // page read 
       'pagesRead': pagesRead,
-      'book_title': bookTitle,
+      'bookTitle': bookTitle,
 
     };
   }

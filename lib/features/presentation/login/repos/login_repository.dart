@@ -82,7 +82,8 @@ class LoginRepository {
         'date': formattedDate,
         'firebase_uid': firebaseUid,
         'completed': false,
-        'pee_count': 0
+        'peeCount': 0,
+        'ouncesDrunk': 0
       },
       'alcohol': {
         'date': formattedDate,

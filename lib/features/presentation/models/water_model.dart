@@ -3,12 +3,14 @@ class Water {
   String? firebaseUid;
   bool? completed;
   int? peeCount;
+  int? ouncesDrunk;
 
   Water({
     this.date,
     this.firebaseUid,
     this.completed,
     this.peeCount,
+    this.ouncesDrunk,
   });
 
   factory Water.fromJson(Map<String, dynamic> json) {
@@ -16,8 +18,8 @@ class Water {
       date: json['date'],
       firebaseUid: json['firebase_uid'],
       completed: json['water'],
-      peeCount: json['pee_count'],
-      
+      peeCount: json['peeCount'],
+      ouncesDrunk: json['ouncesDrunk'],
     );
   }
   Map<String, dynamic> toJson() {
@@ -25,8 +27,8 @@ class Water {
       'date': date,
       'firebase_uid': firebaseUid,
       'completed': completed,
-      'pee_count': peeCount,
-
+      'peeCount': peeCount,
+      'ouncesDrunk': ouncesDrunk,
     };
   }
 }

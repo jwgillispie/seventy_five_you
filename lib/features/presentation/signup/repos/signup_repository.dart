@@ -100,7 +100,7 @@ class SignupRepository {
       firebaseUid: firebaseUid,
       completed: false,
       summary: 'defaultSummary',
-      bookTitle: 'defaultBookTitle',
+      bookTitle: 'defaultbookTitle',
       pagesRead: 0,
     );
     
@@ -172,7 +172,9 @@ class SignupRepository {
           'date': formattedDate,
           'firebase_uid': firebaseUid,
           'completed': false,
-          'pee_count': 0,
+          'peeCount': 0,
+          'ouncesDrunk': 0,
+
         },
         'alcohol': {
           'date': formattedDate,

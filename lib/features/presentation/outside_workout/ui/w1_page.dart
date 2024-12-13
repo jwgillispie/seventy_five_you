@@ -27,6 +27,15 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
   bool _isLoading = false;
   bool _isSubmitting = false;
   int _selectedWorkoutType = 0;
+  DateTime today = DateTime.now();
+  bool _completedWorkout = false;
+  final List<String> _reflectionPrompts = [
+    'How did this workout challenge you?',
+    'What could you improve next time?',
+    'Rate your energy level (1-10)',
+    'What was your favorite part?',
+  ];
+
 
 
   final List<Map<String, dynamic>> workoutTypes = [
@@ -60,7 +69,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
     'Did you try any new exercises?',
   ];
 
-  @override
+ @override
   void initState() {
     super.initState();
     user = _auth.currentUser;
@@ -76,6 +85,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
       CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
     );
     _animationController.forward();
+    _fetchWorkoutData();  // Add this line
   }
 
   @override
@@ -245,6 +255,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
       ),
     );
   }
+  
 
   Widget _buildWorkoutInputCard() {
     return Container(
@@ -290,21 +301,316 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
       ),
     );
   }
+  Widget _buildSubmitButton() {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton(
+        onPressed: _isSubmitting ? null : _submitWorkout,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: workoutTypes[_selectedWorkoutType]['gradient'][0],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+        ),
+        child: _isSubmitting
+            ? CircularProgressIndicator(color: SFColors.surface)
+            : Text(
+                'Save Workout',
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: SFColors.surface,
+                ),
+              ),
+      ),
+    );
+  }
+
+// Success snackbar
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Row(
+        children: [
+          Icon(Icons.check_circle, color: SFColors.surface),
+          const SizedBox(width: 8),
+          Expanded(child: Text(message)),
+        ],
+      ),
+      backgroundColor: SFColors.primary,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    ));
+  }
+
+// Error snackbar
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Row(
+        children: [
+          Icon(Icons.error_outline, color: SFColors.surface),
+          const SizedBox(width: 8),
+          Expanded(child: Text(message)),
+        ],
+      ),
+      backgroundColor: const Color(0xFFB23B3B),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    ));
+  }
+  // Add this new widget for reflection tab
+  Widget _buildReflectionTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildMoodSelector(),
+          const SizedBox(height: 24),
+          _buildReflectionPrompts(),
+          const SizedBox(height: 24),
+          _buildReflectionInput(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMoodSelector() {
+    final moods = [
+      {'emoji': '😤', 'label': 'Pumped'},
+      {'emoji': '💪', 'label': 'Strong'},
+      {'emoji': '😅', 'label': 'Tired'},
+      {'emoji': '🤔', 'label': 'Challenged'},
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: SFColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: SFColors.neutral.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'How are you feeling?',
+            style: GoogleFonts.orbitron(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: SFColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: moods.map((mood) {
+              return Column(
+                children: [
+                  Text(
+                    mood['emoji']!,
+                    style: const TextStyle(fontSize: 32),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    mood['label']!,
+                    style: GoogleFonts.inter(
+                      color: SFColors.textSecondary,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReflectionPrompts() {
+    return Container(
+      height: 120,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _reflectionPrompts.length,
+        itemBuilder: (context, index) {
+          return Container(
+            width: 200,
+            margin: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [SFColors.neutral, SFColors.tertiary],
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Center(
+              child: Text(
+                _reflectionPrompts[index],
+                style: GoogleFonts.poppins(
+                  color: SFColors.surface,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildReflectionInput() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: SFColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: SFColors.neutral.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Workout Reflection',
+            style: GoogleFonts.orbitron(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: SFColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _reflectionController,
+            maxLines: 5,
+            decoration: InputDecoration(
+              hintText: 'Share your thoughts about today\'s workout...',
+              filled: true,
+              fillColor: SFColors.background,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+   // Update the _buildContent method to use the new reflection tab
+
+
+  // Update the submit workout function to include reflection data
+  Future<void> _submitWorkout() async {
+    if (user == null || _workoutDescriptionController.text.isEmpty) {
+      _showErrorSnackBar('Please add a description of your workout');
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      // Create workout data including reflection
+      final workoutData = {
+        'outside_workout': {
+          // add date and firebase uid 
+          'date': today.toString().substring(0, 10),
+          'firebase_uid': user!.uid,
+          'description': _workoutDescriptionController.text,
+          'thoughts': _reflectionController.text,
+          'completed': true,
+          'type': workoutTypes[_selectedWorkoutType]['name'],
+        }
+      };
+
+      // Make API call
+      final response = await http.put(
+        Uri.parse(
+            'http://localhost:8000/day/${user!.uid}/${today.toString().substring(0, 10)}'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(workoutData),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() => _completedWorkout = true);
+        _showSuccessSnackBar('Workout saved successfully! 💪');
+        
+        // Auto-switch to reflection tab after successful submission
+        if (_reflectionController.text.isEmpty) {
+          _tabController.animateTo(1);
+        }
+      } else {
+        _showErrorSnackBar('Failed to save workout');
+      }
+    } catch (e) {
+      _showErrorSnackBar('Error saving workout');
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
+  }
+
+  // Add fetch workout data function
+  Future<void> _fetchWorkoutData() async {
+    if (user == null) return;
+    setState(() => _isLoading = true);
+
+    try {
+      final response = await http.get(
+        Uri.parse('http://localhost:8000/day/${user!.uid}/${today.toString().substring(0, 10)}'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final workout = data['outside_workout'];
+        
+        if (workout != null) {
+          setState(() {
+            _workoutDescriptionController.text = workout['description'] ?? '';
+            _reflectionController.text = workout['thoughts'] ?? '';
+            _completedWorkout = workout['completed'] ?? false;
+            
+            // Set workout type if it exists
+            final workoutType = workout['type'];
+            if (workoutType != null) {
+              _selectedWorkoutType = workoutTypes.indexWhere(
+                (type) => type['name'] == workoutType
+              );
+              if (_selectedWorkoutType == -1) _selectedWorkoutType = 0;
+            }
+          });
+        }
+      }
+    } catch (e) {
+      _showErrorSnackBar('Error loading workout data');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
   Widget _buildContent(BuildContext context) {
     return TabBarView(
-      controller: _tabController,
+      controller: _tabController, 
       children: [
         _buildWorkoutTab(),
-        Center(
-          child: Text(
-            'Reflection Coming Soon',
-            style: GoogleFonts.poppins(
-              color: Colors.black,
-              fontSize: 18,
-            ),
-          ),
-        ),
+        _buildReflectionTab(),
+
       ],
     );
   }
@@ -342,6 +648,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
               Expanded(
                 child: _buildContent(context),
               ),
+              _buildSubmitButton(),
             ],
           ),
         ),

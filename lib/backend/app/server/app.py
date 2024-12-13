@@ -43,27 +43,38 @@ async def update_user_by_firebase_uid(firebase_uid: str, updated_fields: dict):
     else:
         raise HTTPException(status_code=404, detail="User not found")
 
-
-@app.get("/day/{firebase_uid}", response_model=Day, tags=["Day"])
-async def get_day_by_firebase_uid(firebase_uid: str):
-    day = await Day.find_one({"firebase_uid": firebase_uid})
-    if day:
-        return day
-    else:
+# app.py (or your routes file)
+@app.get("/day/{firebase_uid}/{date}", response_model=Day, tags=["Day"])
+async def get_day_by_firebase_uid_and_date(firebase_uid: str, date: str) -> Day:
+    day = await Day.find_one({"firebase_uid": firebase_uid, "date": date})
+    if not day:
         raise HTTPException(status_code=404, detail="Day not found")
+    return day
 
-
-@app.put("/day/{firebase_uid}", response_model=Day, tags=["Day"])
-async def update_day_by_firebase_uid(firebase_uid: str, updated_fields: dict):
-    day = await Day.find_one({"firebase_uid": firebase_uid})
-    if day:
-        for key, value in updated_fields.items():
+@app.put("/day/{firebase_uid}/{date}", response_model=Day, tags=["Day"])
+async def update_day_by_firebase_uid_and_date(
+    firebase_uid: str, 
+    date: str, 
+    updated_fields: dict
+):
+    day = await Day.find_one({"firebase_uid": firebase_uid, "date": date})
+    if not day:
+        # Create a new day if it doesn't exist
+        new_day = Day(
+            firebase_uid=firebase_uid,
+            date=date,
+            **updated_fields
+        )
+        await new_day.create()
+        return new_day
+    
+    # Update existing day
+    for key, value in updated_fields.items():
+        if key in day.dict():
             setattr(day, key, value)
-        await day.save()
-        return day
-    else:
-        raise HTTPException(status_code=404, detail="Day not found")
-
+    
+    await day.save()
+    return day
 
 @app.get("/day/{firebase_uid}/{date}", response_model=Day, tags=["Day"])
 async def get_day_by_firebase_uid_and_date(firebase_uid: str, date: str) -> Day:
