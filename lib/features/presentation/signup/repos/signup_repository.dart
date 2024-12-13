@@ -7,6 +7,7 @@ import 'package:seventy_five_hard/features/presentation/models/water_model.dart'
 import 'package:seventy_five_hard/features/presentation/models/outside_workout_model.dart';
 import 'package:seventy_five_hard/features/presentation/models/inside_workout_model.dart';
 import 'package:seventy_five_hard/features/presentation/models/diet_model.dart';import "dart:async";
+import 'package:seventy_five_hard/features/presentation/models/reminder_model.dart';
 import 'package:seventy_five_hard/features/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -25,7 +26,7 @@ class SignupRepository {
   }
 
   FutureOr<bool> createNewUser(String firebaseUid, String username,
-      String email, String firstName, String lastName, List days) async {
+      String email, String firstName, String lastName, List days, List reminder) async {
     print("Creating new user object for $firebaseUid");
     Uri userUrl = Uri.parse("http://localhost:8000/user/");
     Map<String, String> userHeaders = {
@@ -38,6 +39,7 @@ class SignupRepository {
       'first_name': firstName,
       'last_name': lastName,
       'days': days,
+      'reminder': reminder
     };
 
     try {
@@ -101,6 +103,7 @@ class SignupRepository {
       bookTitle: 'defaultBookTitle',
       pagesRead: 0,
     );
+    
     Diet defaultDiet = Diet(
         date: formattedDate,
         firebaseUid: firebaseUid,
@@ -108,6 +111,7 @@ class SignupRepository {
         lunch: [],
         dinner: [],
         snacks: []);
+
     Map<String, dynamic> dayBody = {
       'date': formattedDate,
       'firebase_uid': firebaseUid,
@@ -131,7 +135,7 @@ class SignupRepository {
       print("Failed to send day object to backend: ${dayResponse.statusCode}");
     }
   }
-  // function to get current user and add day ibject to user object's days array
+  // function to get current user and add day object to user object's days array
   FutureOr<bool> addDayToUser(String firebaseUid) async {
     print("Adding day object to user object for $firebaseUid");
     DateTime today = DateTime.now();

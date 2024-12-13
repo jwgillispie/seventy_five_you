@@ -21,7 +21,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
     User? user = await SignupRepository().signUp(event.email, event.password);
     if (user != null) {
       SignupRepository().createNewUser(user.uid, event.username, event.email,
-          event.firstName, event.lastName, event.days);
+          event.firstName, event.lastName, event.days, event.reminder);
       SignupRepository().createNewDay(user.uid);
       emit(SignupSuccess());
     } else {

@@ -9,6 +9,7 @@ class SignupButtonPressedEvent extends SignupEvent {
   final String firstName;
   final String lastName;
   final List days;
+  final List reminder;
 
   SignupButtonPressedEvent(
       {required this.username,
@@ -16,7 +17,8 @@ class SignupButtonPressedEvent extends SignupEvent {
       required this.lastName,
       required this.email,
       required this.password,
-      required this.days});
+      required this.days,
+      required this.reminder});
 }
 
 class SignupNavigateToLoginEvent extends SignupEvent {}

@@ -134,7 +134,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               username: _usernameController.text.trim(),
                               firstName: _firstNameController.text.trim(),
                               lastName: _lastNameController.text.trim(),
-                              days: []));
+                              days: [],
+                              reminder: []));
                         },
                         child: Container(
                           width: double.infinity,
