@@ -1,31 +1,30 @@
 class Alcohol {
-      String? date;
-      String? firebaseUid;
-      bool? completed;
+      String? dayId;
       int? difficulty;
+      bool? completed;
       
 
   Alcohol({
-        this.date,
-        this.firebaseUid,
-        this.completed,
+        this.dayId,
         this.difficulty,
+        this.completed,
   });
 
+  // Factory constructor for creating an Alcohol object from JSON
   factory Alcohol.fromJson(Map<String, dynamic> json) {
     return Alcohol(
-      date: json['date'],
-      firebaseUid: json['firebase_uid'],
-      completed: json['completed'],
+      dayId: json['day_id'], // Matches Python field name
       difficulty: json['difficulty'],
+      completed: json['completed'],
     );
   }
+  
+  // Convert Alcohol object to JSON  
   Map<String, dynamic> toJson() {
     return {
-      'date': date,
-      'firebase_uid': firebaseUid,
-      'completed': completed,
+      'day_id': dayId,
       'difficulty': difficulty,
+      'completed': completed,
     };
   }
 }

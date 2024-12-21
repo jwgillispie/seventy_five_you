@@ -1,13 +1,12 @@
 from beanie import Document
-# from pydantic import EmailStr
 from typing import List, Optional
-from datetime import datetime
+from beanie import PydanticObjectId
+
 
 class Reminder(Document):
     class Settings:
-        name = "Reminder"
-    date : str  # Date of the day
-    firebase_uid : str
+        collection = "Reminder"
+    user_id : PydanticObjectId # Reference to the User collection
     user_reminder : List[str] # List of user reminders
     
 

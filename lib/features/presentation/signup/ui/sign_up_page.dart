@@ -134,8 +134,9 @@ class _SignUpPageState extends State<SignUpPage> {
                               username: _usernameController.text.trim(),
                               firstName: _firstNameController.text.trim(),
                               lastName: _lastNameController.text.trim(),
-                              days: [],
-                              reminder: []));
+                              // days: [],
+                              // reminder: []
+                            ));
                         },
                         child: Container(
                           width: double.infinity,
@@ -165,7 +166,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                print("login oressed");
+                                print("login pressed");
                                 signupBloc.add(SignupNavigateToLoginEvent());
                               },
                               child: Text(

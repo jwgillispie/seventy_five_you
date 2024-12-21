@@ -1,16 +1,14 @@
 class Diet {
-  String? date;
-  String? firebaseUid;
+  String? dayId;
   List<String>? breakfast;
   List<String>? lunch;
   List<String>? dinner;
   List<String>? snacks;
-        bool? completed = false;
+  bool? completed = false;
 
 
   Diet({
-    this.date,
-    this.firebaseUid,
+    this.dayId,
     this.breakfast,
     this.lunch,
     this.dinner,
@@ -19,10 +17,10 @@ class Diet {
     
   });
 
+  // Factory constructor for creating a Diet object from JSON
   factory Diet.fromJson(Map<String, dynamic> json) {
     return Diet(
-      date: json['date'] as String,
-      firebaseUid: json['firebase_uid'] as String,
+      dayId: json['day_id'] as String,
       breakfast: json['breakfast'] != null
           ? List<String>.from(json['breakfast'] as List<dynamic>)
           : null,
@@ -39,10 +37,10 @@ class Diet {
     );
   }
 
+  // Convert Diet object to Json
   Map<String, dynamic> toJson() {
     return {
-      'date': date,
-      'firebase_uid': firebaseUid,
+      'day_id': dayId,
       'breakfast': breakfast,
       'lunch': lunch,
       'dinner': dinner,

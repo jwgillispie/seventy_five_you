@@ -6,6 +6,7 @@ import 'package:seventy_five_hard/features/presentation/models/alcohol_model.dar
 import 'package:seventy_five_hard/features/presentation/models/day_model.dart';
 import 'package:seventy_five_hard/features/presentation/models/diet_model.dart';
 import 'package:seventy_five_hard/features/presentation/models/inside_workout_model.dart';
+import 'package:seventy_five_hard/features/presentation/models/second_workout_model.dart';
 import 'package:seventy_five_hard/features/presentation/models/outside_workout_model.dart';
 import 'package:seventy_five_hard/features/presentation/models/ten_pages_model.dart';
 import 'package:seventy_five_hard/features/presentation/models/water_model.dart';
@@ -28,7 +29,7 @@ class _CalendarPageState extends State<CalendarPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   Water? waterModel;
   Diet? dietModel;
-  InsideWorkout? insideWorkoutModel;
+  SecondWorkout? secondWorkoutModel;
   OutsideWorkout? outsideWorkoutModel;
   TenPages? tenPagesModel;
   Alcohol? alcoholModel;
@@ -58,7 +59,7 @@ class _CalendarPageState extends State<CalendarPage> {
           Day day = Day.fromJson(data);
           waterModel = day.water;
           dietModel = day.diet;
-          insideWorkoutModel = day.insideWorkout;
+          secondWorkoutModel = day.secondWorkout;
           outsideWorkoutModel = day.outsideWorkout;
           tenPagesModel = day.pages;
           alcoholModel = day.alcohol;
@@ -85,7 +86,7 @@ class _CalendarPageState extends State<CalendarPage> {
   void _clearObjectives() {
     waterModel = null;
     dietModel = null;
-    insideWorkoutModel = null;
+    secondWorkoutModel = null;
     outsideWorkoutModel = null;
     tenPagesModel = null;
     alcoholModel = null;
@@ -370,19 +371,19 @@ class _CalendarPageState extends State<CalendarPage> {
             sectionTitleStyle: sectionTitleStyle,
             theme: theme,
           ),
-        if (insideWorkoutModel != null)
+        if (secondWorkoutModel != null)
           _buildObjectiveCard(
             title: 'Inside Workout',
             icon: Icons.fitness_center,
             content: [
               _buildObjectiveContent(
                 icon: Icons.run_circle,
-                label: 'Description: ${insideWorkoutModel!.description}',
-                success: insideWorkoutModel!.description!.isNotEmpty,
+                label: 'Description: ${secondWorkoutModel!.description}',
+                success: secondWorkoutModel!.description!.isNotEmpty,
               ),
               _buildObjectiveContent(
                 icon: Icons.lightbulb,
-                label: 'Thoughts: ${insideWorkoutModel!.thoughts}',
+                label: 'Thoughts: ${secondWorkoutModel!.thoughts}',
               ),
             ],
             sectionTitleStyle: sectionTitleStyle,
@@ -444,7 +445,7 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
         if (waterModel == null &&
             dietModel == null &&
-            insideWorkoutModel == null &&
+            secondWorkoutModel == null &&
             outsideWorkoutModel == null &&
             tenPagesModel == null &&
             alcoholModel == null)

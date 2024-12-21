@@ -1,34 +1,34 @@
 class Water {
-  String? date;
-  String? firebaseUid;
-  bool? completed;
+  String? dayId;
   int? peeCount;
-  int? ouncesDrunk;
+  int? amountFinished;
+  bool? completed;
+
 
   Water({
-    this.date,
-    this.firebaseUid,
-    this.completed,
+    this.dayId,
     this.peeCount,
-    this.ouncesDrunk,
+    this.amountFinished,
+    this.completed,
   });
 
+  // Factory constructor for creating a Water object from JSON
   factory Water.fromJson(Map<String, dynamic> json) {
     return Water(
-      date: json['date'],
-      firebaseUid: json['firebase_uid'],
-      completed: json['water'],
-      peeCount: json['peeCount'],
-      ouncesDrunk: json['ouncesDrunk'],
+      dayId: json['day_id'],
+      peeCount: json['pee_count'],
+      amountFinished: json['amount_finished'],
+      completed: json['completed'],
     );
   }
+
+  // Convert Water object to JSON  
   Map<String, dynamic> toJson() {
     return {
-      'date': date,
-      'firebase_uid': firebaseUid,
+      'day_id': dayId,
+      'pee_count': peeCount,
+      'amount_finished': amountFinished,
       'completed': completed,
-      'peeCount': peeCount,
-      'ouncesDrunk': ouncesDrunk,
     };
   }
 }

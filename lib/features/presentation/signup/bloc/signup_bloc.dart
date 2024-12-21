@@ -21,11 +21,17 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
     User? user = await SignupRepository().signUp(event.email, event.password);
     if (user != null) {
       SignupRepository().createNewUser(user.uid, event.username, event.email,
-          event.firstName, event.lastName, event.days, event.reminder);
-      SignupRepository().createNewDay(user.uid);
-      emit(SignupSuccess());
+          event.firstName, event.lastName);
+      String? challengeId = await SignupRepository().createNewChallenge(user.uid);
+      print(challengeId);
+      if (challengeId != null) {
+        await SignupRepository().createNewDay(challengeId);
+        emit(SignupSuccess());
+      } else {
+        emit(SignupFailure("Signup Failed. Failed to create challenge"));
+      }
     } else {
-      emit(SignupFailure("Signup Failed"));
+      emit(SignupFailure("Signup failed"));
     }
   }
 

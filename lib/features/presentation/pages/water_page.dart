@@ -106,7 +106,7 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
 
     water!.completed = _remainingWaterOunces == 0;
     water!.peeCount = _bathroomCounter;
-    water!.ouncesDrunk = (128.0 - _remainingWaterOunces).toInt();
+    water!.amountFinished = (128.0 - _remainingWaterOunces).toInt();
     final Map<String, dynamic> waterData = water!.toJson();
 
     try {
@@ -342,7 +342,7 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
               return ClipPath(
                 clipper: WaveClipper(
                   animation: _waveAnimation.value,
-                  fillPercentage: water!.ouncesDrunk! / 128.0 ,
+                  fillPercentage: water!.amountFinished! / 128.0 ,
                 ),
                 child: Container(
                   decoration: BoxDecoration(
