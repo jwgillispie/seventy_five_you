@@ -49,6 +49,7 @@ dependencies:
   flutter_spinkit: ^5.1.0
   confetti: 
   persistent_bottom_nav_bar_v2: ^5.3.1
+  provider: 
 
 
 

@@ -45,50 +45,50 @@ class _TenPagesPageState extends State<TenPagesPage> with TickerProviderStateMix
     "Reading shapes the leader within you. 🌟"
   ];
 
-  final List<Map<String, dynamic>> _readingStats = [
-    {
-      'title': 'Current Streak',
-      'value': '7 Days',
-      'icon': Icons.local_fire_department,
-      'color': SFColors.neutral,
-    },
-    {
-      'title': 'Pages Read',
-      'value': '70',
-      'icon': Icons.menu_book,
-      'color': SFColors.primary,
-    },
-    {
-      'title': 'Books Started',
-      'value': '3',
-      'icon': Icons.library_books,
-      'color': SFColors.tertiary,
-    },
-  ];
+  // final List<Map<String, dynamic>> _readingStats = [
+  //   {
+  //     'title': 'Current Streak',
+  //     'value': '7 Days',
+  //     'icon': Icons.local_fire_department,
+  //     'color': Theme.of(context).colorScheme.secondaryFixed,
+  //   },
+  //   {
+  //     'title': 'Pages Read',
+  //     'value': '70',
+  //     'icon': Icons.menu_book,
+  //     'color': Theme.of(context).colorScheme.primary,
+  //   },
+  //   {
+  //     'title': 'Books Started',
+  //     'value': '3',
+  //     'icon': Icons.library_books,
+  //     'color': Theme.of(context).colorScheme.tertiary,
+  //   },
+  // ];
 
-  final List<Map<String, dynamic>> _achievements = [
-    {
-      'title': 'First Book',
-      'description': 'Started your reading journey',
-      'icon': Icons.auto_stories,
-      'color': SFColors.primary,
-      'earned': true,
-    },
-    {
-      'title': '7-Day Streak',
-      'description': 'Read consistently for a week',
-      'icon': Icons.workspace_premium,
-      'color': SFColors.tertiary,
-      'earned': true,
-    },
-    {
-      'title': 'Quick Notes',
-      'description': 'Made detailed reading notes',
-      'icon': Icons.rate_review,
-      'color': SFColors.neutral,
-      'earned': false,
-    },
-  ];
+  // final List<Map<String, dynamic>> _achievements = [
+  //   {
+  //     'title': 'First Book',
+  //     'description': 'Started your reading journey',
+  //     'icon': Icons.auto_stories,
+  //     'color': Theme.of(context).colorScheme.primary,
+  //     'earned': true,
+  //   },
+  //   {
+  //     'title': '7-Day Streak',
+  //     'description': 'Read consistently for a week',
+  //     'icon': Icons.workspace_premium,
+  //     'color': Theme.of(context).colorScheme.tertiary,
+  //     'earned': true,
+  //   },
+  //   {
+  //     'title': 'Quick Notes',
+  //     'description': 'Made detailed reading notes',
+  //     'icon': Icons.rate_review,
+  //     'color': Theme.of(context).colorScheme.secondaryFixed,
+  //     'earned': false,
+  //   },
+  // ];
 
   @override
   void initState() {
@@ -233,12 +233,12 @@ class _TenPagesPageState extends State<TenPagesPage> with TickerProviderStateMix
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Row(
         children: [
-          Icon(Icons.check_circle, color: SFColors.surface),
+          Icon(Icons.check_circle, color: Theme.of(context).colorScheme.surface),
           const SizedBox(width: 8),
           Expanded(child: Text(message)),
         ],
       ),
-      backgroundColor: SFColors.primary,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     ));
@@ -248,7 +248,7 @@ class _TenPagesPageState extends State<TenPagesPage> with TickerProviderStateMix
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Row(
         children: [
-          Icon(Icons.error_outline, color: SFColors.surface),
+          Icon(Icons.error_outline, color: Theme.of(context).colorScheme.surface),
           const SizedBox(width: 8),
           Expanded(child: Text(message)),
         ],
@@ -268,8 +268,8 @@ class _TenPagesPageState extends State<TenPagesPage> with TickerProviderStateMix
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              SFColors.surface,
-              SFColors.background,
+              Theme.of(context).colorScheme.surface,
+              Theme.of(context).colorScheme.background,
             ],
           ),
         ),
@@ -308,14 +308,14 @@ class _TenPagesPageState extends State<TenPagesPage> with TickerProviderStateMix
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [SFColors.neutral, SFColors.tertiary],
+          colors: [Theme.of(context).colorScheme.secondaryFixed, Theme.of(context).colorScheme.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -334,14 +334,14 @@ class _TenPagesPageState extends State<TenPagesPage> with TickerProviderStateMix
                     style: GoogleFonts.orbitron(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: SFColors.surface,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Day ${today.difference(DateTime(2024, 1, 1)).inDays + 1} of 75',
                     style: GoogleFonts.inter(
-                      color: SFColors.surface.withOpacity(0.9),
+                      color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
                       fontSize: 16,
                     ),
                   ),
@@ -365,8 +365,8 @@ class _TenPagesPageState extends State<TenPagesPage> with TickerProviderStateMix
         shape: BoxShape.circle,
         gradient: LinearGradient(
           colors: [
-            SFColors.surface.withOpacity(0.2),
-            SFColors.surface.withOpacity(0.1),
+            Theme.of(context).colorScheme.surface.withOpacity(0.2),
+            Theme.of(context).colorScheme.surface.withOpacity(0.1),
           ],
         ),
       ),
@@ -376,13 +376,61 @@ class _TenPagesPageState extends State<TenPagesPage> with TickerProviderStateMix
           style: GoogleFonts.orbitron(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: SFColors.surface,
+            color: Theme.of(context).colorScheme.surface,
           ),
         ),
       ),
     );
   }
+  // get stats and achieevements 
+  List<Map<String, dynamic>> getReadingStats(BuildContext context) {
+  return [
+    {
+      'title': 'Current Streak',
+      'value': '7 Days',
+      'icon': Icons.local_fire_department,
+      'color': Theme.of(context).colorScheme.secondary,
+    },
+    {
+      'title': 'Pages Read',
+      'value': '70',
+      'icon': Icons.menu_book,
+      'color': Theme.of(context).colorScheme.primary,
+    },
+    {
+      'title': 'Books Started',
+      'value': '3',
+      'icon': Icons.library_books,
+      'color': Theme.of(context).colorScheme.tertiary,
+    },
+  ];
+}
 
+List<Map<String, dynamic>> getAchievements(BuildContext context) {
+  return [
+    {
+      'title': 'First Book',
+      'description': 'Started your reading journey',
+      'icon': Icons.auto_stories,
+      'color': Theme.of(context).colorScheme.primary,
+      'earned': true,
+    },
+    {
+      'title': '7-Day Streak',
+      'description': 'Read consistently for a week',
+      'icon': Icons.workspace_premium,
+      'color': Theme.of(context).colorScheme.tertiary,
+      'earned': true,
+    },
+    {
+      'title': 'Quick Notes',
+      'description': 'Made detailed reading notes',
+      'icon': Icons.rate_review,
+      'color': Theme.of(context).colorScheme.secondary,
+      'earned': false,
+    },
+  ];
+}
   Widget _buildReadingStats() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -398,12 +446,12 @@ class _TenPagesPageState extends State<TenPagesPage> with TickerProviderStateMix
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: SFColors.surface.withOpacity(0.1),
+        color: Theme.of(context).colorScheme.surface.withOpacity(0.1),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
         children: [
-          Icon(icon, color: SFColors.surface, size: 20),
+          Icon(icon, color: Theme.of(context).colorScheme.surface, size: 20),
           const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -411,7 +459,7 @@ class _TenPagesPageState extends State<TenPagesPage> with TickerProviderStateMix
               Text(
                 value,
                 style: GoogleFonts.inter(
-                  color: SFColors.surface,
+                  color: Theme.of(context).colorScheme.surface,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -419,7 +467,7 @@ class _TenPagesPageState extends State<TenPagesPage> with TickerProviderStateMix
               Text(
                 label,
                 style: GoogleFonts.inter(
-                  color: SFColors.surface.withOpacity(0.8),
+                  color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
                   fontSize: 12,
                 ),
               ),
@@ -435,12 +483,12 @@ Widget _buildReadingProgress() {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [SFColors.neutral, SFColors.tertiary],
+          colors: [Theme.of(context).colorScheme.secondaryFixed, Theme.of(context).colorScheme.tertiary],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -456,13 +504,13 @@ Widget _buildReadingProgress() {
                 style: GoogleFonts.inter(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: SFColors.surface,
+                  color: Theme.of(context).colorScheme.surface,
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: SFColors.surface.withOpacity(0.2),
+                  color: Theme.of(context).colorScheme.surface.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -470,7 +518,7 @@ Widget _buildReadingProgress() {
                   style: GoogleFonts.inter(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: SFColors.surface,
+                    color: Theme.of(context).colorScheme.surface,
                   ),
                 ),
               ),
@@ -481,8 +529,8 @@ Widget _buildReadingProgress() {
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
               value: _currentPage / 10,
-              backgroundColor: SFColors.surface.withOpacity(0.2),
-              valueColor: AlwaysStoppedAnimation<Color>(SFColors.surface),
+              backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.2),
+              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.surface),
               minHeight: 10,
             ),
           ),
@@ -494,10 +542,10 @@ Widget _buildReadingProgress() {
                 onPressed: () => _updatePageCount(pages),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _currentPage == pages
-                      ? SFColors.surface
-                      : SFColors.surface.withOpacity(0.2),
+                      ? Theme.of(context).colorScheme.surface
+                      : Theme.of(context).colorScheme.surface.withOpacity(0.2),
                   foregroundColor:
-                      _currentPage == pages ? SFColors.neutral : SFColors.surface,
+                      _currentPage == pages ? Theme.of(context).colorScheme.secondaryFixed : Theme.of(context).colorScheme.surface,
                 ),
                 child: Text('$pages pages'),
               );
@@ -513,11 +561,11 @@ Widget _buildReadingProgress() {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: SFColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -531,7 +579,7 @@ Widget _buildReadingProgress() {
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: SFColors.neutral,
+              color: Theme.of(context).colorScheme.secondaryFixed,
             ),
           ),
           const SizedBox(height: 20),
@@ -539,10 +587,10 @@ Widget _buildReadingProgress() {
             controller: _bookTitleController,
             decoration: InputDecoration(
               hintText: 'What are you reading?',
-              prefixIcon: Icon(Icons.auto_stories, color: SFColors.neutral),
+              prefixIcon: Icon(Icons.auto_stories, color: Theme.of(context).colorScheme.secondaryFixed),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: SFColors.neutral),
+                borderSide: BorderSide(color: Theme.of(context).colorScheme.secondaryFixed),
               ),
             ),
           ),
@@ -556,11 +604,11 @@ Widget _buildReadingProgress() {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: SFColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -574,7 +622,7 @@ Widget _buildReadingProgress() {
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: SFColors.neutral,
+              color: Theme.of(context).colorScheme.secondaryFixed,
             ),
           ),
           const SizedBox(height: 20),
@@ -585,7 +633,7 @@ Widget _buildReadingProgress() {
               hintText: 'Share your thoughts and key takeaways...',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: SFColors.neutral),
+                borderSide: BorderSide(color: Theme.of(context).colorScheme.secondaryFixed),
               ),
             ),
           ),
@@ -595,17 +643,18 @@ Widget _buildReadingProgress() {
   }
 
   Widget _buildAchievements() {
+    final _achievements = getAchievements(context);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [SFColors.neutral, SFColors.tertiary],
+          colors: [Theme.of(context).colorScheme.secondaryFixed, Theme.of(context).colorScheme.tertiary],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -618,7 +667,7 @@ Widget _buildReadingProgress() {
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: SFColors.surface,
+              color: Theme.of(context).colorScheme.surface,
             ),
           ),
           const SizedBox(height: 20),
@@ -632,14 +681,14 @@ Widget _buildReadingProgress() {
                 margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  color: SFColors.surface.withOpacity(0.1),
+                  color: Theme.of(context).colorScheme.surface.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       achievement['icon'],
-                      color: SFColors.surface,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                     const SizedBox(width: 15),
                     Expanded(
@@ -651,14 +700,14 @@ Widget _buildReadingProgress() {
                             style: GoogleFonts.inter(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: SFColors.surface,
+                              color: Theme.of(context).colorScheme.surface,
                             ),
                           ),
                           Text(
                             achievement['description'],
                             style: GoogleFonts.inter(
                               fontSize: 14,
-                              color: SFColors.surface.withOpacity(0.8),
+                              color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
                             ),
                           ),
                         ],
@@ -667,7 +716,7 @@ Widget _buildReadingProgress() {
                     if (achievement['earned'])
                       Icon(
                         Icons.check_circle,
-                        color: SFColors.surface,
+                        color: Theme.of(context).colorScheme.surface,
                       ),
                   ],
                 ),
@@ -687,19 +736,19 @@ Widget _buildReadingProgress() {
       child: ElevatedButton(
         onPressed: _isSaving ? null : _submitData,
         style: ElevatedButton.styleFrom(
-          backgroundColor: SFColors.neutral,
+          backgroundColor: Theme.of(context).colorScheme.secondaryFixed,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
         ),
         child: _isSaving
-            ? CircularProgressIndicator(color: SFColors.surface)
+            ? CircularProgressIndicator(color: Theme.of(context).colorScheme.surface)
             : Text(
                 'Save Progress',
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: SFColors.surface,
+                  color: Theme.of(context).colorScheme.surface,
                 ),
               ),
       ),

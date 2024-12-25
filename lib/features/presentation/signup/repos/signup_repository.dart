@@ -56,83 +56,69 @@ class SignupRepository {
     }
   }
 
-  // createDay function.. send day object to mongo db for user
   Future<void> createNewDay(String firebaseUid) async {
-    print("Creating new day object for $firebaseUid");
     DateTime today = DateTime.now();
     String formattedDate =
         "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
 
-    Uri dayUrl = Uri.parse(
-        "http://localhost:8000/day/"); // Replace with your backend API URL for day object
-    Map<String, String> dayHeaders = {
-      'Content-Type': 'application/json',
-    };
-    InsideWorkout defaultInsideWorkout = InsideWorkout(
-      date: formattedDate,
-      firebaseUid: firebaseUid,
-      description: 'defaultDescription',
-      thoughts: 'defaultThoughts',
-    );
-    OutsideWorkout defaultOutsideWorkout = OutsideWorkout(
-      date: formattedDate,
-      firebaseUid: firebaseUid,
-      description: 'defaultDescription',
-      thoughts: 'defaultThoughts',
-    );
-
-    Water defaultWater = Water(
-      date: formattedDate,
-      firebaseUid: firebaseUid,
-      completed: false,
-      peeCount: 0,
-    );
-
-    Alcohol defaultAlcohol = Alcohol(
-      date: formattedDate,
-      firebaseUid: firebaseUid,
-      completed: false,
-      difficulty: 0,
-    );
-
-    TenPages defaultPages = TenPages(
-      date: formattedDate,
-      firebaseUid: firebaseUid,
-      completed: false,
-      summary: 'defaultSummary',
-      bookTitle: 'defaultbookTitle',
-      pagesRead: 0,
-    );
-    
-    Diet defaultDiet = Diet(
-        date: formattedDate,
-        firebaseUid: firebaseUid,
-        breakfast: [],
-        lunch: [],
-        dinner: [],
-        snacks: []);
-
     Map<String, dynamic> dayBody = {
       'date': formattedDate,
       'firebase_uid': firebaseUid,
-      'diet': defaultDiet.toJson(),
-      'outside_workout': defaultOutsideWorkout.toJson(),
-      'inside_workout': defaultInsideWorkout.toJson(),
-      'water': defaultWater.toJson(),
-      'alcohol': defaultAlcohol.toJson(),
-      'pages': defaultPages.toJson(),
+      'diet': {
+        'date': formattedDate,
+        'firebase_uid': firebaseUid,
+        'breakfast': [],
+        'lunch': [],
+        'dinner': [],
+        'snacks': [],
+        'completed': false
+      },
+      'outside_workout': {
+        'date': formattedDate,
+        'firebase_uid': firebaseUid,
+        'description': 'defaultDescription',
+        'thoughts': 'defaultThoughts',
+        'completed': false
+      },
+      'inside_workout': {
+        'date': formattedDate,
+        'firebase_uid': firebaseUid,
+        'description': 'defaultDescription',
+        'thoughts': 'defaultThoughts',
+        'completed': false
+      },
+      'water': {
+        'date': formattedDate,
+        'firebase_uid': firebaseUid,
+        'completed': false,
+        'peeCount': 0,
+        'ouncesDrunk': 0
+      },
+      'alcohol': {
+        'date': formattedDate,
+        'firebase_uid': firebaseUid,
+        'completed': false,
+        'difficulty': 0
+      },
+      'pages': {
+        'date': formattedDate,
+        'firebase_uid': firebaseUid,
+        'completed': false,
+        'summary': 'defaultSummary',
+        'bookTitle': 'defaultBookTitle',
+        'pagesRead': 0
+      }
     };
 
-    final dayResponse = await http.post(
-      dayUrl,
-      headers: dayHeaders,
+    final response = await http.post(
+      Uri.parse('http://localhost:8000/day/'),
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode(dayBody),
     );
 
-    if (dayResponse.statusCode == 200) {
-      print("Day object successfully sent to backend");
-    } else {
-      print("Failed to send day object to backend: ${dayResponse.statusCode}");
+    if (response.statusCode != 200) {
+      print("Failed to create day: ${response.statusCode} - ${response.body}");
+      throw Exception("Failed to create day");
     }
   }
   // function to get current user and add day object to user object's days array

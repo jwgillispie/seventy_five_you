@@ -1,225 +1,128 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class SFColors {
-  static const Color primary = Color(0xFF4DAA57);    // Green
-  static const Color secondary = Color(0xFFB5DDA4);  // Light green
-  static const Color tertiary = Color(0xFF587D71);   // Sage
-  static const Color neutral = Color(0xFF754668);    // Purple
-  static const Color background = Color(0xFFF9ECCC); // Cream
-  static const Color surface = Colors.white;
-  static const Color textPrimary = Color(0xFF754668);
-  static const Color textSecondary = Color(0xFF587D71);
-  // error, success, warning, info
-  static const Color error = Color(0xFFB23B3B);
-  static const Color success = Color(0xFF4DAA57);
-  static const Color warning = Color(0xFFE9A74A);
-  static const Color info = Color(0xFF4DAA57);
-  
-  static const List<Color> primaryGradient = [
-    Color(0xFF4DAA57),
-    Color(0xFFB5DDA4),
+class ColorPalette {
+  final String name;
+  final Color primary;
+  final Color secondary;
+  final Color tertiary;
+  final Color neutral;
+  final Color background;
+
+  const ColorPalette({
+    required this.name,
+    required this.primary,
+    required this.secondary,
+    required this.tertiary,
+    required this.neutral,
+    required this.background,
+  });
+}
+
+class ThemeProvider extends ChangeNotifier {
+  static const String _themeKey = 'selected_theme';
+  static const List<ColorPalette> funkyPalettes = [
+    ColorPalette(
+      name: 'Ocean Dreams',
+      primary: Color(0xFF084B83),     // Deep Ocean Blue
+      secondary: Color(0xFF42BFDD),   // Bright Azure
+      tertiary: Color(0xFFBBE6E4),    // Soft Aqua
+      neutral: Color(0xFFF0F6F6),     // Ice White
+      background: Color(0xFFFF66B3),  // Coral Pink
+    ),
+    ColorPalette(
+      name: 'Mystic Twilight',
+      primary: Color(0xFF59C3C3),     // Vibrant Teal
+      secondary: Color(0xFF52489C),   // Deep Purple
+      tertiary: Color(0xFFEBEBEB),    // Soft Gray
+      neutral: Color(0xFFCAD2C5),     // Sage
+      background: Color(0xFF84A98C),  // Forest Green
+    ),
+    ColorPalette(
+      name: 'Coastal Vibes',
+      primary: Color(0xFF00BFB2),     // Turquoise
+      secondary: Color(0xFF1A5E63),   // Deep Sea
+      tertiary: Color(0xFF028090),    // Ocean Blue
+      neutral: Color(0xFFF0F3BD),     // Sand Yellow
+      background: Color(0xFFC64191),  // Magenta
+    ),
+    ColorPalette(
+      name: 'Desert Sunset',
+      primary: Color(0xFFC54545),     // Terra Red
+      secondary: Color(0xFFFF715B),   // Coral Orange
+      tertiary: Color(0xFFFFFFFF),    // Pure White
+      neutral: Color(0xFF1EA896),     // Turquoise
+      background: Color(0xFF523F38),  // Deep Brown
+    ),
+    ColorPalette(
+      name: 'Midnight Edge',
+      primary: Color(0xFF1E1E24),     // Night Black
+      secondary: Color(0xFF92140C),   // Blood Red
+      tertiary: Color(0xFFFFF8F0),    // Cream White
+      neutral: Color(0xFFFFCF99),     // Peach
+      background: Color(0xFF111D4A),  // Navy Blue
+    ),
+    ColorPalette(
+      name: 'Aurora Borealis',
+      primary: Color(0xFF673C4F),     // Deep Purple
+      secondary: Color(0xFF7F557D),   // Mauve
+      tertiary: Color(0xFF726E97),    // Lavender
+      neutral: Color(0xFF7698B3),     // Steel Blue
+      background: Color(0xFF83B5D1),  // Sky Blue
+    ),
   ];
-}
 
-class SFDecorations {
-  static BoxDecoration get whiteContainerShadow => BoxDecoration(
-    color: SFColors.surface,
-    borderRadius: BorderRadius.circular(12),
-    boxShadow: [
-      BoxShadow(
-        color: SFColors.neutral.withOpacity(0.1),
-        spreadRadius: 2,
-        blurRadius: 10,
-        offset: const Offset(0, 4),
-      ),
-    ],
-  );
-  
-  static BoxDecoration get gradientContainer => BoxDecoration(
-    gradient: const LinearGradient(
-      colors: SFColors.primaryGradient,
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    ),
-    borderRadius: BorderRadius.circular(12),
-    boxShadow: [
-      BoxShadow(
-        color: SFColors.primary.withOpacity(0.2),
-        spreadRadius: 2,
-        blurRadius: 10,
-        offset: const Offset(0, 4),
-      ),
-    ],
-  );
-  
-  static ButtonStyle get primaryButton => ElevatedButton.styleFrom(
-    foregroundColor: Colors.white,
-    backgroundColor: SFColors.primary,
-    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8),
-    ),
-  );
-  
-  static BoxDecoration get cardDecoration => BoxDecoration(
-    color: SFColors.surface,
-    borderRadius: BorderRadius.circular(16),
-    boxShadow: [
-      BoxShadow(
-        color: SFColors.neutral.withOpacity(0.08),
-        spreadRadius: 1,
-        blurRadius: 8,
-        offset: const Offset(0, 2),
-      ),
-    ],
-  );
-}
+  int _selectedPaletteIndex = 0;
 
-class SFThemes {
-  static TextStyle _safeGoogleFont(String fontFamily, TextStyle baseStyle) {
-    try {
-      return GoogleFonts.getFont(fontFamily).copyWith(
-        fontSize: baseStyle.fontSize,
-        fontWeight: baseStyle.fontWeight,
-        color: baseStyle.color,
-        letterSpacing: baseStyle.letterSpacing,
-      );
-    } catch (e) {
-      return baseStyle;
-    }
+  ColorPalette get currentPalette => funkyPalettes[_selectedPaletteIndex];
+
+  ThemeProvider() {
+    _loadSavedTheme();
   }
 
-  static ThemeData get lightTheme {
-    final baseTextTheme = _buildTextTheme();
-    
+  Future<void> _loadSavedTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    _selectedPaletteIndex = prefs.getInt(_themeKey) ?? 0;
+    notifyListeners();
+  }
+
+  Future<void> setTheme(int index) async {
+    if (index < 0 || index >= funkyPalettes.length) return;
+
+    _selectedPaletteIndex = index;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_themeKey, index);
+    notifyListeners();
+  }
+
+  ThemeData getTheme(Brightness brightness) {
+    final palette = currentPalette;
+
     return ThemeData(
-      useMaterial3: true,
-      scaffoldBackgroundColor: SFColors.background,
-      brightness: Brightness.light,
-      primaryColor: SFColors.primary,
+      brightness: brightness,
+      primaryColor: palette.primary,
+      scaffoldBackgroundColor: brightness == Brightness.light
+          ? palette.neutral // Using neutral as the main background for better contrast
+          : Color(0xFF121212),
       
-      colorScheme: const ColorScheme.light(
-        primary: SFColors.primary,
-        secondary: SFColors.secondary,
-        tertiary: SFColors.tertiary,
-        surface: SFColors.surface,
-        background: SFColors.background,
-        error: Color(0xFFB23B3B),
+      colorScheme: ColorScheme(
+        brightness: brightness,
+        primary: palette.primary,
+        secondary: palette.secondary,
+        tertiary: palette.tertiary,
+        secondaryFixed: palette.neutral,
+        background: palette.neutral,
+        surface: Colors.white,
+        error: palette.primary,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
-        onSurface: SFColors.textPrimary,
-        onBackground: SFColors.textPrimary,
-      ),
-      
-      appBarTheme: AppBarTheme(
-        backgroundColor: SFColors.primary,
-        elevation: 0,
-        centerTitle: true,
-        titleTextStyle: _safeGoogleFont('Inter', 
-          const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-      
-      textTheme: baseTextTheme,
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: SFDecorations.primaryButton,
-      ),
-      
-      cardTheme: CardTheme(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        color: SFColors.surface,
-      ),
-      
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: SFColors.surface,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: SFColors.textSecondary.withOpacity(0.3)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: SFColors.textSecondary.withOpacity(0.3)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: SFColors.primary),
-        ),
+        onTertiary: Colors.white,
+        onBackground: Colors.black87,
+        onSurface: Colors.black87,
+        onError: Colors.white,
       ),
     );
   }
-
-  static ThemeData get darkTheme {
-    return lightTheme.copyWith(
-      scaffoldBackgroundColor: const Color(0xFF1A1A1A),
-      brightness: Brightness.dark,
-      
-      colorScheme: ColorScheme.dark(
-        primary: SFColors.primary,
-        secondary: SFColors.secondary,
-        tertiary: SFColors.tertiary,
-        surface: const Color(0xFF2A2A2A),
-        background: const Color(0xFF1A1A1A),
-        error: const Color(0xFFB23B3B),
-        onPrimary: Colors.white,
-        onSecondary: SFColors.textPrimary,
-        onSurface: Colors.white,
-        onBackground: Colors.white,
-      ),
-      
-      textTheme: _buildTextTheme(isDark: true),
-    );
-  }
-
-  static TextTheme _buildTextTheme({bool isDark = false}) {
-    final Color textColor = isDark ? Colors.white : SFColors.textPrimary;
-    final Color mutedColor = isDark ? Colors.white70 : SFColors.textSecondary;
-    
-    return TextTheme(
-      displayLarge: _safeGoogleFont('Inter', TextStyle(
-        fontSize: 32,
-        fontWeight: FontWeight.bold,
-        color: textColor,
-        letterSpacing: -0.5,
-      )),
-      displayMedium: _safeGoogleFont('Inter', TextStyle(
-        fontSize: 28,
-        fontWeight: FontWeight.bold,
-        color: textColor,
-        letterSpacing: -0.5,
-      )),
-      displaySmall: _safeGoogleFont('Inter', TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        color: textColor,
-      )),
-      headlineMedium: _safeGoogleFont('Inter', TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: textColor,
-      )),
-      bodyLarge: _safeGoogleFont('Inter', TextStyle(
-        fontSize: 16,
-        color: mutedColor,
-      )),
-      bodyMedium: _safeGoogleFont('Inter', TextStyle(
-        fontSize: 14,
-        color: mutedColor,
-      )),
-    );
-  }
-}
-
-extension ThemeExtension on BuildContext {
-  ThemeData get theme => Theme.of(this);
-  ColorScheme get colors => theme.colorScheme;
-  TextTheme get textTheme => theme.textTheme;
 }

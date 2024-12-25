@@ -71,11 +71,11 @@ class NewNavBar extends StatelessWidget {
           fontSize: 12,
           fontWeight: FontWeight.w500,
         ),
-        activeForegroundColor: SFColors.primary,
+        activeForegroundColor: Theme.of(context).colorScheme.primary,
         inactiveForegroundColor: Theme.of(context).brightness == Brightness.dark
             ? Colors.white.withOpacity(0.7)
             : Colors.black54,
-        activeColorSecondary: SFColors.primary,
+        activeColorSecondary: Theme.of(context).colorScheme.primary,
         iconSize: 24,
       ),
     );

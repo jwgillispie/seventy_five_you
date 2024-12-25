@@ -38,28 +38,28 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
 
 
 
-  final List<Map<String, dynamic>> workoutTypes = [
-    {
-      'name': 'Strength',
-      'icon': Icons.fitness_center,
-      'gradient': [SFColors.primary, SFColors.secondary],
-    },
-    {
-      'name': 'Cardio',
-      'icon': Icons.directions_run,
-      'gradient': [SFColors.tertiary, SFColors.neutral],
-    },
-    {
-      'name': 'HIIT',
-      'icon': Icons.timer,
-      'gradient': [SFColors.primary, SFColors.tertiary],
-    },
-    {
-      'name': 'Yoga',
-      'icon': Icons.self_improvement,
-      'gradient': [SFColors.neutral, SFColors.secondary],
-    },
-  ];
+  // final List<Map<String, dynamic>> workoutTypes = [
+  //   {
+  //     'name': 'Strength',
+  //     'icon': Icons.fitness_center,
+  //     'gradient': [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
+  //   },
+  //   {
+  //     'name': 'Cardio',
+  //     'icon': Icons.directions_run,
+  //     'gradient': [Theme.of(context).colorScheme.tertiary, Theme.of(context).colorScheme.secondaryFixed],
+  //   },
+  //   {
+  //     'name': 'HIIT',
+  //     'icon': Icons.timer,
+  //     'gradient': [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.tertiary],
+  //   },
+  //   {
+  //     'name': 'Yoga',
+  //     'icon': Icons.self_improvement,
+  //     'gradient': [Theme.of(context).colorScheme.secondaryFixed, Theme.of(context).colorScheme.secondary],
+  //   },
+  // ];
 
 
   final List<String> _workoutPrompts = [
@@ -97,6 +97,8 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
     super.dispose();
   }
   Widget _buildHeader(BuildContext context) {
+      final workoutTypes = getWorkoutTypes(context);
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -127,14 +129,14 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
                     style: GoogleFonts.orbitron(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: SFColors.surface,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Day 2 of 75',
                     style: GoogleFonts.inter(
-                      color: SFColors.surface.withOpacity(0.9),
+                      color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
                       fontSize: 16,
                     ),
                   ),
@@ -146,8 +148,45 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
       ),
     );
   }
-
+List<Map<String, dynamic>> getWorkoutTypes(BuildContext context) {
+  return [
+    {
+      'name': 'Strength',
+      'icon': Icons.fitness_center,
+      'gradient': [
+        Theme.of(context).colorScheme.primary,
+        Theme.of(context).colorScheme.secondary,
+      ],
+    },
+    {
+      'name': 'Cardio',
+      'icon': Icons.directions_run,
+      'gradient': [
+        Theme.of(context).colorScheme.tertiary,
+        Theme.of(context).colorScheme.secondary,
+      ],
+    },
+    {
+      'name': 'HIIT',
+      'icon': Icons.timer,
+      'gradient': [
+        Theme.of(context).colorScheme.primary,
+        Theme.of(context).colorScheme.tertiary,
+      ],
+    },
+    {
+      'name': 'Yoga',
+      'icon': Icons.self_improvement,
+      'gradient': [
+        Theme.of(context).colorScheme.secondary,
+        Theme.of(context).colorScheme.primary,
+      ],
+    },
+  ];
+}
   Widget _buildWorkoutTypeSelector() {
+    final workoutTypes = getWorkoutTypes(context);
+
     return Container(
       height: 120,
       margin: const EdgeInsets.symmetric(vertical: 20),
@@ -169,14 +208,14 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
                 gradient: LinearGradient(
                   colors: isSelected 
                       ? type['gradient']
-                      : [SFColors.background, SFColors.background],
+                      : [Theme.of(context).colorScheme.background, Theme.of(context).colorScheme.background],
                 ),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
                     color: isSelected
                         ? (type['gradient'][0] as Color).withOpacity(0.3)
-                        : SFColors.neutral.withOpacity(0.1),
+                        : Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -187,14 +226,14 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
                 children: [
                   Icon(
                     type['icon'],
-                    color: isSelected ? SFColors.surface : SFColors.textSecondary,
+                    color: isSelected ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.onPrimary,
                     size: 32,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     type['name'],
                     style: GoogleFonts.inter(
-                      color: isSelected ? SFColors.surface : SFColors.textPrimary,
+                      color: isSelected ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.onPrimary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -224,6 +263,8 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
   }
 
   Widget _buildPromptCards() {
+      final workoutTypes = getWorkoutTypes(context);
+
     return SizedBox(
       height: 80,
       child: ListView.builder(
@@ -244,7 +285,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
               child: Text(
                 _workoutPrompts[index],
                 style: GoogleFonts.poppins(
-                  color: SFColors.surface,
+                  color: Theme.of(context).colorScheme.surface,
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
@@ -262,11 +303,11 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: SFColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -280,7 +321,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: SFColors.textPrimary,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
           const SizedBox(height: 16),
@@ -290,7 +331,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
             decoration: InputDecoration(
               hintText: 'Describe your workout...',
               filled: true,
-              fillColor: SFColors.background,
+              fillColor: Theme.of(context).colorScheme.background,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -302,6 +343,10 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
     );
   }
   Widget _buildSubmitButton() {
+      final workoutTypes = getWorkoutTypes(context);
+
+  
+  
     return Container(
       margin: const EdgeInsets.all(20),
       width: double.infinity,
@@ -315,13 +360,13 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
           ),
         ),
         child: _isSubmitting
-            ? CircularProgressIndicator(color: SFColors.surface)
+            ? CircularProgressIndicator(color: Theme.of(context).colorScheme.surface)
             : Text(
                 'Save Workout',
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: SFColors.surface,
+                  color: Theme.of(context).colorScheme.surface,
                 ),
               ),
       ),
@@ -333,12 +378,12 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Row(
         children: [
-          Icon(Icons.check_circle, color: SFColors.surface),
+          Icon(Icons.check_circle, color: Theme.of(context).colorScheme.surface),
           const SizedBox(width: 8),
           Expanded(child: Text(message)),
         ],
       ),
-      backgroundColor: SFColors.primary,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     ));
@@ -349,7 +394,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Row(
         children: [
-          Icon(Icons.error_outline, color: SFColors.surface),
+          Icon(Icons.error_outline, color: Theme.of(context).colorScheme.surface),
           const SizedBox(width: 8),
           Expanded(child: Text(message)),
         ],
@@ -387,11 +432,11 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: SFColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -405,7 +450,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: SFColors.textPrimary,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
           const SizedBox(height: 16),
@@ -422,7 +467,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
                   Text(
                     mood['label']!,
                     style: GoogleFonts.inter(
-                      color: SFColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSecondary,
                       fontSize: 12,
                     ),
                   ),
@@ -448,7 +493,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [SFColors.neutral, SFColors.tertiary],
+                colors: [Theme.of(context).colorScheme.secondaryFixed, Theme.of(context).colorScheme.tertiary],
               ),
               borderRadius: BorderRadius.circular(16),
             ),
@@ -456,7 +501,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
               child: Text(
                 _reflectionPrompts[index],
                 style: GoogleFonts.poppins(
-                  color: SFColors.surface,
+                  color: Theme.of(context).colorScheme.surface,
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
@@ -472,11 +517,11 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: SFColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -490,7 +535,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: SFColors.textPrimary,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
           const SizedBox(height: 16),
@@ -500,7 +545,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
             decoration: InputDecoration(
               hintText: 'Share your thoughts about today\'s workout...',
               filled: true,
-              fillColor: SFColors.background,
+              fillColor: Theme.of(context).colorScheme.background,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -516,6 +561,8 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
 
   // Update the submit workout function to include reflection data
   Future<void> _submitWorkout() async {
+    final workoutTypes = getWorkoutTypes(context);
+
     if (user == null || _workoutDescriptionController.text.isEmpty) {
       _showErrorSnackBar('Please add a description of your workout');
       return;
@@ -526,7 +573,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
     try {
       // Create workout data including reflection
       final workoutData = {
-        'outside_workout': {
+        'inside_workout': {
           // add date and firebase uid 
           'date': today.toString().substring(0, 10),
           'firebase_uid': user!.uid,
@@ -567,6 +614,8 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
 
   // Add fetch workout data function
   Future<void> _fetchWorkoutData() async {
+    final workoutTypes = getWorkoutTypes(context);
+
     if (user == null) return;
     setState(() => _isLoading = true);
 
@@ -578,7 +627,7 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final workout = data['outside_workout'];
+        final workout = data['inside_workout'];
         
         if (workout != null) {
           setState(() {
@@ -615,7 +664,9 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
     );
   }
   @override
+  
   Widget build(BuildContext context) {
+    
     return Scaffold(
       body: Container(
       decoration: BoxDecoration(
@@ -624,12 +675,12 @@ class _WorkoutOnePageState extends State<WorkoutOnePage>
             end: Alignment.bottomRight,
             colors: Theme.of(context).brightness == Brightness.dark
                 ? [
-                    SFColors.neutral.withOpacity(0.9),
-                    SFColors.tertiary,
+                    Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.9),
+                    Theme.of(context).colorScheme.tertiary,
                   ]
                 : [
-                    SFColors.surface,
-                    SFColors.background,
+                    Theme.of(context).colorScheme.surface,
+                    Theme.of(context).colorScheme.background,
                   ],
           ),
         ),

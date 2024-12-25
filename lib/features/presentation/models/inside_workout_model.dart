@@ -1,17 +1,18 @@
 class InsideWorkout {
-    String? date;
-    String? firebaseUid;
-    String? description;
-    String? thoughts;
-          bool? completed = false;
-
+  String? date;
+  String? firebaseUid;
+  String? description;
+  String? thoughts;
+  bool? completed = false;
+  String? workoutType;
 
   InsideWorkout({
-      this.date,
-      this.firebaseUid,
-      this.description,
-      this.thoughts,
-      this.completed,
+    this.date,
+    this.firebaseUid,
+    this.description,
+    this.thoughts,
+    this.completed,
+    this.workoutType,
   });
 
   factory InsideWorkout.fromJson(Map<String, dynamic> json) {
@@ -21,6 +22,7 @@ class InsideWorkout {
       description: json['description'],
       thoughts: json['thoughts'],
       completed: json['completed'],
+      workoutType: json['workoutType'],
     );
   }
   // to json
@@ -31,6 +33,7 @@ class InsideWorkout {
       'description': description,
       'thoughts': thoughts,
       'completed': completed,
+      'workoutType': workoutType,
     };
   }
 }

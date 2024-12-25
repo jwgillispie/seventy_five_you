@@ -62,7 +62,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [SFColors.neutral, SFColors.tertiary],
+          colors: [Theme.of(context).colorScheme.secondaryFixed, Theme.of(context).colorScheme.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -75,7 +75,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
             style: GoogleFonts.orbitron(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: SFColors.surface,
+              color: Theme.of(context).colorScheme.surface,
             ),
           ),
           const SizedBox(height: 8),
@@ -83,7 +83,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
             "Share Your Journey",
             style: GoogleFonts.inter(
               fontSize: 16,
-              color: SFColors.surface.withOpacity(0.9),
+              color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
             ),
           ),
         ],
@@ -96,11 +96,11 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: SFColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
             spreadRadius: 2,
             blurRadius: 10,
             offset: const Offset(0, 4),
@@ -118,10 +118,10 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
                 style: GoogleFonts.poppins(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: SFColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
-              Icon(Icons.military_tech, color: SFColors.tertiary),
+              Icon(Icons.military_tech, color: Theme.of(context).colorScheme.tertiary),
             ],
           ),
           const SizedBox(height: 16),
@@ -139,15 +139,15 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
                     decoration: BoxDecoration(
                       gradient: isSelected
                           ? LinearGradient(
-                              colors: [SFColors.neutral, SFColors.tertiary])
+                              colors: [Theme.of(context).colorScheme.secondaryFixed, Theme.of(context).colorScheme.tertiary])
                           : null,
-                      color: isSelected ? null : SFColors.background,
+                      color: isSelected ? null : Theme.of(context).colorScheme.background,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
                           color: isSelected
-                              ? SFColors.neutral.withOpacity(0.2)
-                              : SFColors.neutral.withOpacity(0.1),
+                              ? Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.2)
+                              : Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -158,8 +158,8 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
                         Icon(
                           challenge.icon,
                           color: isSelected
-                              ? SFColors.surface
-                              : SFColors.textSecondary,
+                              ? Theme.of(context).colorScheme.surface
+                              : Theme.of(context).colorScheme.onSecondary,
                         ),
                         const SizedBox(width: 8),
                         Column(
@@ -169,8 +169,8 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
                               challenge.name,
                               style: TextStyle(
                                 color: isSelected
-                                    ? SFColors.surface
-                                    : SFColors.textPrimary,
+                                    ? Theme.of(context).colorScheme.surface
+                                    : Theme.of(context).colorScheme.onPrimary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -178,8 +178,8 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
                               '${challenge.count} posts',
                               style: TextStyle(
                                 color: isSelected
-                                    ? SFColors.surface.withOpacity(0.8)
-                                    : SFColors.textSecondary,
+                                    ? Theme.of(context).colorScheme.surface.withOpacity(0.8)
+                                    : Theme.of(context).colorScheme.onSecondary,
                                 fontSize: 12,
                               ),
                             ),
@@ -203,11 +203,11 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: SFColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 8,
             offset: const Offset(0, 2),
@@ -237,7 +237,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: SFColors.textPrimary,
+                              color: Theme.of(context).colorScheme.onPrimary,
                             ),
                           ),
                           Row(
@@ -245,13 +245,13 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
                               Icon(
                                 Icons.local_fire_department,
                                 size: 14,
-                                color: SFColors.primary,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 'Day 69',
                                 style: TextStyle(
-                                  color: SFColors.textSecondary,
+                                  color: Theme.of(context).colorScheme.onSecondary,
                                   fontSize: 12,
                                 ),
                               ),
@@ -263,7 +263,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
                     Text(
                       post.timestamp,
                       style: TextStyle(
-                        color: SFColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSecondary,
                         fontSize: 12,
                       ),
                     ),
@@ -289,12 +289,18 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.transparent,
-                                  SFColors.neutral.withOpacity(0.7),
-                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? [
+                                        Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.9),
+                                        Theme.of(context).colorScheme.tertiary,
+                                      ]
+                                    : [
+                                        Theme.of(context).colorScheme.surface,
+                                        Theme.of(context).colorScheme.background,
+                                      ],
                               ),
                             ),
                             child: Row(
@@ -305,9 +311,9 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
                                     child: LinearProgressIndicator(
                                       value: post.progress / 100,
                                       backgroundColor:
-                                          SFColors.surface.withOpacity(0.3),
+                                          Theme.of(context).colorScheme.surface.withOpacity(0.3),
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                        SFColors.primary,
+                                        Theme.of(context).colorScheme.primary,
                                       ),
                                     ),
                                   ),
@@ -316,7 +322,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
                                 Text(
                                   '${post.progress}%',
                                   style: TextStyle(
-                                    color: SFColors.surface,
+                                    color: Theme.of(context).colorScheme.surface,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -331,7 +337,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
                 const SizedBox(height: 12),
                 Text(
                   post.content,
-                  style: TextStyle(color: SFColors.textPrimary),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -342,20 +348,20 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
                         _buildActionButton(
                           icon: Icons.favorite,
                           count: post.likes,
-                          color: SFColors.neutral,
+                          color: Theme.of(context).colorScheme.secondaryFixed,
                         ),
                         const SizedBox(width: 16),
                         _buildActionButton(
                           icon: Icons.chat_bubble_outline,
                           count: post.comments.length,
-                          color: SFColors.tertiary,
+                          color: Theme.of(context).colorScheme.tertiary,
                         ),
                       ],
                     ),
                     IconButton(
                       icon: Icon(
                         isExpanded ? Icons.expand_less : Icons.expand_more,
-                        color: SFColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSecondary,
                       ),
                       onPressed: () => setState(() {
                         expandedPost =
@@ -385,7 +391,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
         Text(
           count.toString(),
           style: TextStyle(
-            color: SFColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSecondary,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -397,7 +403,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: SFColors.background,
+        color: Theme.of(context).colorScheme.background,
         borderRadius: const BorderRadius.vertical(
           bottom: Radius.circular(16),
         ),
@@ -410,7 +416,7 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
-              color: SFColors.textPrimary,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
           const SizedBox(height: 12),
@@ -421,20 +427,38 @@ class _EnhancedSocialPageState extends State<EnhancedSocialPage>
   }
 
   @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SFColors.background,
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(child: _buildAppBar(context)),
-          SliverToBoxAdapter(child: _buildChallengeHub()),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => _buildPost(posts[index]),
-              childCount: posts.length,
-            ),
+      backgroundColor: Theme.of(context).colorScheme.background,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: Theme.of(context).brightness == Brightness.dark
+                ? [
+                    Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.9),
+                    Theme.of(context).colorScheme.tertiary,
+                  ]
+                : [
+                    Theme.of(context).colorScheme.surface,
+                    Theme.of(context).colorScheme.background,
+                  ],
           ),
-        ],
+        ),
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(child: _buildAppBar(context)),
+            SliverToBoxAdapter(child: _buildChallengeHub()),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => _buildPost(posts[index]),
+                childCount: posts.length,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

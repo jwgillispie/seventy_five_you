@@ -15,26 +15,26 @@ class _GalleryPageState extends State<GalleryPage>
   final ScrollController _scrollController = ScrollController();
   int _currentIndex = 0;
 // Update the categories list in the state class:
-  final List<Map<String, dynamic>> _categories = [
-    {
-      "title": "Meals",
-      "icon": Icons.restaurant,
-      "color": SFColors.primary, // Green - 4daa57
-      "gradient": [SFColors.primary, SFColors.secondary] // 4daa57 to b5dda4
-    },
-    {
-      "title": "Progress",
-      "icon": Icons.trending_up,
-      "color": SFColors.neutral, // Purple - 754668
-      "gradient": [SFColors.neutral, SFColors.tertiary] // 754668 to 587d71
-    },
-    {
-      "title": "Workouts",
-      "icon": Icons.fitness_center,
-      "color": SFColors.tertiary, // Sage - 587d71
-      "gradient": [SFColors.tertiary, SFColors.primary] // 587d71 to 4daa57
-    }
-  ];
+  // final List<Map<String, dynamic>> _categories = [
+  //   {
+  //     "title": "Meals",
+  //     "icon": Icons.restaurant,
+  //     "color": Theme.of(context).colorScheme.primary, // Green - 4daa57
+  //     "gradient": [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary] // 4daa57 to b5dda4
+  //   },
+  //   {
+  //     "title": "Progress",
+  //     "icon": Icons.trending_up,
+  //     "color": Theme.of(context).colorScheme.secondaryFixed, // Purple - 754668
+  //     "gradient": [Theme.of(context).colorScheme.secondaryFixed, Theme.of(context).colorScheme.tertiary] // 754668 to 587d71
+  //   },
+  //   {
+  //     "title": "Workouts",
+  //     "icon": Icons.fitness_center,
+  //     "color": Theme.of(context).colorScheme.tertiary, // Sage - 587d71
+  //     "gradient": [Theme.of(context).colorScheme.tertiary, Theme.of(context).colorScheme.primary] // 587d71 to 4daa57
+  //   }
+  // ];
   @override
   void initState() {
     super.initState();
@@ -62,10 +62,18 @@ class _GalleryPageState extends State<GalleryPage>
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                SFColors.surface,
-                SFColors.background,
-              ],
+              colors: Theme.of(context).brightness == Brightness.dark
+                  ? [
+                      Theme.of(context)
+                          .colorScheme
+                          .secondaryFixed
+                          .withOpacity(0.9),
+                      Theme.of(context).colorScheme.tertiary,
+                    ]
+                  : [
+                      Theme.of(context).colorScheme.surface,
+                      Theme.of(context).colorScheme.background,
+                    ],
             ),
           ),
           child: SafeArea(
@@ -86,6 +94,38 @@ class _GalleryPageState extends State<GalleryPage>
     );
   }
 
+  List<Map<String, dynamic>> getCategories(BuildContext context) {
+    return [
+      {
+        "title": "Meals",
+        "icon": Icons.restaurant,
+        "color": Theme.of(context).colorScheme.primary,
+        "gradient": [
+          Theme.of(context).colorScheme.primary,
+          Theme.of(context).colorScheme.secondary,
+        ]
+      },
+      {
+        "title": "Progress",
+        "icon": Icons.trending_up,
+        "color": Theme.of(context).colorScheme.secondary,
+        "gradient": [
+          Theme.of(context).colorScheme.secondary,
+          Theme.of(context).colorScheme.tertiary,
+        ]
+      },
+      {
+        "title": "Workouts",
+        "icon": Icons.fitness_center,
+        "color": Theme.of(context).colorScheme.tertiary,
+        "gradient": [
+          Theme.of(context).colorScheme.tertiary,
+          Theme.of(context).colorScheme.primary,
+        ]
+      }
+    ];
+  }
+
   Widget _buildHeader() {
     final statusBarHeight = MediaQuery.of(context).viewPadding.top;
 
@@ -94,7 +134,10 @@ class _GalleryPageState extends State<GalleryPage>
         padding: EdgeInsets.fromLTRB(20, 20 + statusBarHeight, 20, 20),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [SFColors.neutral, SFColors.tertiary],
+            colors: [
+              Theme.of(context).colorScheme.secondaryFixed,
+              Theme.of(context).colorScheme.tertiary
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -111,13 +154,13 @@ class _GalleryPageState extends State<GalleryPage>
                   style: GoogleFonts.orbitron(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: SFColors.surface,
+                    color: Theme.of(context).colorScheme.surface,
                   ),
                 ),
                 IconButton(
                   icon: Icon(
                     Icons.search,
-                    color: SFColors.surface,
+                    color: Theme.of(context).colorScheme.surface,
                   ),
                   onPressed: () {},
                 ),
@@ -127,7 +170,7 @@ class _GalleryPageState extends State<GalleryPage>
             Text(
               "Capture Your Progress",
               style: GoogleFonts.inter(
-                color: SFColors.surface.withOpacity(0.9),
+                color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
                 fontSize: 16,
               ),
             ),
@@ -138,14 +181,15 @@ class _GalleryPageState extends State<GalleryPage>
   }
 
   Widget _buildTabs() {
+    final categories = getCategories(context); // Add this line
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: SFColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -153,66 +197,57 @@ class _GalleryPageState extends State<GalleryPage>
       ),
       child: TabBar(
         controller: _tabController,
-        labelColor: SFColors.surface,
-        unselectedLabelColor: SFColors.textSecondary,
+        labelColor: Theme.of(context).colorScheme.surface,
+        unselectedLabelColor: Theme.of(context).colorScheme.onSecondary,
         indicatorSize: TabBarIndicatorSize.tab,
         padding: EdgeInsets.zero,
         labelPadding: EdgeInsets.zero,
         indicator: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
           gradient: LinearGradient(
-            colors: _categories[_currentIndex]["gradient"],
+            colors: categories[_currentIndex]["gradient"],
           ),
         ),
-        tabs: _categories
-            .map((category) => _buildTab(
-                  category["icon"],
-                  category["title"],
-                  _categories.indexOf(category) == _currentIndex,
-                ))
-            .toList(),
-      ),
-    );
-  }
-
-  Widget _buildTab(IconData icon, String label, bool isSelected) {
-    return Tab(
-      height: 56,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: isSelected ? 22 : 18,
-              color: isSelected ? SFColors.surface : SFColors.textSecondary,
-            ),
-            const SizedBox(width: 4),
-            Flexible(
-              child: Text(
-                label,
-                style: GoogleFonts.inter(
-                  fontSize: isSelected ? 13 : 11,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                  color: isSelected ? SFColors.surface : SFColors.textSecondary,
-                ),
-                overflow: TextOverflow.ellipsis,
+        tabs: categories
+            .map(
+              (category) => Tab(
+                text: category["title"],
+                icon: Icon(category["icon"]),
               ),
-            ),
-          ],
-        ),
+            )
+            .toList(),
+            
+            
       ),
     );
   }
 
   Widget _buildTabContent() {
+    final categories = getCategories(context); // Add this line
     return TabBarView(
       controller: _tabController,
       children:
-          _categories.map((category) => _buildPhotoGrid(category)).toList(),
+          categories.map((category) => _buildPhotoGrid(category)).toList(),
+    );
+  }
+
+  Widget _buildFAB() {
+    final categories = getCategories(context); // Add this line
+    final category = categories[_currentIndex];
+    return FloatingActionButton.extended(
+      onPressed: () {},
+      backgroundColor: category["color"],
+      icon: Icon(
+        category["icon"],
+        color: Theme.of(context).colorScheme.surface,
+      ),
+      label: Text(
+        'Add ${category["title"]}',
+        style: GoogleFonts.inter(
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).colorScheme.surface,
+        ),
+      ),
     );
   }
 
@@ -237,8 +272,8 @@ class _GalleryPageState extends State<GalleryPage>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            SFColors.surface,
-            SFColors.background,
+            Theme.of(context).colorScheme.surface,
+            Theme.of(context).colorScheme.background,
           ],
         ),
         borderRadius: BorderRadius.circular(20),
@@ -290,14 +325,17 @@ class _GalleryPageState extends State<GalleryPage>
                   Text(
                     '${category["title"]} ${index + 1}',
                     style: GoogleFonts.inter(
-                      color: SFColors.surface,
+                      color: Theme.of(context).colorScheme.surface,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     DateTime.now().toString().substring(0, 10),
                     style: GoogleFonts.inter(
-                      color: SFColors.surface.withOpacity(0.7),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surface
+                          .withOpacity(0.7),
                       fontSize: 12,
                     ),
                   ),
@@ -309,24 +347,24 @@ class _GalleryPageState extends State<GalleryPage>
       ),
     );
   }
-
-  // Update the FAB to use category colors consistently
-  Widget _buildFAB() {
-    final category = _categories[_currentIndex];
-    return FloatingActionButton.extended(
-      onPressed: () {},
-      backgroundColor: category["color"],
-      icon: Icon(
-        category["icon"],
-        color: SFColors.surface,
-      ),
-      label: Text(
-        'Add ${category["title"]}',
-        style: GoogleFonts.inter(
-          fontWeight: FontWeight.bold,
-          color: SFColors.surface,
-        ),
-      ),
-    );
-  }
 }
+//   // Update the FAB to use category colors consistently
+//   Widget _buildFAB() {
+//     final category = _categories[_currentIndex];
+//     return FloatingActionButton.extended(
+//       onPressed: () {},
+//       backgroundColor: category["color"],
+//       icon: Icon(
+//         category["icon"],
+//         color: Theme.of(context).colorScheme.surface,
+//       ),
+//       label: Text(
+//         'Add ${category["title"]}',
+//         style: GoogleFonts.inter(
+//           fontWeight: FontWeight.bold,
+//           color: Theme.of(context).colorScheme.surface,
+//         ),
+//       ),
+//     );
+//   }
+// }

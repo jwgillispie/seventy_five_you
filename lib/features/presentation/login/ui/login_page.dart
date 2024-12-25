@@ -60,31 +60,36 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       },
       builder: (context, state) {
         return Scaffold(
-          body: Container(
+          body: DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  SFColors.neutral,
-                  SFColors.tertiary,
+                  Theme.of(context).colorScheme.primaryFixed,
+                  Theme.of(context).colorScheme.tertiary,
                 ],
               ),
             ),
-            child: SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 48),
-                      _buildHeader(),
-                      const SizedBox(height: 48),
-                      _buildLoginForm(context, state),
-                    ],
+            child: CustomScrollView(
+              slivers: [
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 48),
+                          _buildHeader(),
+                          const SizedBox(height: 48),
+                          Expanded(child: _buildLoginForm(context, state)),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
           ),
         );
@@ -102,7 +107,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             style: GoogleFonts.orbitron(
               fontSize: 40,
               fontWeight: FontWeight.bold,
-              color: SFColors.surface,
+              color: Theme.of(context).colorScheme.surface,
             ),
           ),
           const SizedBox(height: 16),
@@ -110,7 +115,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             'Welcome back, warrior!',
             style: GoogleFonts.inter(
               fontSize: 18,
-              color: SFColors.surface.withOpacity(0.8),
+              color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
             ),
           ),
         ],
@@ -122,20 +127,21 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: SFColors.surface.withOpacity(0.1),
+        color: Theme.of(context).colorScheme.surface.withOpacity(0.1),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: SFColors.surface.withOpacity(0.1),
+          color: Theme.of(context).colorScheme.surface.withOpacity(0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.primaryFixed.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _buildTextField(
@@ -181,33 +187,33 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         Text(
           label,
           style: GoogleFonts.inter(
-            color: SFColors.surface,
+            color: Theme.of(context).colorScheme.surface,
             fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: SFColors.surface.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.surface.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: SFColors.surface.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.surface.withOpacity(0.1),
             ),
           ),
           child: TextField(
             controller: controller,
-            style: GoogleFonts.inter(color: SFColors.surface),
+            style: GoogleFonts.inter(color: Theme.of(context).colorScheme.surface),
             keyboardType: keyboardType,
             obscureText: isPassword && !(_isPasswordVisible),
             decoration: InputDecoration(
-              prefixIcon: Icon(icon, color: SFColors.surface.withOpacity(0.7)),
+              prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.surface.withOpacity(0.7)),
               suffixIcon: isPassword
                   ? IconButton(
                       icon: Icon(
                         _isPasswordVisible
                             ? Icons.visibility_off
                             : Icons.visibility,
-                        color: SFColors.surface.withOpacity(0.7),
+                        color: Theme.of(context).colorScheme.surface.withOpacity(0.7),
                       ),
                       onPressed: onVisibilityToggle,
                     )
@@ -235,7 +241,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               ));
             },
       style: ElevatedButton.styleFrom(
-        backgroundColor: SFColors.primary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -248,7 +254,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               width: 24,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(SFColors.surface),
+                valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.surface),
               ),
             )
           : Text(
@@ -256,7 +262,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               style: GoogleFonts.inter(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: SFColors.surface,
+                color: Theme.of(context).colorScheme.surface,
               ),
             ),
     );
@@ -269,7 +275,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         Text(
           "Don't have an account?",
           style: GoogleFonts.inter(
-            color: SFColors.surface.withOpacity(0.8),
+            color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
           ),
         ),
         TextButton(
@@ -277,7 +283,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           child: Text(
             'Sign Up',
             style: GoogleFonts.inter(
-              color: SFColors.primary,
+              color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -295,7 +301,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           child: Text(
             'Privacy Policy',
             style: GoogleFonts.inter(
-              color: SFColors.surface.withOpacity(0.6),
+              color: Theme.of(context).colorScheme.surface.withOpacity(0.6),
               fontSize: 12,
             ),
           ),
@@ -303,7 +309,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         Text(
           '•',
           style: TextStyle(
-            color: SFColors.surface.withOpacity(0.6),
+            color: Theme.of(context).colorScheme.surface.withOpacity(0.6),
           ),
         ),
         TextButton(
@@ -311,7 +317,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           child: Text(
             'Terms of Service',
             style: GoogleFonts.inter(
-              color: SFColors.surface.withOpacity(0.6),
+              color: Theme.of(context).colorScheme.surface.withOpacity(0.6),
               fontSize: 12,
             ),
           ),

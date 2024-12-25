@@ -136,8 +136,8 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              SFColors.secondary.withOpacity(0.1),
-              SFColors.background,
+              Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+              Theme.of(context).colorScheme.background,
             ],
           ),
         ),
@@ -177,14 +177,14 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            SFColors.neutral,
-            SFColors.tertiary,
+            Theme.of(context).colorScheme.secondaryFixed,
+            Theme.of(context).colorScheme.tertiary,
           ],
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -203,14 +203,14 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
                     style: GoogleFonts.orbitron(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: SFColors.surface,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Day ${today.difference(DateTime(2024, 1, 1)).inDays + 1} of 75',
                     style: GoogleFonts.inter(
-                      color: SFColors.surface.withOpacity(0.9),
+                      color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
                       fontSize: 16,
                     ),
                   ),
@@ -236,8 +236,8 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
         shape: BoxShape.circle,
         gradient: LinearGradient(
           colors: [
-            SFColors.surface.withOpacity(0.2),
-            SFColors.surface.withOpacity(0.1),
+            Theme.of(context).colorScheme.surface.withOpacity(0.2),
+            Theme.of(context).colorScheme.surface.withOpacity(0.1),
           ],
         ),
       ),
@@ -247,7 +247,7 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
           style: GoogleFonts.orbitron(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: SFColors.surface,
+            color: Theme.of(context).colorScheme.surface,
           ),
         ),
       ),
@@ -286,12 +286,12 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: SFColors.surface.withOpacity(0.1),
+        color: Theme.of(context).colorScheme.surface.withOpacity(0.1),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
         children: [
-          Icon(icon, color: SFColors.surface, size: 20),
+          Icon(icon, color: Theme.of(context).colorScheme.surface, size: 20),
           const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -299,7 +299,7 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
               Text(
                 value,
                 style: GoogleFonts.inter(
-                  color: SFColors.surface,
+                  color: Theme.of(context).colorScheme.surface,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -307,7 +307,7 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
               Text(
                 label,
                 style: GoogleFonts.inter(
-                  color: SFColors.surface.withOpacity(0.8),
+                  color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
                   fontSize: 12,
                 ),
               ),
@@ -324,11 +324,11 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
       width: 120,
       margin: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
-        color: SFColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(60),
         boxShadow: [
           BoxShadow(
-            color: SFColors.tertiary.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.tertiary.withOpacity(0.2),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -350,8 +350,8 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        SFColors.tertiary.withOpacity(0.6),
-                        SFColors.tertiary,
+                        Theme.of(context).colorScheme.tertiary.withOpacity(0.6),
+                        Theme.of(context).colorScheme.tertiary,
                       ],
                     ),
                     borderRadius: BorderRadius.circular(60),
@@ -374,8 +374,8 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
                   max: 128,
                   divisions: 128,
                   onChanged: _updateWaterLevel,
-                  activeColor: SFColors.tertiary,
-                  inactiveColor: SFColors.tertiary.withOpacity(0.2),
+                  activeColor: Theme.of(context).colorScheme.tertiary,
+                  inactiveColor: Theme.of(context).colorScheme.tertiary.withOpacity(0.2),
                 ),
               ),
             ),
@@ -415,12 +415,12 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [SFColors.neutral, SFColors.tertiary],
+            colors: [Theme.of(context).colorScheme.secondaryFixed, Theme.of(context).colorScheme.tertiary],
           ),
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: SFColors.tertiary.withOpacity(0.2),
+              color: Theme.of(context).colorScheme.tertiary.withOpacity(0.2),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -428,12 +428,12 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
         ),
         child: Row(
           children: [
-            Icon(Icons.water_drop, color: SFColors.surface),
+            Icon(Icons.water_drop, color: Theme.of(context).colorScheme.surface),
             const SizedBox(width: 8),
             Text(
               label,
               style: GoogleFonts.inter(
-                color: SFColors.surface,
+                color: Theme.of(context).colorScheme.surface,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -448,11 +448,11 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: SFColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.tertiary.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.tertiary.withOpacity(0.1),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -465,7 +465,7 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
             style: GoogleFonts.inter(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: SFColors.tertiary,
+              color: Theme.of(context).colorScheme.tertiary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -481,7 +481,7 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: SFColors.tertiary.withOpacity(0.1),
+                  color: Theme.of(context).colorScheme.tertiary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -491,7 +491,7 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
                       style: GoogleFonts.inter(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: SFColors.tertiary,
+                        color: Theme.of(context).colorScheme.tertiary,
                       ),
                     ),
                   ],
@@ -518,12 +518,12 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [SFColors.neutral, SFColors.tertiary],
+            colors: [Theme.of(context).colorScheme.secondaryFixed, Theme.of(context).colorScheme.tertiary],
           ),
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: SFColors.tertiary.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.tertiary.withOpacity(0.3),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -531,7 +531,7 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
         ),
         child: Icon(
           icon,
-          color: SFColors.surface,
+          color: Theme.of(context).colorScheme.surface,
           size: 30,
         ),
       ),
@@ -544,14 +544,14 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [SFColors.neutral, SFColors.tertiary],
+          colors: [Theme.of(context).colorScheme.secondaryFixed, Theme.of(context).colorScheme.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.tertiary.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.tertiary.withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -561,7 +561,7 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
         children: [
           Icon(
             Icons.emoji_events,
-            color: SFColors.surface,
+            color: Theme.of(context).colorScheme.surface,
             size: 40,
           ),
           const SizedBox(height: 12),
@@ -571,7 +571,7 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
             style: GoogleFonts.inter(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: SFColors.surface,
+              color: Theme.of(context).colorScheme.surface,
             ),
           ),
         ],
@@ -607,12 +607,12 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Row(
         children: [
-          Icon(Icons.check_circle, color: SFColors.surface),
+          Icon(Icons.check_circle, color: Theme.of(context).colorScheme.surface),
           const SizedBox(width: 8),
           Expanded(child: Text(message)),
         ],
       ),
-      backgroundColor: SFColors.primary,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     ));
@@ -622,7 +622,7 @@ class _WaterPageState extends State<WaterPage> with TickerProviderStateMixin {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Row(
         children: [
-          Icon(Icons.error_outline, color: SFColors.surface),
+          Icon(Icons.error_outline, color: Theme.of(context).colorScheme.surface),
           const SizedBox(width: 8),
           Expanded(child: Text(message)),
         ],

@@ -69,14 +69,16 @@ class LoginRepository {
         'firebase_uid': firebaseUid,
         'description': 'defaultDescription',
         'thoughts': 'defaultThoughts',
-        'completed': false
+        'completed': false,
+        'workoutType': 'defaultWorkoutType'
       },
       'inside_workout': {
         'date': formattedDate,
         'firebase_uid': firebaseUid,
         'description': 'defaultDescription',
         'thoughts': 'defaultThoughts',
-        'completed': false
+        'completed': false,
+        'workoutType': 'defaultWorkoutType'
       },
       'water': {
         'date': formattedDate,

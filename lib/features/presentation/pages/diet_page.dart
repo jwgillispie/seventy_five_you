@@ -14,89 +14,95 @@ class DietPage extends StatefulWidget {
   DietPageState createState() => DietPageState();
 }
 
-class DietPageState extends State<DietPage>
-    with SingleTickerProviderStateMixin {
+class DietPageState extends State<DietPage> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  final cardAnimations = <String, Animation<double>>{};
+  final Map<String, Animation<double>> cardAnimations = {};
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? user;
   Day? day;
   Diet? diet;
   DateTime today = DateTime.now();
   bool _isSaving = false;
-
-  // Enhanced meal categories with additional styling information
-  final Map<String, Map<String, dynamic>> mealCategories = {
-    'Breakfast': {
-      'icon': Icons.wb_sunny,
-      'gradient': [SFColors.primary, SFColors.secondary],
-      'meals': <String>[],
-    },
-    'Lunch': {
-      'icon': Icons.restaurant,
-      'gradient': [SFColors.tertiary, SFColors.secondary],
-      'meals': <String>[],
-    },
-    'Dinner': {
-      'icon': Icons.nightlight_round,
-      'gradient': [SFColors.neutral, SFColors.tertiary],
-      'meals': <String>[],
-    },
-    'Snacks': {
-      'icon': Icons.cookie,
-      'gradient': [SFColors.secondary, SFColors.background],
-      'meals': <String>[],
-    }
-  };
+  bool _isLoading = true;
+  Map<String, Map<String, dynamic>>? _mealCategories;
 
   @override
   void initState() {
     super.initState();
+    user = _auth.currentUser;
+    _initializeController();
+    _fetchDayData();
+  }
+
+  void _initializeController() {
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
+  }
 
-    // Create staggered animations for each meal card
-    mealCategories.keys.toList().asMap().forEach((index, meal) {
-      cardAnimations[meal] = CurvedAnimation(
-        parent: _animationController,
-        curve: Interval(
-          index * 0.1, // Stagger start times
-          1.0,
-          curve: Curves.easeInOut,
-        ),
-      );
-    });
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _initializeMealCategories();
+  }
 
-    _animationController.forward();
-    super.initState();
-    user = _auth.currentUser;
-    _fetchDayData();
+  void _initializeMealCategories() {
+    _mealCategories = {
+      'Breakfast': {
+        'icon': Icons.wb_sunny,
+        'gradient': [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
+        'meals': <String>[],
+      },
+      'Lunch': {
+        'icon': Icons.restaurant,
+        'gradient': [Theme.of(context).colorScheme.tertiary, Theme.of(context).colorScheme.secondary],
+        'meals': <String>[],
+      },
+      'Dinner': {
+        'icon': Icons.nightlight_round,
+        'gradient': [Theme.of(context).colorScheme.secondary, Theme.of(context).colorScheme.tertiary],
+        'meals': <String>[],
+      },
+      'Snacks': {
+        'icon': Icons.cookie,
+        'gradient': [Theme.of(context).colorScheme.secondary, Theme.of(context).colorScheme.background],
+        'meals': <String>[],
+      },
+    };
+
+    if (cardAnimations.isEmpty && _mealCategories != null) {
+      _mealCategories!.keys.toList().asMap().forEach((index, meal) {
+        cardAnimations[meal] = CurvedAnimation(
+          parent: _animationController,
+          curve: Interval(
+            index * 0.1,
+            1.0,
+            curve: Curves.easeInOut,
+          ),
+        );
+      });
+      _animationController.forward();
+    }
   }
 
   Future<void> _fetchDayData() async {
     if (user == null) return;
 
-    String formattedDate = today.toString().substring(0, 10);
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/day/${user!.uid}/$formattedDate'),
+        Uri.parse('http://localhost:8000/day/${user!.uid}/${today.toString().substring(0, 10)}'),
         headers: {'Content-Type': 'application/json'},
       );
 
-      if (!mounted) return; // Add check before setState
+      if (!mounted) return;
 
       if (response.statusCode == 200) {
         setState(() {
           day = Day.fromJson(json.decode(response.body));
           diet = day!.diet;
-          if (diet != null) {
-            mealCategories['Breakfast']?['meals'] = diet!.breakfast ?? [];
-            mealCategories['Lunch']?['meals'] = diet!.lunch ?? [];
-            mealCategories['Dinner']?['meals'] = diet!.dinner ?? [];
-            mealCategories['Snacks']?['meals'] = diet!.snacks ?? [];
-          }
+          _updateMealCategories();
+          _isLoading = false;
         });
       } else {
         _showErrorSnackBar("Failed to fetch data");
@@ -104,189 +110,229 @@ class DietPageState extends State<DietPage>
     } catch (e) {
       if (!mounted) return;
       _showErrorSnackBar("Error: $e");
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
-// Modified submitMeal function
-Future<void> submitMeal(String mealType, String newMeal) async {
-  if (user == null || diet == null) return;
 
-  // Create a copy of the current meal list
-  List<String> updatedMealList;
-  
-  switch (mealType) {
-    case 'Breakfast':
-      updatedMealList = [...(diet!.breakfast ?? []), newMeal];
-      diet!.breakfast = updatedMealList;
-      break;
-    case 'Lunch':
-      updatedMealList = [...(diet!.lunch ?? []), newMeal];
-      diet!.lunch = updatedMealList;
-      break;
-    case 'Dinner':
-      updatedMealList = [...(diet!.dinner ?? []), newMeal];
-      diet!.dinner = updatedMealList;
-      break;
-    case 'Snacks':
-      updatedMealList = [...(diet!.snacks ?? []), newMeal];
-      diet!.snacks = updatedMealList;
-      break;
-    default:
-      return;
+  void _updateMealCategories() {
+    if (diet != null && _mealCategories != null) {
+      setState(() {
+        _mealCategories!['Breakfast']!['meals'] = diet!.breakfast ?? [];
+        _mealCategories!['Lunch']!['meals'] = diet!.lunch ?? [];
+        _mealCategories!['Dinner']!['meals'] = diet!.dinner ?? [];
+        _mealCategories!['Snacks']!['meals'] = diet!.snacks ?? [];
+      });
+    }
   }
 
-  final Map<String, dynamic> dietData = diet!.toJson();
+  Future<void> submitMeal(String mealType, String newMeal) async {
+    if (user == null || diet == null) return;
 
-  final response = await http.put(
-    Uri.parse('http://localhost:8000/day/${user!.uid}/${today.toString().substring(0, 10)}'),
-    headers: {'Content-Type': 'application/json'},
-    body: json.encode({'diet': dietData}),
-  );
+    List<String> updatedMealList;
+    
+    switch (mealType) {
+      case 'Breakfast':
+        updatedMealList = [...(diet!.breakfast ?? []), newMeal];
+        diet!.breakfast = updatedMealList;
+        break;
+      case 'Lunch':
+        updatedMealList = [...(diet!.lunch ?? []), newMeal];
+        diet!.lunch = updatedMealList;
+        break;
+      case 'Dinner':
+        updatedMealList = [...(diet!.dinner ?? []), newMeal];
+        diet!.dinner = updatedMealList;
+        break;
+      case 'Snacks':
+        updatedMealList = [...(diet!.snacks ?? []), newMeal];
+        diet!.snacks = updatedMealList;
+        break;
+      default:
+        return;
+    }
 
-  if (response.statusCode != 200) {
-    throw Exception('Failed to update diet data');
+    try {
+      final response = await http.put(
+        Uri.parse('http://localhost:8000/day/${user!.uid}/${today.toString().substring(0, 10)}'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'diet': diet!.toJson()}),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to update diet data');
+      }
+
+      _updateMealCategories();
+    } catch (e) {
+      throw Exception('Failed to submit meal: $e');
+    }
   }
-}
-void _showAddMealDialog(String mealType) {
-  final TextEditingController mealController = TextEditingController();
-  final category = mealCategories[mealType]!;
 
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
+  void _showAddMealDialog(String mealType) {
+    if (_mealCategories == null) return;
+    
+    final TextEditingController mealController = TextEditingController();
+    final category = _mealCategories![mealType]!;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
-            color: SFColors.surface,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: category['gradient'],
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      category['icon'],
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Add to $mealType',
-                    style: GoogleFonts.inter(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: SFColors.textPrimary,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: mealController,
-                decoration: InputDecoration(
-                  hintText: 'What did you eat?',
-                  filled: true,
-                  fillColor: SFColors.background,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.restaurant_menu,
-                    color: SFColors.textSecondary,
-                  ),
-                  hintStyle: TextStyle(
-                    color: SFColors.textSecondary,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(
-                        color: SFColors.textSecondary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (mealController.text.isNotEmpty) {
-                        setState(() => _isSaving = true);
-                        
-                        try {
-                          await submitMeal(mealType, mealController.text);
-                          
-                          if (mounted) {
-                            setState(() {
-                              mealCategories[mealType]?['meals'].add(mealController.text);
-                              _isSaving = false;
-                            });
-                          }
-                          
-                          Navigator.pop(context);
-                          _showSuccessSnackBar('${mealType.toLowerCase()} added successfully! 🍽️');
-                        } catch (e) {
-                          if (mounted) {
-                            setState(() => _isSaving = false);
-                            _showErrorSnackBar('Failed to add meal');
-                          }
-                        }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: category['gradient'][0],
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Theme.of(context).colorScheme.surface,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: category['gradient'],
+                        ),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
+                      child: Icon(
+                        category['icon'],
+                        color: Colors.white,
                       ),
                     ),
-                    child: _isSaving 
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : const Text(
-                          'Add Meal',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Add to $mealType',
+                        style: GoogleFonts.inter(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: mealController,
+                  decoration: InputDecoration(
+                    hintText: 'What did you eat?',
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.background,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.restaurant_menu,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
-                ],
-              ),
-            ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('Cancel'),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: _isSaving
+                          ? null
+                          : () async {
+                              if (mealController.text.isEmpty) return;
+
+                              setState(() => _isSaving = true);
+                              try {
+                                await submitMeal(mealType, mealController.text);
+                                Navigator.pop(context);
+                                _showSuccessSnackBar('${mealType.toLowerCase()} added successfully! 🍽️');
+                              } catch (e) {
+                                _showErrorSnackBar('Failed to add meal');
+                              } finally {
+                                if (mounted) {
+                                  setState(() => _isSaving = false);
+                                }
+                              }
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: (category['gradient'] as List<Color>)[0],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: _isSaving
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : const Text('Add Meal'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
+
+
+  
+  Map<String, Map<String, dynamic>> getMealCategories(BuildContext context) {
+    return {
+      'Breakfast': {
+        'icon': Icons.wb_sunny,
+        'gradient': [
+          Theme.of(context).colorScheme.primary,
+          Theme.of(context).colorScheme.secondary,
+        ],
+        'meals': <String>[],
+      },
+      'Lunch': {
+        'icon': Icons.restaurant,
+        'gradient': [
+          Theme.of(context).colorScheme.tertiary,
+          Theme.of(context).colorScheme.secondary,
+        ],
+        'meals': <String>[],
+      },
+      'Dinner': {
+        'icon': Icons.nightlight_round,
+        'gradient': [
+          Theme.of(context).colorScheme.secondary,
+          Theme.of(context).colorScheme.tertiary,
+        ],
+        'meals': <String>[],
+      },
+      'Snacks': {
+        'icon': Icons.cookie,
+        'gradient': [
+          Theme.of(context).colorScheme.secondary,
+          Theme.of(context).colorScheme.background,
+        ],
+        'meals': <String>[],
+      }
+    };
+  }
+
+
   Widget _buildHeader(ThemeData theme) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
@@ -294,12 +340,15 @@ void _showAddMealDialog(String mealType) {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [SFColors.primary, SFColors.secondary],
+          colors: [
+            Theme.of(context).colorScheme.primary,
+            Theme.of(context).colorScheme.secondary
+          ],
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
-            color: SFColors.primary.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -317,7 +366,7 @@ void _showAddMealDialog(String mealType) {
                     style: GoogleFonts.orbitron(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: SFColors.surface,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -325,7 +374,10 @@ void _showAddMealDialog(String mealType) {
                     'Track your nutrition journey',
                     style: GoogleFonts.inter(
                       fontSize: 16,
-                      color: SFColors.surface.withOpacity(0.9),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surface
+                          .withOpacity(0.9),
                     ),
                   ),
                 ],
@@ -423,6 +475,8 @@ void _showAddMealDialog(String mealType) {
   }
 
   Widget _buildMealCard(String mealType, ThemeData theme) {
+    final mealCategories = getMealCategories(context);
+
     final category = mealCategories[mealType]!;
     final meals = category['meals'] as List<String>;
 
@@ -491,14 +545,13 @@ void _showAddMealDialog(String mealType) {
                     leading: const Icon(Icons.restaurant_menu),
                     title: Text(
                       meals[index],
-                     style: GoogleFonts.inter(
+                      style: GoogleFonts.inter(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         // account for color in light/dark mode
                         color: theme.brightness == Brightness.dark
                             ? Colors.black
                             : Colors.black,
-
                       ),
                     ),
                     subtitle: Text(
@@ -511,7 +564,6 @@ void _showAddMealDialog(String mealType) {
                         color: theme.brightness == Brightness.dark
                             ? Colors.black.withOpacity(0.6)
                             : Colors.black.withOpacity(0.6),
-
                       ),
                     ),
                   );
@@ -527,6 +579,7 @@ void _showAddMealDialog(String mealType) {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final mealCategories = getMealCategories(context);
 
     return Scaffold(
       body: Container(
@@ -536,12 +589,15 @@ void _showAddMealDialog(String mealType) {
             end: Alignment.bottomRight,
             colors: theme.brightness == Brightness.dark
                 ? [
-                    SFColors.neutral.withOpacity(0.9),
-                    SFColors.tertiary,
+                    Theme.of(context)
+                        .colorScheme
+                        .secondaryFixed
+                        .withOpacity(0.9),
+                    Theme.of(context).colorScheme.tertiary,
                   ]
                 : [
-                    SFColors.surface,
-                    SFColors.background,
+                    Theme.of(context).colorScheme.surface,
+                    Theme.of(context).colorScheme.background,
                   ],
           ),
         ),
@@ -570,10 +626,11 @@ void _showAddMealDialog(String mealType) {
       height: 60,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: SFColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.1),
+            color:
+                Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -583,11 +640,11 @@ void _showAddMealDialog(String mealType) {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildStatItem('1,850', 'Calories', Icons.local_fire_department,
-              SFColors.primary, theme),
-          _buildStatItem(
-              '75g', 'Protein', Icons.fitness_center, SFColors.tertiary, theme),
-          _buildStatItem(
-              '4/5', 'Meals', Icons.restaurant_menu, SFColors.secondary, theme),
+              Theme.of(context).colorScheme.primary, theme),
+          _buildStatItem('75g', 'Protein', Icons.fitness_center,
+              Theme.of(context).colorScheme.tertiary, theme),
+          _buildStatItem('4/5', 'Meals', Icons.restaurant_menu,
+              Theme.of(context).colorScheme.secondary, theme),
         ],
       ),
     );
@@ -608,7 +665,7 @@ void _showAddMealDialog(String mealType) {
                 style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: SFColors.textSecondary)),
+                    color: Theme.of(context).colorScheme.onSecondary)),
             Text(label,
                 style: theme.textTheme.bodySmall?.copyWith(fontSize: 12)),
           ],
@@ -616,6 +673,14 @@ void _showAddMealDialog(String mealType) {
       ],
     );
   }
+
+
+@override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
 
   void _showErrorSnackBar(String message) {
     if (!mounted) return;
@@ -636,10 +701,11 @@ void _showAddMealDialog(String mealType) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: SFColors.primary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.fromLTRB(20, 0, 20, 80),
       ),
     );
   }
 }
+

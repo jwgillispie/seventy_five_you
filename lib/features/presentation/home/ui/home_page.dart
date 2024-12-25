@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,14 +20,16 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   late AnimationController _animationController;
+  late List<AnimationController> _iconControllers;
+  late List<Animation<double>> _iconAnimations;
   Timer? _scrollTimer;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? user;
   final UserBloc userBloc = UserBloc();
-  
+
   final List<String> motivationalMessages = [
     '💪 EMBRACE THE CHALLENGE',
     '🔥 NO EXCUSES TODAY',
@@ -45,6 +48,30 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     if (user != null) {
       userBloc.add(FetchUserName(user!.uid));
     }
+
+    // Initialize floating icon animations
+    _iconControllers = List.generate(
+      5,
+      (index) => AnimationController(
+        duration: Duration(milliseconds: 2000 + (index * 500)),
+        vsync: this,
+      ),
+    );
+
+    _iconAnimations = _iconControllers.map((controller) {
+      return Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(
+          parent: controller,
+          curve: Curves.easeInOut,
+        ),
+      );
+    }).toList();
+
+    // Start the animations
+    for (var controller in _iconControllers) {
+      controller.repeat(reverse: true);
+    }
+
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -55,6 +82,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   void dispose() {
+    for (var controller in _iconControllers) {
+      controller.dispose();
+    }
     _scrollTimer?.cancel();
     _scrollController.dispose();
     _animationController.dispose();
@@ -72,6 +102,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -83,14 +114,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: isDark 
+            colors: isDark
                 ? [
-                    SFColors.neutral.withOpacity(0.9),
-                    SFColors.tertiary,
+                    Theme.of(context).colorScheme.primaryFixed.withOpacity(0.9),
+                    Theme.of(context).colorScheme.tertiary,
                   ]
                 : [
-                    SFColors.surface,
-                    SFColors.background,
+                    Theme.of(context).colorScheme.surface,
+                    Theme.of(context).colorScheme.background,
                   ],
           ),
         ),
@@ -112,21 +143,37 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   Widget _buildChallengeGrid(ThemeData theme) {
     final challenges = [
-      {"title": "Diet", "icon": Icons.restaurant, "color": SFColors.primary},
-      {"title": "Outside Workout", "icon": Icons.directions_run, "color": SFColors.tertiary},
-      {"title": "Second Workout", "icon": Icons.fitness_center, "color": SFColors.neutral},
-      {"title": "Water", "icon": Icons.water_drop, "color": SFColors.secondary},
-      {"title": "Alcohol", "icon": Icons.no_drinks, "color": const Color(0xFFB23B3B)},
-      {"title": "10 Pages", "icon": Icons.menu_book, "color": SFColors.neutral.withOpacity(0.8)},
+      {"title": "Diet", "icon": Icons.restaurant, "color": Theme.of(context).colorScheme.primary},
+      {
+        "title": "Outside Workout",
+        "icon": Icons.directions_run,
+        "color": Theme.of(context).colorScheme.tertiary
+      },
+      {
+        "title": "Second Workout",
+        "icon": Icons.fitness_center,
+        "color": Theme.of(context).colorScheme.primaryFixed
+      },
+      {"title": "Water", "icon": Icons.water_drop, "color": Theme.of(context).colorScheme.secondary},
+      {
+        "title": "Alcohol",
+        "icon": Icons.no_drinks,
+        "color": const Color(0xFFB23B3B)
+      },
+      {
+        "title": "10 Pages",
+        "icon": Icons.menu_book,
+        "color": Theme.of(context).colorScheme.primaryFixed.withOpacity(0.8)
+      },
     ];
 
     return GridView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 1.1,
-        crossAxisSpacing: 15,
-        mainAxisSpacing: 15,
+        childAspectRatio: 0.85, // Adjusted for new content
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 20,
       ),
       itemCount: challenges.length,
       itemBuilder: (context, index) {
@@ -139,12 +186,28 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         );
       },
     );
-  }  Widget _buildAppBar(ThemeData theme) {
+  }
+
+  Widget _buildAppBar(ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primary.withOpacity(0.1),
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.primaryFixed.withOpacity(0.15),
+            Theme.of(context).colorScheme.tertiary.withOpacity(0.2),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.primaryFixed.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: BlocConsumer<UserBloc, UserState>(
         bloc: userBloc,
@@ -159,19 +222,59 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           String username = state is UserLoaded ? state.username : "Warrior";
           return Column(
             children: [
-              Text(
-                "DAY ${DateTime.now().difference(DateTime(2024, 1, 1)).inDays + 1}",
-                style: GoogleFonts.orbitron(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.primary,
+              ShaderMask(
+                shaderCallback: (bounds) => LinearGradient(
+                  colors: [
+                    Theme.of(context).colorScheme.primary,
+                    Theme.of(context).colorScheme.tertiary,
+                  ],
+                ).createShader(bounds),
+                child: Text(
+                  "DAY ${DateTime.now().difference(DateTime(2024, 1, 1)).inDays + 1}",
+                  style: GoogleFonts.orbitron(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 2,
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                "Let's Crush It, $username!",
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+              const SizedBox(height: 12),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context).colorScheme.primary.withOpacity(0.9),
+                      Theme.of(context).colorScheme.tertiary.withOpacity(0.9),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                      blurRadius: 15,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  "Let's Crush It, $username!",
+                  style: GoogleFonts.rajdhani(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    letterSpacing: 1,
+                    height: 1.1,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withOpacity(0.3),
+                        offset: const Offset(0, 2),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -181,13 +284,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     );
   }
 
- Widget _buildMotivationalTicker(ThemeData theme) {
+  Widget _buildMotivationalTicker(ThemeData theme) {
     return SizedBox(
       height: 60,
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
-        itemCount: motivationalMessages.length * 10, // Increased for smoother looping
+        itemCount:
+            motivationalMessages.length * 10, // Increased for smoother looping
         itemBuilder: (context, index) {
           final itemIndex = index % motivationalMessages.length;
           return _buildMotivationalItem(
@@ -199,11 +303,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       ),
     );
   }
+
   Widget _buildMotivationalItem(String message, ThemeData theme, int index) {
     final colors = [
-      SFColors.primary,
-      SFColors.secondary,
-      SFColors.tertiary,
+      Theme.of(context).colorScheme.primary,
+      Theme.of(context).colorScheme.secondary,
+      Theme.of(context).colorScheme.tertiary,
     ];
 
     return Container(
@@ -231,7 +336,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         child: Text(
           message,
           style: GoogleFonts.inter(
-            color: SFColors.surface,
+            color: Theme.of(context).colorScheme.surface,
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
@@ -295,82 +400,157 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         ),
       ],
     );
-  }
-
-
-
-  Widget _buildChallengeCard({
-    required String title,
-    required IconData icon,
-    required Color color,
-    required ThemeData theme,
-  }) {
-    return GestureDetector(
-      onTap: () => _navigateToPage(context, title),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              color.withOpacity(0.2),
-              color.withOpacity(0.1),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: color.withOpacity(0.3),
-            width: 2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
+  }Widget _buildChallengeCard({
+  required String title,
+  required IconData icon,
+  required Color color,
+  required ThemeData theme,
+}) {
+  return GestureDetector(
+    onTap: () => _navigateToPage(context, title),
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Theme.of(context).colorScheme.primaryFixed.withOpacity(0.25),
+            Theme.of(context).colorScheme.tertiary.withOpacity(0.3),
           ],
+          stops: const [0.3, 0.9],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Large background icon
+          Positioned(
+            right: -15,
+            bottom: -15,
+            child: Icon(
               icon,
-              size: 40,
-              color: color,
+              size: 90,
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.07),
             ),
-            const SizedBox(height: 10),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onBackground,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                "Tap to Start",
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.bold,
+          ),
+          // Main content column
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Icon container
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                      Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+                    ],
+                  ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.25),
+                      blurRadius: 10,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  icon,
+                  size: 30,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
-            ),
-          ],
-        ),
+              const SizedBox(height: 16),
+              // Title
+              Text(
+                title.toUpperCase(),
+                textAlign: TextAlign.center,
+                style: GoogleFonts.orbitron(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.surface,
+                  letterSpacing: 0.8,
+                  height: 1.2,
+                  shadows: [
+                    Shadow(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                      offset: const Offset(0, 2),
+                      blurRadius: 3,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
+              // Start button
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  gradient:  LinearGradient(
+                    colors: [
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.secondary,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                     Icon(
+                      Icons.play_arrow_rounded,
+                      size: 18,
+                      color: Theme.of(context).colorScheme.surface,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'START',
+                      style: GoogleFonts.rajdhani(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Theme.of(context).colorScheme.surface,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
-    );
+    ),
+  );
+}
+  double _randomPosition(double max) {
+    return Random().nextDouble() * max;
   }
+
   void _navigateToPage(BuildContext context, String title) {
     // Instead of navigation, use a callback or state management
     // to show these pages within the same tab
-    final content = switch(title) {
+    final content = switch (title) {
       "Diet" => const DietPage(),
       "Outside Workout" => const WorkoutOnePage(),
       "Second Workout" => const WorkoutTwoPage(),

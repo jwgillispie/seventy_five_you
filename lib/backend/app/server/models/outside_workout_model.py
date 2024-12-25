@@ -10,6 +10,7 @@ class OutsideWorkout(Document):
     description : str  # Description of the workout
     thoughts: str  # Thoughts on the workout
     completed: bool
+    workoutType: str
    
 
 

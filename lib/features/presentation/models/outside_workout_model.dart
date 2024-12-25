@@ -3,7 +3,8 @@ class OutsideWorkout {
   String? firebaseUid;
   String? description;
   String? thoughts;
-        bool? completed = false;
+  bool? completed = false;
+  String? workoutType;
 
 
   OutsideWorkout({
@@ -12,6 +13,7 @@ class OutsideWorkout {
     this.description,
     this.thoughts,
     this.completed,
+    this.workoutType,
   });
 
   // Factory constructor for creating a new OutsideWorkout instance from a map
@@ -22,6 +24,7 @@ class OutsideWorkout {
       description: json['description'] as String?,
       thoughts: json['thoughts'] as String?,
       completed: json['completed'] as bool?,
+      workoutType: json['workoutType'] as String?,
     );
   }
 
@@ -33,6 +36,7 @@ class OutsideWorkout {
       'description': description,
       'thoughts': thoughts,
       'completed': completed,
+      'workoutType': workoutType,
     };
   }
 }

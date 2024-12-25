@@ -2,17 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:seventy_five_hard/features/presentation/models/alcohol_model.dart';
-import 'package:seventy_five_hard/features/presentation/models/day_model.dart';
-import 'package:seventy_five_hard/features/presentation/models/diet_model.dart';
-import 'package:seventy_five_hard/features/presentation/models/inside_workout_model.dart';
-import 'package:seventy_five_hard/features/presentation/models/outside_workout_model.dart';
-import 'package:seventy_five_hard/features/presentation/models/ten_pages_model.dart';
-import 'package:seventy_five_hard/features/presentation/models/water_model.dart';
-import 'package:seventy_five_hard/features/presentation/widgets/nav_bar.dart';
-import 'package:seventy_five_hard/themes.dart';
-import 'package:table_calendar/table_calendar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:seventy_five_hard/features/presentation/models/day_model.dart';
+import 'package:seventy_five_hard/themes.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);
@@ -23,129 +16,112 @@ class CalendarPage extends StatefulWidget {
 
 class _CalendarPageState extends State<CalendarPage> {
   late Map<DateTime, List<dynamic>> _events;
-  DateTime _selectedDay = DateTime.now(); // Track the selected day
-  DateTime _focusedDay = DateTime.now(); // Track the focused day
+  DateTime _selectedDay = DateTime.now();
+  DateTime _focusedDay = DateTime.now();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  Water? waterModel;
-  Diet? dietModel;
-  InsideWorkout? insideWorkoutModel;
-  OutsideWorkout? outsideWorkoutModel;
-  TenPages? tenPagesModel;
-  Alcohol? alcoholModel;
   User? user;
-  bool isDayEmpty = false; // Flag for empty day
+  Day? day;
+  bool isDayEmpty = true;
+  bool _isLoading = false;
+  Map<String, bool> expandedTasks = {};
 
-  @override
-  void initState() {
-    super.initState();
-    user = _auth.currentUser;
-    _events = {};
-    _fetchObjectives(); // Fetch objectives when the calendar is initialized
-  }
+  
 
-  // Fetch the objectives for the selected day
+@override
+void initState() {
+  super.initState();
+  user = _auth.currentUser;
+  _events = {};
+  _fetchObjectives();
+  
+  // Initialize all tasks as collapsed
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    final tasks = getTasks(context);
+    for (var task in tasks) {
+      expandedTasks[task['id']] = false;
+    }
+  });
+}
+
   Future<void> _fetchObjectives() async {
-    String formattedDate =
-        "${_selectedDay.year}-${_selectedDay.month}-${_selectedDay.day}";
+    if (user == null) return;
+    setState(() => _isLoading = true);
+
     try {
       final response = await http.get(
         Uri.parse(
-            'http://localhost:8000/day/${user?.uid}/${_selectedDay.toString().substring(0, 10)}'),
+          'http://localhost:8000/day/${user!.uid}/${_selectedDay.toString().substring(0, 10)}',
+        ),
       );
+
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
         setState(() {
-          Day day = Day.fromJson(data);
-          waterModel = day.water;
-          dietModel = day.diet;
-          insideWorkoutModel = day.insideWorkout;
-          outsideWorkoutModel = day.outsideWorkout;
-          tenPagesModel = day.pages;
-          alcoholModel = day.alcohol;
-          isDayEmpty = false; // Reset empty flag if objectives are found
-        });
-      } else if (response.statusCode == 404) {
-        // Handle 404 - No data for this day
-        setState(() {
-          _clearObjectives();
-          isDayEmpty = true; // Set the empty flag if no data is found
+          day = Day.fromJson(json.decode(response.body));
+          isDayEmpty = false;
         });
       } else {
-        print('Failed to fetch objectives: ${response.statusCode}');
+        setState(() => isDayEmpty = true);
       }
     } catch (e) {
-      print("Error fetching objectives: $e");
-      setState(() {
-        isDayEmpty = true; // Mark as empty if error occurs
-      });
+      _showErrorSnackBar('Error loading data');
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
-
-  // Clear the objectives when no data is found
-  void _clearObjectives() {
-    waterModel = null;
-    dietModel = null;
-    insideWorkoutModel = null;
-    outsideWorkoutModel = null;
-    tenPagesModel = null;
-    alcoholModel = null;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              SFColors.surface,
-              SFColors.background,
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildHeader(),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      _buildCalendar(),
-                      const SizedBox(height: 20),
-                      isDayEmpty
-                          ? _buildEmptyDayScreen(context)
-                          : Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child: _buildObjectivesDisplay(context),
-                            ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+List<Map<String, dynamic>> getTasks(BuildContext context) {
+  return [
+    {
+      'id': 'diet',
+      'title': 'Diet',
+      'icon': Icons.restaurant_menu,
+      'color': Theme.of(context).colorScheme.primary,
+    },
+    {
+      'id': 'outside_workout',
+      'title': 'Outside Workout',
+      'icon': Icons.directions_run,
+      'color': Theme.of(context).colorScheme.secondary,
+    },
+    {
+      'id': 'inside_workout',
+      'title': 'Inside Workout',
+      'icon': Icons.fitness_center,
+      'color': Theme.of(context).colorScheme.tertiary,
+    },
+    {
+      'id': 'water',
+      'title': 'Water',
+      'icon': Icons.water_drop,
+      'color': Theme.of(context).colorScheme.secondary,
+    },
+    {
+      'id': 'alcohol',
+      'title': 'No Alcohol',
+      'icon': Icons.no_drinks,
+      'color': const Color(0xFFB23B3B),
+    },
+    {
+      'id': 'pages',
+      'title': 'Reading',
+      'icon': Icons.book,
+      'color': Theme.of(context).colorScheme.primary.withBlue(150),
+    },
+  ];
+}
 
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [SFColors.neutral, SFColors.tertiary],
+          colors: [Theme.of(context).colorScheme.secondaryFixed, Theme.of(context).colorScheme.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -160,18 +136,18 @@ class _CalendarPageState extends State<CalendarPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Progress Calendar',
+                    'Daily Progress',
                     style: GoogleFonts.orbitron(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: SFColors.surface,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Track Your Journey',
+                    _selectedDay.toString().substring(0, 10),
                     style: GoogleFonts.inter(
-                      color: SFColors.surface.withOpacity(0.9),
+                      color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
                       fontSize: 16,
                     ),
                   ),
@@ -180,12 +156,12 @@ class _CalendarPageState extends State<CalendarPage> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: SFColors.surface.withOpacity(0.2),
+                  color: Theme.of(context).colorScheme.surface.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Icon(
                   Icons.calendar_today,
-                  color: SFColors.surface,
+                  color: Theme.of(context).colorScheme.surface,
                   size: 24,
                 ),
               ),
@@ -200,25 +176,27 @@ class _CalendarPageState extends State<CalendarPage> {
     return Container(
       margin: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: SFColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: TableCalendar(
-        focusedDay: _focusedDay,
         firstDay: DateTime.utc(2024, 1, 1),
         lastDay: DateTime.utc(2024, 12, 31),
+        focusedDay: _focusedDay,
         selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
         onDaySelected: (selectedDay, focusedDay) {
           setState(() {
             _selectedDay = selectedDay;
             _focusedDay = focusedDay;
+            // Reset expanded states when selecting a new day
+            expandedTasks.updateAll((key, value) => false);
           });
           _fetchObjectives();
         },
@@ -226,309 +204,525 @@ class _CalendarPageState extends State<CalendarPage> {
           titleTextStyle: GoogleFonts.orbitron(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: SFColors.neutral,
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
           formatButtonVisible: false,
-          leftChevronIcon: Icon(Icons.chevron_left, color: SFColors.neutral),
-          rightChevronIcon: Icon(Icons.chevron_right, color: SFColors.neutral),
+          titleCentered: true,
         ),
         calendarStyle: CalendarStyle(
           todayDecoration: BoxDecoration(
-            color: SFColors.neutral.withOpacity(0.8),
+            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.8),
             shape: BoxShape.circle,
           ),
           selectedDecoration: BoxDecoration(
-            color: SFColors.tertiary,
+            gradient: LinearGradient(
+              colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
+            ),
             shape: BoxShape.circle,
           ),
-          todayTextStyle: TextStyle(color: SFColors.surface),
-          selectedTextStyle: TextStyle(color: SFColors.surface),
-          defaultTextStyle: TextStyle(color: SFColors.textPrimary),
-          outsideTextStyle: TextStyle(color: SFColors.textSecondary),
-          weekendTextStyle: TextStyle(color: SFColors.textPrimary),
         ),
       ),
     );
   }
 
-  Widget _buildObjectiveContent({
-    required IconData icon,
-    required String label,
-    bool success = true,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            color: success ? SFColors.primary : const Color(0xFFB23B3B),
-            size: 20,
+  Widget _buildTaskSection() {
+    final tasks = getTasks(context);
+    if (_isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: tasks.length,
+      itemBuilder: (context, index) {
+        final task = tasks[index];
+        final isExpanded = expandedTasks[task['id']] ?? false;
+        return _buildExpandableTask(task, isExpanded);
+      },
+    );
+  }
+
+  Widget _buildExpandableTask(Map<String, dynamic> task, bool isExpanded) {
+    bool isCompleted = _getTaskCompletionStatus(task['id']);
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: task['color'].withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                color: success ? SFColors.primary : const Color(0xFFB23B3B),
-                fontWeight: FontWeight.w600,
+        ],
+      ),
+      child: Column(
+        children: [
+          // Task Header
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  expandedTasks[task['id']] = !isExpanded;
+                });
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: task['color'].withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        task['icon'],
+                        color: task['color'],
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        task['title'],
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isCompleted
+                            ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                            : Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        isCompleted ? 'Completed' : 'Incomplete',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: isCompleted
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.onSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(
+                      isExpanded
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    ),
+                  ],
+                ),
               ),
             ),
+          ),
+          // Expanded Details
+          AnimatedCrossFade(
+            firstChild: Container(),
+            secondChild: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: task['color'].withOpacity(0.05),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                ),
+              ),
+              child: _buildTaskDetails(task['id']),
+            ),
+            crossFadeState: isExpanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 300),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildEmptyDayScreen(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.hourglass_empty,
-              size: 100,
-              color: SFColors.tertiary.withOpacity(0.7),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'No objectives logged for this day',
-              style: GoogleFonts.inter(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: SFColors.tertiary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'It looks like you haven\'t logged any activities for ${_selectedDay.toString().substring(0, 10)}. Select another day or start logging your activities!',
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                color: SFColors.tertiary.withOpacity(0.7),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
+  Widget _buildTaskDetails(String taskId) {
+    switch (taskId) {
+      case 'diet':
+        return _buildDietDetails();
+      case 'outside_workout':
+        return _buildWorkoutDetails(true);
+      case 'inside_workout':
+        return _buildWorkoutDetails(false);
+      case 'water':
+        return _buildWaterDetails();
+      case 'alcohol':
+        return _buildAlcoholDetails();
+      case 'pages':
+        return _buildReadingDetails();
+      default:
+        return const SizedBox();
+    }
   }
 
-  // Widget to display logged objectives when data is available
-  Widget _buildObjectivesDisplay(BuildContext context) {
-    final theme = Theme.of(context);
-
-    final sectionTitleStyle = theme.textTheme.displaySmall?.copyWith(
-      fontWeight: FontWeight.w600,
-      color: theme.colorScheme.secondary,
-    );
+  Widget _buildDietDetails() {
+    final diet = day?.diet;
+    if (diet == null) return const Text('No data available');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (waterModel != null)
-          _buildObjectiveCard(
-            title: 'Water Intake',
-            icon: Icons.water_drop,
-            content: [
-              _buildObjectiveContent(
-                icon: Icons.bathroom_outlined,
-                label: 'Pee Count: ${waterModel!.peeCount}',
-                success: waterModel!.peeCount! > 5,
-              ),
-            ],
-            sectionTitleStyle: sectionTitleStyle,
-            theme: theme,
-          ),
-        if (dietModel != null)
-          _buildObjectiveCard(
-            title: 'Diet',
-            icon: Icons.restaurant_menu,
-            content: [
-              _buildObjectiveContent(
-                icon: Icons.breakfast_dining,
-                label:
-                    'Breakfast: ${dietModel!.breakfast?.join(", ") ?? "N/A"}',
-              ),
-              _buildObjectiveContent(
-                icon: Icons.lunch_dining,
-                label: 'Lunch: ${dietModel!.lunch?.join(", ") ?? "N/A"}',
-              ),
-              _buildObjectiveContent(
-                icon: Icons.dinner_dining,
-                label: 'Dinner: ${dietModel!.dinner?.join(", ") ?? "N/A"}',
-              ),
-              _buildObjectiveContent(
-                icon: Icons.fastfood,
-                label: 'Snacks: ${dietModel!.snacks?.join(", ") ?? "N/A"}',
-              ),
-            ],
-            sectionTitleStyle: sectionTitleStyle,
-            theme: theme,
-          ),
-        if (insideWorkoutModel != null)
-          _buildObjectiveCard(
-            title: 'Inside Workout',
-            icon: Icons.fitness_center,
-            content: [
-              _buildObjectiveContent(
-                icon: Icons.run_circle,
-                label: 'Description: ${insideWorkoutModel!.description}',
-                success: insideWorkoutModel!.description!.isNotEmpty,
-              ),
-              _buildObjectiveContent(
-                icon: Icons.lightbulb,
-                label: 'Thoughts: ${insideWorkoutModel!.thoughts}',
-              ),
-            ],
-            sectionTitleStyle: sectionTitleStyle,
-            theme: theme,
-          ),
-        if (outsideWorkoutModel != null)
-          _buildObjectiveCard(
-            title: 'Outside Workout',
-            icon: Icons.directions_run,
-            content: [
-              _buildObjectiveContent(
-                icon: Icons.nature_people,
-                label: 'Description: ${outsideWorkoutModel!.description}',
-                success: outsideWorkoutModel!.description!.isNotEmpty,
-              ),
-              _buildObjectiveContent(
-                icon: Icons.lightbulb_outline,
-                label: 'Thoughts: ${outsideWorkoutModel!.thoughts}',
-              ),
-            ],
-            sectionTitleStyle: sectionTitleStyle,
-            theme: theme,
-          ),
-        if (tenPagesModel != null)
-          _buildObjectiveCard(
-            title: 'Ten Pages',
-            icon: Icons.book,
-            content: [
-              _buildObjectiveContent(
-                icon: Icons.menu_book,
-                label:
-                    'Completed: ${tenPagesModel?.completed ?? false ? "Yes" : "No"}',
-                success: tenPagesModel?.completed ?? false,
-              ),
-              if (tenPagesModel?.summary != null &&
-                  tenPagesModel!.summary!.isNotEmpty)
-                _buildObjectiveContent(
-                  icon: Icons.notes,
-                  label: 'Summary: ${tenPagesModel!.summary}',
-                ),
-            ],
-            sectionTitleStyle: sectionTitleStyle,
-            theme: theme,
-          ),
-        if (alcoholModel != null)
-          _buildObjectiveCard(
-            title: 'Alcohol Consumption',
-            icon: Icons.no_drinks,
-            content: [
-              _buildObjectiveContent(
-                icon: Icons.no_drinks,
-                label:
-                    'Consumed: ${alcoholModel?.completed ?? false ? "No" : "Yes"}',
-                success: alcoholModel?.completed ?? false,
-              ),
-            ],
-            sectionTitleStyle: sectionTitleStyle,
-            theme: theme,
-          ),
-        if (waterModel == null &&
-            dietModel == null &&
-            insideWorkoutModel == null &&
-            outsideWorkoutModel == null &&
-            tenPagesModel == null &&
-            alcoholModel == null)
-          const Text('No data available for this day.'),
+        _buildMealSection('Breakfast', diet.breakfast ?? []),
+        _buildMealSection('Lunch', diet.lunch ?? []),
+        _buildMealSection('Dinner', diet.dinner ?? []),
+        _buildMealSection('Snacks', diet.snacks ?? []),
       ],
     );
   }
 
-  Widget _buildObjectiveCard({
-    required String title,
-    required IconData icon,
-    required List<Widget> content,
-    required TextStyle? sectionTitleStyle,
-    required ThemeData theme,
-  }) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: SFColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: SFColors.neutral.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+  Widget _buildMealSection(String title, List<String> items) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        if (items.isEmpty)
+          Text(
+            'No items logged',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSecondary,
+              fontStyle: FontStyle.italic,
+            ),
+          )
+        else
+          ...items.map((item) => Padding(
+                padding: const EdgeInsets.only(left: 16, bottom: 4),
+                child: Text(
+                  '• $item',
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+                ),
+              )),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Widget _buildWorkoutDetails(bool isOutside) {
+    final workout = isOutside ? day?.outsideWorkout : day?.insideWorkout;
+    if (workout == null) return const Text('No workout logged');
+
+    // Extract description and thoughts with null safety
+    final description =
+        workout is Map ? workout['description'] as String? : null;
+    final thoughts = workout is Map ? workout['thoughts'] as String? : null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Description',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          description ?? 'No description provided',
+          style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          'Thoughts',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          thoughts ?? 'No thoughts recorded',
+          style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWaterDetails() {
+    final water = day?.water;
+    if (water == null) return const Text('No data available');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.confirmation_number, color: Theme.of(context).colorScheme.secondaryFixed),
+            const SizedBox(width: 8),
+            Text(
+              'Bathroom Breaks: ${water.peeCount ?? 0}',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Icon(
+              water.completed ?? false
+                  ? Icons.check_circle
+                  : Icons.error_outline,
+              color: water.completed ?? false
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.secondaryFixed,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              water.completed ?? false
+                  ? 'Daily water goal achieved!'
+                  : 'Water goal not yet met',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAlcoholDetails() {
+    final alcohol = day?.alcohol;
+    if (alcohol == null) return const Text('No data available');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              alcohol.completed ?? false ? Icons.check_circle : Icons.cancel,
+              color: alcohol.completed ?? false
+                  ? Theme.of(context).colorScheme.primary
+                  : const Color(0xFFB23B3B),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              alcohol.completed ?? false
+                  ? 'Successfully avoided alcohol today!'
+                  : 'Goal not met today',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        if (alcohol.difficulty != null) ...[
+          Text(
+            'Difficulty Level',
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: alcohol.difficulty! / 10,
+              backgroundColor: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                alcohol.difficulty! > 7
+                    ? const Color(0xFFB23B3B)
+                    : alcohol.difficulty! > 4
+                        ? Theme.of(context).colorScheme.secondaryFixed
+                        : Theme.of(context).colorScheme.primary,
+              ),
+              minHeight: 8,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _getDifficultyLabel(alcohol.difficulty!),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSecondary,
+              fontStyle: FontStyle.italic,
+            ),
           ),
         ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: SFColors.neutral.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon, color: SFColors.neutral),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  title,
-                  style: GoogleFonts.orbitron(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: SFColors.neutral,
-                  ),
-                ),
-              ],
+      ],
+    );
+  }
+
+  String _getDifficultyLabel(int difficulty) {
+    if (difficulty <= 3) return 'Easy to maintain';
+    if (difficulty <= 6) return 'Moderately challenging';
+    if (difficulty <= 8) return 'Very challenging';
+    return 'Extremely difficult';
+  }
+
+  Widget _buildReadingDetails() {
+    final pages = day?.pages;
+    if (pages == null) return const Text('No data available');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (pages.bookTitle != null && pages.bookTitle!.isNotEmpty) ...[
+          Text(
+            'Current Book',
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
-            const Divider(height: 20),
-            ...content,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            pages.bookTitle!,
+            style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+          ),
+          const SizedBox(height: 16),
+        ],
+        Row(
+          children: [
+            Icon(Icons.menu_book, color: Theme.of(context).colorScheme.primary),
+            const SizedBox(width: 8),
+            Text(
+              'Pages Read: ${pages.pagesRead ?? 0}/10',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
           ],
+        ),
+        const SizedBox(height: 16),
+        if (pages.summary != null && pages.summary!.isNotEmpty) ...[
+          Text(
+            'Reading Notes',
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            pages.summary!,
+            style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+          ),
+        ],
+      ],
+    );
+  }
+
+  bool _getTaskCompletionStatus(String taskId) {
+    if (day == null) return false;
+
+    switch (taskId) {
+      case 'diet':
+        return day!.diet?.completed ?? false;
+      case 'outside_workout':
+        return day!.outsideWorkout?.completed ?? false;
+      case 'inside_workout':
+        return day!.insideWorkout?.completed ?? false;
+      case 'water':
+        return day!.water?.completed ?? false;
+      case 'alcohol':
+        return day!.alcohol?.completed ?? false;
+      case 'pages':
+        return day!.pages?.completed ?? false;
+      default:
+        return false;
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: const Color(0xFFB23B3B),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: Theme.of(context).brightness == Brightness.dark
+                ? [
+                    Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.9),
+                    Theme.of(context).colorScheme.tertiary,
+                  ]
+                : [
+                    Theme.of(context).colorScheme.surface,
+                    Theme.of(context).colorScheme.background,
+                  ],
+          ),
+        ),
+        child: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(child: _buildHeader()),
+              SliverToBoxAdapter(child: _buildCalendar()),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
+                  child: Text(
+                    'Daily Tasks',
+                    style: GoogleFonts.orbitron(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(child: _buildTaskSection()),
+              // Add some padding at the bottom
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 24),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-}  // Widget to build objective content with icons and text
-  // Widget _buildObjectiveContent({
-  //   required IconData icon,
-  //   required String label,
-  //   bool success = true,
-  // }) {
-  //   final theme = Theme.of(context);
-
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(vertical: 4),
-  //     child: Row(
-  //       children: [
-  //         Icon(icon, color: success ? SFColors.secondary : Colors.red),
-  //         const SizedBox(width: 10),
-  //         Text(
-  //           label,
-  //           style: theme.textTheme.displaySmall?.copyWith(
-  //             color: success ? SFColors.secondary : Colors.red,
-  //             fontWeight: FontWeight.w600,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
+}

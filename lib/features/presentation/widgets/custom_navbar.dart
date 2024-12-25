@@ -65,8 +65,8 @@ class NavBarItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
           color: isSelected 
               ? (Theme.of(context).brightness == Brightness.dark
-                  ? SFColors.primary.withOpacity(0.15)
-                  : SFColors.primary.withOpacity(0.1))
+                  ? Theme.of(context).colorScheme.primary.withOpacity(0.15)
+                  : Theme.of(context).colorScheme.primary.withOpacity(0.1))
               : Colors.transparent,
         ),
         child: Column(

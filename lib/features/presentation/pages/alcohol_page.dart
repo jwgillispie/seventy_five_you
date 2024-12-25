@@ -41,33 +41,40 @@ class _AlcoholPageState extends State<AlcoholPage>
     "Money Saved 💰",
     "Better Sleep 😴",
   ];
-  final List<Map<String, dynamic>> _benefitsData = [
-    {
-      'title': 'Mental Clarity',
-      'icon': Icons.psychology,
-      'color': SFColors.primary,
-      'progress': 0.85,
-    },
-    {
-      'title': 'Energy Level',
-      'icon': Icons.bolt,
-      'color': SFColors.secondary,
-      'progress': 0.75,
-    },
-    {
-      'title': 'Sleep Quality',
-      'icon': Icons.nightlight_round,
-      'color': SFColors.tertiary,
-      'progress': 0.90,
-    },
-    {
-      'title': 'Money Saved',
-      'icon': Icons.savings,
-      'color': SFColors.neutral,
-      'progress': 1.0,
-    },
-  ];
+
+  List<Map<String, dynamic>> getBenefitsData() {
+    final List<Map<String, dynamic>> _benefitsData = [
+      {
+        'title': 'Mental Clarity',
+        'icon': Icons.psychology,
+        'color': Theme.of(context).colorScheme.primary,
+        'progress': 0.85,
+      },
+      {
+        'title': 'Energy Level',
+        'icon': Icons.bolt,
+        'color': Theme.of(context).colorScheme.secondary,
+        'progress': 0.75,
+      },
+      {
+        'title': 'Sleep Quality',
+        'icon': Icons.nightlight_round,
+        'color': Theme.of(context).colorScheme.tertiary,
+        'progress': 0.90,
+      },
+      {
+        'title': 'Money Saved',
+        'icon': Icons.savings,
+        'color': Theme.of(context).colorScheme.secondaryFixed,
+        'progress': 1.0,
+      },
+    ];
+
+    return _benefitsData;
+  }
+
   Widget _buildBenefitsGrid() {
+    final _benefitsData = getBenefitsData();
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -114,7 +121,7 @@ class _AlcoholPageState extends State<AlcoholPage>
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: SFColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -249,12 +256,13 @@ class _AlcoholPageState extends State<AlcoholPage>
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Row(
         children: [
-          Icon(Icons.check_circle, color: SFColors.surface),
+          Icon(Icons.check_circle,
+              color: Theme.of(context).colorScheme.surface),
           const SizedBox(width: 8),
           Expanded(child: Text(message)),
         ],
       ),
-      backgroundColor: SFColors.primary,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     ));
@@ -264,7 +272,8 @@ class _AlcoholPageState extends State<AlcoholPage>
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Row(
         children: [
-          Icon(Icons.error_outline, color: SFColors.surface),
+          Icon(Icons.error_outline,
+              color: Theme.of(context).colorScheme.surface),
           const SizedBox(width: 8),
           Expanded(child: Text(message)),
         ],
@@ -275,18 +284,18 @@ class _AlcoholPageState extends State<AlcoholPage>
     ));
   }
 
-
   Widget _buildSliverHeader() {
+    final theme = Theme.of(context);
     return SliverAppBar(
       expandedHeight: 200,
       floating: false,
       pinned: true,
-      backgroundColor: SFColors.primary,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: SFColors.primaryGradient,
+              colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -441,13 +450,14 @@ class _AlcoholPageState extends State<AlcoholPage>
   }
 
   Widget _buildLoadingState() {
+    final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            SFColors.primary.withOpacity(0.05),
+            Theme.of(context).colorScheme.primary.withOpacity(0.05),
             Colors.white,
           ],
         ),
@@ -456,14 +466,15 @@ class _AlcoholPageState extends State<AlcoholPage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(SFColors.primary),
+             CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  theme.colorScheme.primary),
             ),
             const SizedBox(height: 16),
             Text(
               'Loading your progress...',
               style: GoogleFonts.poppins(
-                color: SFColors.primary,
+                color: Theme.of(context).colorScheme.primary,
                 fontSize: 16,
               ),
             ),
@@ -490,13 +501,13 @@ class _AlcoholPageState extends State<AlcoholPage>
               'How challenging was it?',
               style: GoogleFonts.poppins(
                 fontSize: 16,
-                color: SFColors.textPrimary,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: SFColors.primary.withOpacity(0.1),
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -504,7 +515,7 @@ class _AlcoholPageState extends State<AlcoholPage>
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: SFColors.primary,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
@@ -517,10 +528,12 @@ class _AlcoholPageState extends State<AlcoholPage>
             Expanded(
               child: SliderTheme(
                 data: SliderThemeData(
-                  activeTrackColor: SFColors.primary,
-                  inactiveTrackColor: SFColors.primary.withOpacity(0.2),
-                  thumbColor: SFColors.primary,
-                  overlayColor: SFColors.primary.withOpacity(0.2),
+                  activeTrackColor: Theme.of(context).colorScheme.primary,
+                  inactiveTrackColor:
+                      Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                  thumbColor: Theme.of(context).colorScheme.primary,
+                  overlayColor:
+                      Theme.of(context).colorScheme.primary.withOpacity(0.2),
                   trackHeight: 8,
                 ),
                 child: Slider(
@@ -541,83 +554,88 @@ class _AlcoholPageState extends State<AlcoholPage>
       ],
     );
   }
-Widget _buildDailyCheckIn() {
-  return Container(
-    padding: const EdgeInsets.all(24),
-    decoration: BoxDecoration(
-      color: SFColors.surface,
-      borderRadius: BorderRadius.circular(20),
-      boxShadow: [
-        BoxShadow(
-          color: SFColors.neutral.withOpacity(0.1),
-          blurRadius: 10,
-          offset: const Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.verified, color: SFColors.primary, size: 28),
-            const SizedBox(width: 12),
-            Text(
-              'Daily Check-in',
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: SFColors.primary,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: SFColors.primary.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(16),
+
+  Widget _buildDailyCheckIn() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color:
+                Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Icon(Icons.verified,
+                  color: Theme.of(context).colorScheme.primary, size: 28),
+              const SizedBox(width: 12),
               Text(
-                'Alcohol-Free Today?',
+                'Daily Check-in',
                 style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  color: SFColors.textPrimary,
-                ),
-              ),
-              Transform.scale(
-                scale: 1.2,
-                child: Switch(
-                  value: _avoidedAlcohol,
-                  onChanged: (value) {
-                    setState(() {
-                      _avoidedAlcohol = value;
-                      _showStreak = value;
-                      if (value) {
-                        _slideController.forward();
-                      }
-                    });
-                    _updateAlcoholData();
-                  },
-                  activeColor: SFColors.primary,
-                  activeTrackColor: SFColors.primary.withOpacity(0.4),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ],
           ),
-        ),
-        if (_avoidedAlcohol) ...[
-          const SizedBox(height: 16),
-          _buildDifficultySlider(),
+          const SizedBox(height: 24),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Alcohol-Free Today?',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+                Transform.scale(
+                  scale: 1.2,
+                  child: Switch(
+                    value: _avoidedAlcohol,
+                    onChanged: (value) {
+                      setState(() {
+                        _avoidedAlcohol = value;
+                        _showStreak = value;
+                        if (value) {
+                          _slideController.forward();
+                        }
+                      });
+                      _updateAlcoholData();
+                    },
+                    activeColor: Theme.of(context).colorScheme.primary,
+                    activeTrackColor:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.4),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_avoidedAlcohol) ...[
+            const SizedBox(height: 16),
+            _buildDifficultySlider(),
+          ],
         ],
-      ],
-    ),
-  );
-}
+      ),
+    );
+  }
+
   Widget _buildAchievements() {
     return Container(
       padding: const EdgeInsets.all(24),
@@ -639,7 +657,7 @@ Widget _buildDailyCheckIn() {
             children: [
               Icon(
                 Icons.emoji_events,
-                color: SFColors.primary,
+                color: Theme.of(context).colorScheme.primary,
                 size: 28,
               ),
               const SizedBox(width: 12),
@@ -648,7 +666,7 @@ Widget _buildDailyCheckIn() {
                 style: GoogleFonts.poppins(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
-                  color: SFColors.primary,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ],
@@ -667,8 +685,8 @@ Widget _buildDailyCheckIn() {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        SFColors.primary.withOpacity(0.8),
-                        SFColors.primary,
+                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                        Theme.of(context).colorScheme.primary,
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -699,20 +717,21 @@ Widget _buildDailyCheckIn() {
   }
 
   Widget _buildStreakCard() {
+    final theme = Theme.of(context);
     return SlideTransition(
       position: _slideAnimation,
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: SFColors.primaryGradient,
+          gradient:  LinearGradient(
+            colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: SFColors.primary.withOpacity(0.2),
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -780,12 +799,15 @@ Widget _buildDailyCheckIn() {
             end: Alignment.bottomRight,
             colors: Theme.of(context).brightness == Brightness.dark
                 ? [
-                    SFColors.neutral.withOpacity(0.9),
-                    SFColors.tertiary,
+                    Theme.of(context)
+                        .colorScheme
+                        .secondaryFixed
+                        .withOpacity(0.9),
+                    Theme.of(context).colorScheme.tertiary,
                   ]
                 : [
-                    SFColors.surface,
-                    SFColors.background,
+                    Theme.of(context).colorScheme.surface,
+                    Theme.of(context).colorScheme.background,
                   ],
           ),
         ),
@@ -824,14 +846,18 @@ Widget _buildDailyCheckIn() {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [SFColors.neutral, SFColors.tertiary],
+          colors: [
+            Theme.of(context).colorScheme.secondaryFixed,
+            Theme.of(context).colorScheme.tertiary
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.3),
+            color:
+                Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -850,14 +876,17 @@ Widget _buildDailyCheckIn() {
                     style: GoogleFonts.orbitron(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: SFColors.surface,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Day ${today.difference(DateTime(2024, 1, 1)).inDays + 1} of 75',
                     style: GoogleFonts.inter(
-                      color: SFColors.surface.withOpacity(0.9),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surface
+                          .withOpacity(0.9),
                       fontSize: 16,
                     ),
                   ),
@@ -881,8 +910,8 @@ Widget _buildDailyCheckIn() {
         shape: BoxShape.circle,
         gradient: LinearGradient(
           colors: [
-            SFColors.surface.withOpacity(0.2),
-            SFColors.surface.withOpacity(0.1),
+            Theme.of(context).colorScheme.surface.withOpacity(0.2),
+            Theme.of(context).colorScheme.surface.withOpacity(0.1),
           ],
         ),
       ),
@@ -892,7 +921,7 @@ Widget _buildDailyCheckIn() {
           style: GoogleFonts.orbitron(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: SFColors.surface,
+            color: Theme.of(context).colorScheme.surface,
           ),
         ),
       ),
@@ -903,11 +932,12 @@ Widget _buildDailyCheckIn() {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: SFColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.neutral.withOpacity(0.1),
+            color:
+                Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -934,7 +964,7 @@ Widget _buildDailyCheckIn() {
             style: GoogleFonts.inter(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: SFColors.textPrimary,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -943,7 +973,7 @@ Widget _buildDailyCheckIn() {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: benefit['progress'],
-              backgroundColor: SFColors.background,
+              backgroundColor: Theme.of(context).colorScheme.background,
               valueColor: AlwaysStoppedAnimation<Color>(benefit['color']),
               minHeight: 6,
             ),
@@ -1001,19 +1031,22 @@ Widget _buildDailyCheckIn() {
   }
 
   Widget _buildCommitmentCard() {
+    final theme = Theme.of(context);
     return Container(
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: SFColors.primaryGradient,
+        gradient:  LinearGradient(
+          colors: theme.brightness == Brightness.dark
+              ? [Color(0xFF4CAF50), Color(0xFF81C784)]
+              : [Color(0xFF2196F3), Color(0xFF64B5F6)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: SFColors.primary.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -1051,6 +1084,7 @@ Widget _buildDailyCheckIn() {
   }
 
   Widget _buildProgressGrid() {
+    final _benefitsData = getBenefitsData();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GridView.builder(
