@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:seventy_five_hard/features/presentation/login/ui/login_page.dart';
+import 'package:seventy_five_hard/features/presentation/profile/ui/reminder_section.dart';
 import 'package:seventy_five_hard/features/presentation/profile/ui/theme_selector.dart';
 import 'package:seventy_five_hard/themes.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,7 +19,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _editMode = false;
-
+  List<String> _reminders = [];
   User? _user;
   String _email = '';
   String _username = '';
@@ -88,25 +89,29 @@ class _ProfilePageState extends State<ProfilePage> {
     );
     Fluttertoast.showToast(msg: 'User has been signed out');
   }
- @override
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: Theme.of(context).brightness == Brightness.dark
-                  ? [
-                      Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.9),
-                      Theme.of(context).colorScheme.tertiary,
-                    ]
-                  : [
-                      Theme.of(context).colorScheme.surface,
-                      Theme.of(context).colorScheme.background,
-                    ],
-            ),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: Theme.of(context).brightness == Brightness.dark
+                ? [
+                    Theme.of(context)
+                        .colorScheme
+                        .secondaryFixed
+                        .withOpacity(0.9),
+                    Theme.of(context).colorScheme.tertiary,
+                  ]
+                : [
+                    Theme.of(context).colorScheme.surface,
+                    Theme.of(context).colorScheme.background,
+                  ],
           ),
+        ),
         child: SafeArea(
           child: _isLoading
               ? _buildLoadingState()
@@ -133,9 +138,11 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-Widget _buildThemeSection() {
-  return const ThemeSelector();
-}
+
+  Widget _buildThemeSection() {
+    return const ThemeSelector();
+  }
+
   Widget _buildLoadingState() {
     return Container(
       decoration: BoxDecoration(
@@ -153,7 +160,8 @@ Widget _buildThemeSection() {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.secondaryFixed),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).colorScheme.secondaryFixed),
             ),
             const SizedBox(height: 16),
             Text(
@@ -174,14 +182,18 @@ Widget _buildThemeSection() {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Theme.of(context).colorScheme.secondaryFixed, Theme.of(context).colorScheme.tertiary],
+          colors: [
+            Theme.of(context).colorScheme.secondaryFixed,
+            Theme.of(context).colorScheme.tertiary
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.3),
+            color:
+                Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -207,7 +219,10 @@ Widget _buildThemeSection() {
                   Text(
                     '75 Hard Warrior',
                     style: GoogleFonts.inter(
-                      color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surface
+                          .withOpacity(0.9),
                       fontSize: 16,
                     ),
                   ),
@@ -301,7 +316,8 @@ Widget _buildThemeSection() {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
+            color:
+                Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -332,7 +348,8 @@ Widget _buildThemeSection() {
           ),
           const SizedBox(height: 20),
           TextFormField(
-            style: GoogleFonts.inter(color: Theme.of(context).colorScheme.secondaryFixed),
+            style: GoogleFonts.inter(
+                color: Theme.of(context).colorScheme.secondaryFixed),
             initialValue: _username,
             enabled: _editMode,
             decoration: _buildInputDecoration('Username', Icons.person),
@@ -340,17 +357,24 @@ Widget _buildThemeSection() {
           ),
           const SizedBox(height: 16),
           TextFormField(
-            style: GoogleFonts.inter(color: Theme.of(context).colorScheme.secondaryFixed),
+            style: GoogleFonts.inter(
+                color: Theme.of(context).colorScheme.secondaryFixed),
             initialValue: _email,
             enabled: false,
             decoration: _buildInputDecoration('Email', Icons.email),
           ),
           _buildThemeSection(),
-          
+          const SizedBox(height: 20),
+ReminderSection(
+  userId: _user?.uid ?? '',
+  initialReminders: _reminders,
+  onRemindersUpdated: (updatedReminders) {
+    setState(() => _reminders = updatedReminders);
+  },
+),
         ],
       ),
     );
-
   }
 
   Widget _buildSettingsCard() {
@@ -363,7 +387,8 @@ Widget _buildThemeSection() {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
+            color:
+                Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -391,10 +416,12 @@ Widget _buildThemeSection() {
               ),
             ),
             child: _isSubmitting
-                ? CircularProgressIndicator(color: Theme.of(context).colorScheme.surface)
+                ? CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.surface)
                 : Text(
                     'Save Changes',
-                    style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.surface),
                   ),
           ),
         ],
@@ -408,14 +435,15 @@ Widget _buildThemeSection() {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Theme.of(context).colorScheme.secondaryFixed, 
+            Theme.of(context).colorScheme.secondaryFixed,
             const Color(0xFFB23B3B), // Keep error color for danger zone
           ],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.2),
+            color:
+                Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -453,18 +481,23 @@ Widget _buildThemeSection() {
   InputDecoration _buildInputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.secondaryFixed),
+      prefixIcon:
+          Icon(icon, color: Theme.of(context).colorScheme.secondaryFixed),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Theme.of(context).colorScheme.secondaryFixed),
+        borderSide:
+            BorderSide(color: Theme.of(context).colorScheme.secondaryFixed),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.2)),
+        borderSide: BorderSide(
+            color:
+                Theme.of(context).colorScheme.secondaryFixed.withOpacity(0.2)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Theme.of(context).colorScheme.secondaryFixed, width: 2),
+        borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.secondaryFixed, width: 2),
       ),
     );
   }
