@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:seventy_five_hard/features/presentation/home/ui/home_page.dart';
-import 'package:seventy_five_hard/features/presentation/pages/calendar.dart';
+import 'package:seventy_five_hard/features/home/ui/home_page.dart';
+import 'package:seventy_five_hard/features/calendar/presentation/pages/calendar.dart';
 import 'package:seventy_five_hard/features/presentation/pages/gallery.dart';
-import 'package:seventy_five_hard/features/presentation/pages/social_page.dart';
-import 'package:seventy_five_hard/features/presentation/profile/ui/profile_page.dart';
+import 'package:seventy_five_hard/features/social/presentation/social_page.dart';
+import 'package:seventy_five_hard/features/profile/ui/profile_page.dart';
 import 'package:seventy_five_hard/features/presentation/widgets/custom_navbar.dart';
 import 'package:seventy_five_hard/themes.dart';
 

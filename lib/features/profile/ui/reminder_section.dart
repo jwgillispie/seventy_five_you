@@ -157,7 +157,7 @@ class _ReminderSectionState extends State<ReminderSection> {
                 child: Row(
                   children: [
                     Icon(
-                      Icons.lightbulb_outline_rounded,
+                      Icons.lightbulb_outline_rounded ,
                       color: Theme.of(context).colorScheme.secondaryFixed,
                       size: 20,
                     ),

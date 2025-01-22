@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:seventy_five_hard/features/app/splash_screen/splash_screen.dart';
-import 'package:seventy_five_hard/features/presentation/pages/calendar.dart';
+import 'package:seventy_five_hard/features/calendar/presentation/pages/calendar.dart';
 import 'package:seventy_five_hard/features/presentation/login/ui/login_page.dart';
-import 'package:seventy_five_hard/features/presentation/profile/ui/profile_page.dart';
+import 'package:seventy_five_hard/features/profile/ui/profile_page.dart';
 import 'package:seventy_five_hard/features/presentation/signup/ui/sign_up_page.dart';
-import 'package:seventy_five_hard/features/presentation/home/ui/home_page.dart';
+import 'package:seventy_five_hard/features/home/ui/home_page.dart';
 import 'package:seventy_five_hard/features/presentation/pages/diet_page.dart';
 import 'package:seventy_five_hard/features/presentation/outside_workout/ui/w1_page.dart';
 import 'package:seventy_five_hard/features/presentation/pages/w2_page.dart';

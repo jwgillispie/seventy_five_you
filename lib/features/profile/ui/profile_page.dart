@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:seventy_five_hard/features/presentation/login/ui/login_page.dart';
-import 'package:seventy_five_hard/features/presentation/profile/ui/reminder_section.dart';
-import 'package:seventy_five_hard/features/presentation/profile/ui/theme_selector.dart';
+import 'package:seventy_five_hard/features/profile/ui/reminder_section.dart';
+import 'package:seventy_five_hard/features/profile/ui/theme_selector.dart';
 import 'package:seventy_five_hard/themes.dart';
 import 'package:google_fonts/google_fonts.dart';
 
