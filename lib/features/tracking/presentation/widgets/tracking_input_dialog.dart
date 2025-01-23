@@ -40,13 +40,13 @@ class TrackingInputDialog extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [AppColors.neutral, AppColors.tertiary],
+                      colors: [SFColors.neutral, SFColors.tertiary],
                     ),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     icon,
-                    color: AppColors.surface,
+                    color: SFColors.surface,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -56,7 +56,7 @@ class TrackingInputDialog extends StatelessWidget {
                     style: GoogleFonts.orbitron(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: SFColors.textPrimary,
                     ),
                   ),
                 ),
@@ -71,13 +71,13 @@ class TrackingInputDialog extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 filled: true,
-                fillColor: AppColors.background,
+                fillColor: SFColors.background,
               ),
             ),
             const SizedBox(height: 24),
             AppButton(
               onPressed: onSubmit,
-              label: 'Save',
+              text: 'Save',
               isLoading: isLoading,
             ),
           ],

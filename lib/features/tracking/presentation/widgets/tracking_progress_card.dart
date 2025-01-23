@@ -31,13 +31,13 @@ class TrackingProgressCard extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: isCompleted 
-              ? [AppColors.success, AppColors.success.withOpacity(0.8)]
-              : [AppColors.neutral, AppColors.tertiary],
+              ? [SFColors.success, SFColors.success.withOpacity(0.8)]
+              : [SFColors.neutral, SFColors.tertiary],
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.neutral.withOpacity(0.1),
+              color: SFColors.neutral.withOpacity(0.1),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -51,12 +51,12 @@ class TrackingProgressCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.surface.withOpacity(0.2),
+                    color: SFColors.surface.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     icon,
-                    color: AppColors.surface,
+                    color: SFColors.surface,
                     size: 24,
                   ),
                 ),
@@ -67,14 +67,14 @@ class TrackingProgressCard extends StatelessWidget {
                     style: GoogleFonts.orbitron(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.surface,
+                      color: SFColors.surface,
                     ),
                   ),
                 ),
                 if (isCompleted)
                   const Icon(
                     Icons.check_circle,
-                    color: AppColors.surface,
+                    color: SFColors.surface,
                   ),
               ],
             ),
@@ -83,8 +83,8 @@ class TrackingProgressCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               child: LinearProgressIndicator(
                 value: progress,
-                backgroundColor: AppColors.surface.withOpacity(0.2),
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.surface),
+                backgroundColor: SFColors.surface.withOpacity(0.2),
+                valueColor: AlwaysStoppedAnimation<Color>(SFColors.surface),
                 minHeight: 8,
               ),
             ),
@@ -93,7 +93,7 @@ class TrackingProgressCard extends StatelessWidget {
               subtitle,
               style: GoogleFonts.inter(
                 fontSize: 14,
-                color: AppColors.surface.withOpacity(0.9),
+                color: SFColors.surface.withOpacity(0.9),
               ),
             ),
           ],

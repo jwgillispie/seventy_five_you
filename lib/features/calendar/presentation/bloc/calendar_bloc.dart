@@ -4,8 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
+import 'package:seventy_five_hard/features/tracking/data/models/day_model.dart';
 import 'dart:convert';
-import '../../../../models/day_model.dart';
 
 part 'calendar_event.dart';
 part 'calendar_state.dart';

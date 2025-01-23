@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:seventy_five_hard/features/tracking/presentation/bloc/tracking_event.dart';
 import '../../../../../core/themes/app_colors.dart';
 import '../bloc/tracking_bloc.dart';
 import '../widgets/tracking_input_dialog.dart';
@@ -45,8 +46,8 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppColors.surface,
-              AppColors.background,
+              SFColors.surface,
+              SFColors.background,
             ],
           ),
         ),
@@ -86,7 +87,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.neutral, AppColors.tertiary],
+          colors: [SFColors.neutral, SFColors.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -104,14 +105,14 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
                     style: GoogleFonts.orbitron(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.surface,
+                      color: SFColors.surface,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Minimum 45 minutes',
                     style: GoogleFonts.inter(
-                      color: AppColors.surface.withOpacity(0.9),
+                      color: SFColors.surface.withOpacity(0.9),
                       fontSize: 16,
                     ),
                   ),
@@ -130,11 +131,11 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: SFColors.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.neutral.withOpacity(0.1),
+            color: SFColors.neutral.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -148,7 +149,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: SFColors.textPrimary,
             ),
           ),
           const SizedBox(height: 16),
@@ -165,10 +166,10 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
                     setState(() => _selectedWorkoutType = type);
                   }
                 },
-                backgroundColor: AppColors.background,
-                selectedColor: AppColors.primary,
+                backgroundColor: SFColors.background,
+                selectedColor: SFColors.primary,
                 labelStyle: TextStyle(
-                  color: isSelected ? AppColors.surface : AppColors.textPrimary,
+                  color: isSelected ? SFColors.surface : SFColors.textPrimary,
                 ),
               );
             }).toList(),
@@ -182,11 +183,11 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: SFColors.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.neutral.withOpacity(0.1),
+            color: SFColors.neutral.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -200,7 +201,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: SFColors.textPrimary,
             ),
           ),
           const SizedBox(height: 16),
@@ -213,7 +214,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               filled: true,
-              fillColor: AppColors.background,
+              fillColor: SFColors.background,
             ),
           ),
         ],
@@ -225,7 +226,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: SFColors.surface,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -236,7 +237,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: SFColors.textPrimary,
             ),
           ),
           const SizedBox(height: 16),
@@ -249,7 +250,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
             onChanged: (value) {
               setState(() => _intensity = value.toInt());
             },
-            activeColor: AppColors.primary,
+            activeColor: SFColors.primary,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -268,7 +269,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: SFColors.surface,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -279,7 +280,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: SFColors.textPrimary,
             ),
           ),
           const SizedBox(height: 16),
@@ -328,8 +329,8 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
       onPressed: onPressed,
       icon: Icon(icon),
       style: IconButton.styleFrom(
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.surface,
+        backgroundColor: SFColors.primary,
+        foregroundColor: SFColors.surface,
         padding: const EdgeInsets.all(12),
       ),
     );
@@ -339,7 +340,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: SFColors.surface,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -350,7 +351,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: SFColors.textPrimary,
             ),
           ),
           const SizedBox(height: 16),
@@ -363,7 +364,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               filled: true,
-              fillColor: AppColors.background,
+              fillColor: SFColors.background,
             ),
           ),
         ],
@@ -379,7 +380,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
               ? null
               : _submitWorkout,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
+            backgroundColor: SFColors.primary,
             padding: const EdgeInsets.symmetric(
               horizontal: 48,
               vertical: 16,
@@ -395,7 +396,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
                   style: GoogleFonts.inter(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.surface,
+                    color: SFColors.surface,
                   ),
                 ),
         );
@@ -408,7 +409,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.surface.withOpacity(0.2),
+        color: SFColors.surface.withOpacity(0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -421,7 +422,7 @@ class _WorkoutTrackingPageState extends State<WorkoutTrackingPage> {
           Text(
             '72°F',
             style: GoogleFonts.inter(
-              color: AppColors.surface,
+              color: SFColors.surface,
               fontWeight: FontWeight.bold,
             ),
           ),

@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../../core/navigation/app_router.dart';
+import 'package:provider/provider.dart';
+import 'package:seventy_five_hard/features/auth/presentation/bloc/auth_state.dart';
+import 'package:seventy_five_hard/features/auth/presentation/pages/login_page.dart';
 import '../bloc/auth_bloc.dart';
 import '../providers/auth_provider.dart';
 
@@ -37,7 +39,7 @@ class AuthWrapper extends StatelessWidget {
           final authProvider = context.watch<AuthProvider>();
           
           if (authProvider.isLoading) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           }
           
           if (!authProvider.isAuthenticated) {

@@ -1,6 +1,6 @@
 
 // lib/shared/services/storage_service.dart
-import 'package:shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
   static final StorageService _instance = StorageService._internal();

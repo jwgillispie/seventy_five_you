@@ -2,12 +2,12 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:seventy_five_hard/features/tracking/presentation/bloc/tracking_event.dart';
 import '../../domain/entities/water_tracking.dart';
 import '../../domain/entities/workout_tracking.dart';
 import '../../domain/usecases/update_water_tracking.dart';
 import '../../domain/usecases/update_workout_tracking.dart';
 
-part 'tracking_event.dart';
 part 'tracking_state.dart';
 
 class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {

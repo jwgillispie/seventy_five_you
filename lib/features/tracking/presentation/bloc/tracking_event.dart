@@ -1,41 +1,57 @@
-//lib/features/tracking/presentation/bloc/tracking_state.dart
+//lib/features/tracking/presentation/bloc/tracking_event.dart
 
-part of 'tracking_bloc.dart';
 
-abstract class TrackingState extends Equatable {
-  const TrackingState();
+import 'package:equatable/equatable.dart';
+
+abstract class TrackingEvent extends Equatable {
+  const TrackingEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
-class TrackingInitial extends TrackingState {}
+class WaterTrackingUpdated extends TrackingEvent {
+  final int peeCount;
+  final int ouncesDrunk;
+  final bool completed;
 
-class TrackingLoading extends TrackingState {}
-
-class WaterTrackingUpdateSuccess extends TrackingState {
-  final WaterTracking tracking;
-
-  const WaterTrackingUpdateSuccess(this.tracking);
+  const WaterTrackingUpdated({
+    required this.peeCount,
+    required this.ouncesDrunk,
+    required this.completed,
+  });
 
   @override
-  List<Object> get props => [tracking];
+  List<Object> get props => [peeCount, ouncesDrunk, completed];
 }
 
-class WorkoutTrackingUpdateSuccess extends TrackingState {
-  final WorkoutTracking tracking;
+class WorkoutTrackingUpdated extends TrackingEvent {
+  final String type;
+  final String description;
+  final String thoughts;
+  final bool isOutdoor;
+  final Duration duration;
+  final int intensity;
+  final bool completed;
 
-  const WorkoutTrackingUpdateSuccess(this.tracking);
+  const WorkoutTrackingUpdated({
+    required this.type,
+    required this.description,
+    required this.thoughts,
+    required this.isOutdoor,
+    required this.duration,
+    required this.intensity,
+    required this.completed,
+  });
 
   @override
-  List<Object> get props => [tracking];
-}
-
-class TrackingError extends TrackingState {
-  final String message;
-
-  const TrackingError({required this.message});
-
-  @override
-  List<Object> get props => [message];
+  List<Object> get props => [
+    type,
+    description,
+    thoughts,
+    isOutdoor,
+    duration,
+    intensity,
+    completed,
+  ];
 }

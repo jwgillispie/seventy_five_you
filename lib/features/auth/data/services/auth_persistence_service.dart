@@ -1,6 +1,6 @@
 // lib/features/auth/data/services/auth_persistence_service.dart
 
-import 'package:shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../../core/errors/exceptions.dart';
 import '../models/user_model.dart';
 import 'dart:convert';

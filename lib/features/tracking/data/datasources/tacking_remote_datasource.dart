@@ -27,7 +27,7 @@ class TrackingRemoteDataSourceImpl implements TrackingRemoteDataSource {
   Future<WaterTrackingModel> getWaterTracking(String date) async {
     try {
       final uid = _auth.currentUser?.uid;
-      if (uid == null) throw const AuthException(message: 'Not authenticated');
+      if (uid == null) throw  AuthException(message: 'Not authenticated');
 
       final response = await _client.get('/day/$uid/$date/water');
       return WaterTrackingModel.fromJson(response);
@@ -40,7 +40,7 @@ class TrackingRemoteDataSourceImpl implements TrackingRemoteDataSource {
   Future<WaterTrackingModel> updateWaterTracking(WaterTrackingModel tracking) async {
     try {
       final uid = _auth.currentUser?.uid;
-      if (uid == null) throw const AuthException(message: 'Not authenticated');
+      if (uid == null) throw AuthException(message: 'Not authenticated');
 
       final response = await _client.put(
         '/day/$uid/${tracking.date}/water',
@@ -56,7 +56,7 @@ class TrackingRemoteDataSourceImpl implements TrackingRemoteDataSource {
   Future<WorkoutTrackingModel> getWorkoutTracking(String date) async {
     try {
       final uid = _auth.currentUser?.uid;
-      if (uid == null) throw const AuthException(message: 'Not authenticated');
+      if (uid == null) throw  AuthException(message: 'Not authenticated');
 
       final response = await _client.get('/day/$uid/$date/workout');
       return WorkoutTrackingModel.fromJson(response);
@@ -69,7 +69,7 @@ class TrackingRemoteDataSourceImpl implements TrackingRemoteDataSource {
   Future<WorkoutTrackingModel> updateWorkoutTracking(WorkoutTrackingModel tracking) async {
     try {
       final uid = _auth.currentUser?.uid;
-      if (uid == null) throw const AuthException(message: 'Not authenticated');
+      if (uid == null) throw  AuthException(message: 'Not authenticated');
 
       final response = await _client.put(
         '/day/$uid/${tracking.date}/workout',

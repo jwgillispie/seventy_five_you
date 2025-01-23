@@ -4,14 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:seventy_five_hard/features/presentation/outside_workout/ui/w1_page.dart';
-import 'package:seventy_five_hard/features/presentation/pages/alcohol_page.dart';
-import 'package:seventy_five_hard/features/presentation/pages/diet_page.dart';
-import 'package:seventy_five_hard/features/presentation/pages/ten_pages_page.dart';
-import 'package:seventy_five_hard/features/presentation/pages/w2_page.dart';
-import 'package:seventy_five_hard/features/presentation/pages/water_page.dart';
-import 'package:seventy_five_hard/features/presentation/users/bloc/user_bloc.dart';
-import 'package:seventy_five_hard/themes.dart';
+import 'package:seventy_five_hard/features/tracking/presentation/alcohol/pages/alcohol_page.dart';
+import 'package:seventy_five_hard/features/tracking/presentation/diet/pages/diet_page.dart';
+import 'package:seventy_five_hard/features/tracking/presentation/pages/water_tracking.dart';
+import 'package:seventy_five_hard/features/tracking/presentation/pages/workout_tracking.dart';
+import 'package:seventy_five_hard/features/tracking/presentation/reading/pages/reading_page.dart';
+import 'package:seventy_five_hard/features/user/presentation/bloc/user_bloc.dart';
+import 'package:seventy_five_hard/features/user/presentation/bloc/user_event.dart';
+import 'package:seventy_five_hard/features/user/presentation/bloc/user_state.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -143,7 +143,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget _buildChallengeGrid(ThemeData theme) {
     final challenges = [
-      {"title": "Diet", "icon": Icons.restaurant, "color": Theme.of(context).colorScheme.primary},
+      {
+        "title": "Diet",
+        "icon": Icons.restaurant,
+        "color": Theme.of(context).colorScheme.primary
+      },
       {
         "title": "Outside Workout",
         "icon": Icons.directions_run,
@@ -154,7 +158,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         "icon": Icons.fitness_center,
         "color": Theme.of(context).colorScheme.primaryFixed
       },
-      {"title": "Water", "icon": Icons.water_drop, "color": Theme.of(context).colorScheme.secondary},
+      {
+        "title": "Water",
+        "icon": Icons.water_drop,
+        "color": Theme.of(context).colorScheme.secondary
+      },
       {
         "title": "Alcohol",
         "icon": Icons.no_drinks,
@@ -253,7 +261,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withOpacity(0.3),
                       blurRadius: 15,
                       offset: const Offset(0, 4),
                     ),
@@ -400,163 +411,177 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
       ],
     );
-  }Widget _buildChallengeCard({
-  required String title,
-  required IconData icon,
-  required Color color,
-  required ThemeData theme,
-}) {
-  return GestureDetector(
-    onTap: () => _navigateToPage(context, title),
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Theme.of(context).colorScheme.primaryFixed.withOpacity(0.25),
-            Theme.of(context).colorScheme.tertiary.withOpacity(0.3),
-          ],
-          stops: const [0.3, 0.9],
-        ),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Large background icon
-          Positioned(
-            right: -15,
-            bottom: -15,
-            child: Icon(
-              icon,
-              size: 90,
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.07),
-            ),
-          ),
-          // Main content column
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Icon container
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                      Theme.of(context).colorScheme.secondary.withOpacity(0.2),
-                    ],
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.25),
-                      blurRadius: 10,
-                      spreadRadius: 1,
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  icon,
-                  size: 30,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Title
-              Text(
-                title.toUpperCase(),
-                textAlign: TextAlign.center,
-                style: GoogleFonts.orbitron(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.surface,
-                  letterSpacing: 0.8,
-                  height: 1.2,
-                  shadows: [
-                    Shadow(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                      offset: const Offset(0, 2),
-                      blurRadius: 3,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 14),
-              // Start button
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  gradient:  LinearGradient(
-                    colors: [
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.secondary,
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                     Icon(
-                      Icons.play_arrow_rounded,
-                      size: 18,
-                      color: Theme.of(context).colorScheme.surface,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'START',
-                      style: GoogleFonts.rajdhani(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.surface,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+  }
+
+  Widget _buildChallengeCard({
+    required String title,
+    required IconData icon,
+    required Color color,
+    required ThemeData theme,
+  }) {
+    return GestureDetector(
+      onTap: () => _navigateToPage(context, title),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Theme.of(context).colorScheme.primaryFixed.withOpacity(0.25),
+              Theme.of(context).colorScheme.tertiary.withOpacity(0.3),
             ],
+            stops: const [0.3, 0.9],
           ),
-        ],
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Large background icon
+            Positioned(
+              right: -15,
+              bottom: -15,
+              child: Icon(
+                icon,
+                size: 90,
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.07),
+              ),
+            ),
+            // Main content column
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Icon container
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                        Theme.of(context)
+                            .colorScheme
+                            .secondary
+                            .withOpacity(0.2),
+                      ],
+                    ),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withOpacity(0.25),
+                        blurRadius: 10,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    icon,
+                    size: 30,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Title
+                Text(
+                  title.toUpperCase(),
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.orbitron(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.surface,
+                    letterSpacing: 0.8,
+                    height: 1.2,
+                    shadows: [
+                      Shadow(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withOpacity(0.5),
+                        offset: const Offset(0, 2),
+                        blurRadius: 3,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 14),
+                // Start button
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(context).colorScheme.primary,
+                        Theme.of(context).colorScheme.secondary,
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.play_arrow_rounded,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.surface,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'START',
+                        style: GoogleFonts.rajdhani(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(context).colorScheme.surface,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
+
   double _randomPosition(double max) {
     return Random().nextDouble() * max;
   }
 
   void _navigateToPage(BuildContext context, String title) {
-    // Instead of navigation, use a callback or state management
-    // to show these pages within the same tab
     final content = switch (title) {
       "Diet" => const DietPage(),
-      "Outside Workout" => const WorkoutOnePage(),
-      "Second Workout" => const WorkoutTwoPage(),
-      "Water" => const WaterPage(),
+      "Outside Workout" => const WorkoutTrackingPage(isOutdoor: true),
+      "Second Workout" => const WorkoutTrackingPage(isOutdoor: false),
+      "Water" => const WaterTrackingPage(),
       "Alcohol" => const AlcoholPage(),
-      "10 Pages" => const TenPagesPage(),
+      "10 Pages" => const ReadingPage(),
       _ => null
     };
 

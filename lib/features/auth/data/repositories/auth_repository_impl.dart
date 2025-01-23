@@ -1,6 +1,7 @@
 //lib/features/auth/data/repositories/auth_repository_impl.dart
 
 import 'package:dartz/dartz.dart';
+import 'package:seventy_five_hard/features/auth/data/models/user_model.dart';
 import '../../../../../core/errors/exceptions.dart';
 import '../../../../../core/errors/failures.dart';
 import '../../../../../core/network/network_info.dart';

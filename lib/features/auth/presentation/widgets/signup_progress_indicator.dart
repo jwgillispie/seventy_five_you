@@ -27,8 +27,8 @@ class SignupProgressIndicator extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 2),
                 decoration: BoxDecoration(
                   color: index < currentStep 
-                      ? AppColors.primary 
-                      : AppColors.neutral.withOpacity(0.2),
+                      ? SFColors.primary 
+                      : SFColors.neutral.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -40,7 +40,7 @@ class SignupProgressIndicator extends StatelessWidget {
           'Step $currentStep of $totalSteps',
           style: GoogleFonts.inter(
             fontSize: 12,
-            color: AppColors.textSecondary,
+            color: SFColors.textSecondary,
           ),
         ),
       ],

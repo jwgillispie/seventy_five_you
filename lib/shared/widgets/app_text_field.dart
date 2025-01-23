@@ -1,5 +1,10 @@
 
 // lib/shared/widgets/app_text_field.dart
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../../core/themes/app_colors.dart';
+
 class AppTextField extends StatelessWidget {
   final TextEditingController? controller;
   final String? label;

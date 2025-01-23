@@ -1,7 +1,11 @@
-lib/features/tracking/presentation/pages/water_tracking_page.dart
+// lib/features/tracking/presentation/pages/water_tracking_page.dart
+
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:seventy_five_hard/features/tracking/presentation/bloc/tracking_event.dart';
+import 'package:seventy_five_hard/features/tracking/presentation/water/painters/wave_painter.dart';
 import '../../../../../core/themes/app_colors.dart';
 import '../bloc/tracking_bloc.dart';
 import '../widgets/tracking_progress_card.dart';
@@ -45,8 +49,8 @@ class _WaterTrackingPageState extends State<WaterTrackingPage>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppColors.surface,
-              AppColors.background,
+              SFColors.surface,
+              SFColors.background,
             ],
           ),
         ),
@@ -80,7 +84,7 @@ class _WaterTrackingPageState extends State<WaterTrackingPage>
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.neutral, AppColors.tertiary],
+          colors: [SFColors.neutral, SFColors.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -99,14 +103,14 @@ class _WaterTrackingPageState extends State<WaterTrackingPage>
                     style: GoogleFonts.orbitron(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.surface,
+                      color: SFColors.surface,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Daily Goal: 1 Gallon',
                     style: GoogleFonts.inter(
-                      color: AppColors.surface.withOpacity(0.9),
+                      color: SFColors.surface.withOpacity(0.9),
                       fontSize: 16,
                     ),
                   ),
@@ -127,7 +131,7 @@ class _WaterTrackingPageState extends State<WaterTrackingPage>
       height: 80,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: AppColors.surface.withOpacity(0.2),
+        color: SFColors.surface.withOpacity(0.2),
       ),
       child: Center(
         child: Text(
@@ -135,7 +139,7 @@ class _WaterTrackingPageState extends State<WaterTrackingPage>
           style: GoogleFonts.orbitron(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: AppColors.surface,
+            color: SFColors.surface,
           ),
         ),
       ),
@@ -150,11 +154,11 @@ class _WaterTrackingPageState extends State<WaterTrackingPage>
           height: 300,
           width: 150,
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: SFColors.surface,
             borderRadius: BorderRadius.circular(75),
             boxShadow: [
               BoxShadow(
-                color: AppColors.neutral.withOpacity(0.2),
+                color: SFColors.neutral.withOpacity(0.2),
                 blurRadius: 15,
                 offset: const Offset(0, 5),
               ),
@@ -189,7 +193,7 @@ class _WaterTrackingPageState extends State<WaterTrackingPage>
     return ElevatedButton(
       onPressed: () => _addWater(amount),
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.neutral,
+        backgroundColor: SFColors.neutral,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
@@ -197,12 +201,12 @@ class _WaterTrackingPageState extends State<WaterTrackingPage>
       ),
       child: Row(
         children: [
-          Icon(Icons.water_drop, color: AppColors.surface),
+          Icon(Icons.water_drop, color: SFColors.surface),
           const SizedBox(width: 8),
           Text(
             label,
             style: GoogleFonts.inter(
-              color: AppColors.surface,
+              color: SFColors.surface,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -215,11 +219,11 @@ class _WaterTrackingPageState extends State<WaterTrackingPage>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: SFColors.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.neutral.withOpacity(0.1),
+            color: SFColors.neutral.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -232,7 +236,7 @@ class _WaterTrackingPageState extends State<WaterTrackingPage>
             style: GoogleFonts.orbitron(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: SFColors.textPrimary,
             ),
           ),
           const SizedBox(height: 20),
@@ -243,7 +247,7 @@ class _WaterTrackingPageState extends State<WaterTrackingPage>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.neutral.withOpacity(0.1),
+                  color: SFColors.neutral.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Text(
@@ -251,7 +255,7 @@ class _WaterTrackingPageState extends State<WaterTrackingPage>
                   style: GoogleFonts.orbitron(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.neutral,
+                    color: SFColors.neutral,
                   ),
                 ),
               ),
@@ -268,8 +272,8 @@ class _WaterTrackingPageState extends State<WaterTrackingPage>
       onPressed: onPressed,
       icon: Icon(icon),
       style: IconButton.styleFrom(
-        backgroundColor: AppColors.neutral,
-        foregroundColor: AppColors.surface,
+        backgroundColor: SFColors.neutral,
+        foregroundColor: SFColors.surface,
         padding: const EdgeInsets.all(12),
       ),
     );
@@ -277,7 +281,7 @@ class _WaterTrackingPageState extends State<WaterTrackingPage>
 
   void _addWater(int amount) {
     setState(() {
-      _waterIntake = math.min(_waterIntake + amount, _targetIntake);
+      _waterIntake = min(_waterIntake + amount, _targetIntake);
     });
     context.read<TrackingBloc>().add(
       WaterTrackingUpdated(
@@ -290,7 +294,7 @@ class _WaterTrackingPageState extends State<WaterTrackingPage>
 
   void _updatePeeCount(int delta) {
     setState(() {
-      _peeCount = math.max(0, _peeCount + delta);
+      _peeCount = max(0, _peeCount + delta);
     });
     context.read<TrackingBloc>().add(
       WaterTrackingUpdated(

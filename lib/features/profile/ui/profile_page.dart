@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:seventy_five_hard/features/presentation/login/ui/login_page.dart';
+import 'package:seventy_five_hard/features/auth/presentation/pages/login_page.dart';
 import 'package:seventy_five_hard/features/profile/ui/reminder_section.dart';
 import 'package:seventy_five_hard/features/profile/ui/theme_selector.dart';
 import 'package:seventy_five_hard/themes.dart';

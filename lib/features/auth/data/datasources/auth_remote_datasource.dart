@@ -1,9 +1,9 @@
-//lib/features/auth/data/datasources/auth_remote_datasource.dart
+// lib/features/auth/data/datasources/auth_remote_datasource.dart
 
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import '../../../../../core/errors/exceptions.dart';
 import '../../../../../core/network/api_client.dart';
 import '../models/user_model.dart';
+import '../services/firebase_auth_service.dart';
 
 abstract class AuthRemoteDataSource {
   Future<UserModel> signIn(String email, String password);
@@ -14,29 +14,25 @@ abstract class AuthRemoteDataSource {
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final firebase_auth.FirebaseAuth _firebaseAuth;
+  final FirebaseAuthService _firebaseAuth;
   final ApiClient _apiClient;
 
   AuthRemoteDataSourceImpl({
-    required firebase_auth.FirebaseAuth firebaseAuth,
+    required FirebaseAuthService firebaseAuth,
     required ApiClient apiClient,
-  }) : _firebaseAuth = firebaseAuth,
-       _apiClient = apiClient;
+  })  : _firebaseAuth = firebaseAuth,
+        _apiClient = apiClient;
 
   @override
   Future<UserModel> signIn(String email, String password) async {
     try {
-      final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
+      final firebaseUser = await _firebaseAuth.signInWithEmailAndPassword(
+        email,
+        password,
       );
 
-      if (userCredential.user == null) {
-        throw AuthException(message: 'Sign in failed');
-      }
-
       final response = await _apiClient.get(
-        '/user/${userCredential.user!.uid}',
+        '/user/${firebaseUser.uid}',
       );
 
       return UserModel.fromJson(response);
@@ -48,17 +44,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<UserModel> signUp(String email, String password, String username) async {
     try {
-      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
+      final firebaseUser = await _firebaseAuth.signUpWithEmailAndPassword(
+        email,
+        password,
       );
 
-      if (userCredential.user == null) {
-        throw AuthException(message: 'Sign up failed');
-      }
-
       final userData = UserModel(
-        firebaseUid: userCredential.user!.uid,
+        firebaseUid: firebaseUser.uid,
         email: email,
         displayName: username,
       );
@@ -86,7 +78,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<UserModel?> getCurrentUser() async {
     try {
-      final firebaseUser = _firebaseAuth.currentUser;
+      final firebaseUser = _firebaseAuth.getCurrentUser();
       if (firebaseUser == null) return null;
 
       final response = await _apiClient.get(

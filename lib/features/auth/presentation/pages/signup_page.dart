@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:seventy_five_hard/features/auth/presentation/bloc/auth_event.dart';
+import 'package:seventy_five_hard/features/auth/presentation/bloc/auth_state.dart';
 import '../../../../../shared/widgets/app_scaffold.dart';
 import '../../../../../core/themes/app_colors.dart';
 import '../bloc/auth_bloc.dart';
@@ -20,7 +22,7 @@ class SignupPage extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.error,
+                backgroundColor: SFColors.error,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -64,7 +66,7 @@ class SignupPage extends StatelessWidget {
           style: GoogleFonts.orbitron(
             fontSize: 40,
             fontWeight: FontWeight.bold,
-            color: AppColors.primary,
+            color: SFColors.primary,
           ),
         ),
         const SizedBox(height: 16),
@@ -72,7 +74,7 @@ class SignupPage extends StatelessWidget {
           'Create your account',
           style: GoogleFonts.inter(
             fontSize: 18,
-            color: AppColors.textSecondary,
+            color: SFColors.textSecondary,
           ),
         ),
       ],
@@ -83,14 +85,14 @@ class SignupPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: SFColors.surface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: AppColors.surface.withOpacity(0.1),
+          color: SFColors.surface.withOpacity(0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.neutral.withOpacity(0.1),
+            color: SFColors.neutral.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -119,7 +121,7 @@ class SignupPage extends StatelessWidget {
         Text(
           "Already have an account?",
           style: GoogleFonts.inter(
-            color: AppColors.textSecondary,
+            color: SFColors.textSecondary,
           ),
         ),
         TextButton(
@@ -127,7 +129,7 @@ class SignupPage extends StatelessWidget {
           child: Text(
             'Login',
             style: GoogleFonts.inter(
-              color: AppColors.primary,
+              color: SFColors.primary,
               fontWeight: FontWeight.w600,
             ),
           ),

@@ -1,5 +1,9 @@
 
 // lib/shared/widgets/loading_indicator.dart
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:seventy_five_hard/core/themes/app_colors.dart';
+
 class LoadingIndicator extends StatelessWidget {
   final String? message;
   final Color? color;

@@ -2,8 +2,8 @@
 // lib/features/calendar/presentation/widgets/day_details.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../themes.dart';
-import '../../../../models/day_model.dart';
+import 'package:seventy_five_hard/core/themes/app_colors.dart';
+import 'package:seventy_five_hard/features/tracking/data/models/day_model.dart';
 
 class DayDetails extends StatelessWidget {
   final Day day;

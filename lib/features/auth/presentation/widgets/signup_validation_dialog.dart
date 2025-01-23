@@ -28,12 +28,12 @@ class SignupValidationDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: SFColors.primary.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.warning_amber_rounded,
-                color: AppColors.primary,
+                color: SFColors.primary,
                 size: 32,
               ),
             ),
@@ -43,7 +43,7 @@ class SignupValidationDialog extends StatelessWidget {
               style: GoogleFonts.orbitron(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: SFColors.textPrimary,
               ),
             ),
             const SizedBox(height: 12),
@@ -51,7 +51,7 @@ class SignupValidationDialog extends StatelessWidget {
               '75 Hard is a challenging commitment. Make sure you\'re ready to give it your all for the next 75 days.',
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
-                color: AppColors.textSecondary,
+                color: SFColors.textSecondary,
               ),
             ),
             const SizedBox(height: 24),
@@ -63,7 +63,7 @@ class SignupValidationDialog extends StatelessWidget {
                     child: Text(
                       'Not Yet',
                       style: GoogleFonts.inter(
-                        color: AppColors.textSecondary,
+                        color: SFColors.textSecondary,
                       ),
                     ),
                   ),
@@ -73,8 +73,8 @@ class SignupValidationDialog extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: onConfirm,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: AppColors.surface,
+                      backgroundColor: SFColors.primary,
+                      foregroundColor: SFColors.surface,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

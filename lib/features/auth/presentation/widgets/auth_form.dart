@@ -46,13 +46,12 @@ class AuthForm extends StatelessWidget {
           AppTextField(
             controller: _passwordController,
             label: 'Password',
-            isPassword: true,
             validator: Validators.validatePassword,
           ),
           const SizedBox(height: 24),
           AppButton(
             onPressed: _handleSubmit,
-            label: isLogin ? 'Login' : 'Sign Up',
+            text: isLogin ? 'Login' : 'Sign Up',
             isLoading: isLoading,
           ),
         ],
