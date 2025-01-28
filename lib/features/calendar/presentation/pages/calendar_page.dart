@@ -7,7 +7,6 @@ import 'package:table_calendar/table_calendar.dart';
 import '../bloc/calendar_bloc.dart';
 import '../widgets/calendar_header.dart';
 import '../widgets/day_details.dart';
-import '../../../../themes.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);

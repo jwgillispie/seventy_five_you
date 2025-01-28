@@ -1,9 +1,7 @@
-
 // lib/features/tracking/presentation/reading/widgets/reading_summary.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:seventy_five_hard/core/themes/app_colors.dart';
-import '../../../../../themes.dart';
 
 class ReadingSummary extends StatelessWidget {
   final String bookTitle;

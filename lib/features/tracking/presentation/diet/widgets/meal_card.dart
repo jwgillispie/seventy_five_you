@@ -2,7 +2,6 @@
 // lib/features/tracking/presentation/diet/widgets/meal_card.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../../themes.dart';
 
 class MealCard extends StatelessWidget {
   final String mealType;

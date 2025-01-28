@@ -6,7 +6,6 @@ import 'package:seventy_five_hard/core/themes/app_colors.dart';
 import '../bloc/reading_bloc.dart';
 import '../widgets/book_progress.dart';
 import '../widgets/reading_summary.dart';
-import '../../../../../themes.dart';
 
 class ReadingPage extends StatefulWidget {
   const ReadingPage({Key? key}) : super(key: key);
@@ -15,7 +14,8 @@ class ReadingPage extends StatefulWidget {
   State<ReadingPage> createState() => _ReadingPageState();
 }
 
-class _ReadingPageState extends State<ReadingPage> with SingleTickerProviderStateMixin {
+class _ReadingPageState extends State<ReadingPage>
+    with SingleTickerProviderStateMixin {
   late ReadingBloc _readingBloc;
   late AnimationController _animationController;
   final DateTime today = DateTime.now();
@@ -77,7 +77,8 @@ class _ReadingPageState extends State<ReadingPage> with SingleTickerProviderStat
                     if (state is ReadingSuccess) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Reading progress updated successfully!'),
+                          content:
+                              Text('Reading progress updated successfully!'),
                           backgroundColor: SFColors.primary,
                         ),
                       );

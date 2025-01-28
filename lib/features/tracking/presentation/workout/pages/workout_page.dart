@@ -7,7 +7,6 @@ import 'package:seventy_five_hard/features/tracking/presentation/workout/bloc/wo
 import 'package:seventy_five_hard/features/tracking/presentation/workout/bloc/workout_state.dart';
 import '../bloc/workout_bloc.dart';
 import '../widgets/workout_form.dart';
-import '../../../../../themes.dart';
 
 class WorkoutPage extends StatefulWidget {
   final bool isOutside;

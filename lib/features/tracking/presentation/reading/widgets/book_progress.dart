@@ -1,9 +1,7 @@
-
 // lib/features/tracking/presentation/reading/widgets/book_progress.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:seventy_five_hard/core/themes/app_colors.dart';
-import '../../../../../themes.dart';
 
 class BookProgress extends StatelessWidget {
   final int pagesRead;
@@ -50,10 +48,12 @@ class BookProgress extends StatelessWidget {
             children: [
               IconButton(
                 onPressed: onRemovePage,
-                icon: const Icon(Icons.remove_circle, color: Colors.white, size: 32),
+                icon: const Icon(Icons.remove_circle,
+                    color: Colors.white, size: 32),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(15),
@@ -69,7 +69,8 @@ class BookProgress extends StatelessWidget {
               ),
               IconButton(
                 onPressed: onAddPage,
-                icon: const Icon(Icons.add_circle, color: Colors.white, size: 32),
+                icon:
+                    const Icon(Icons.add_circle, color: Colors.white, size: 32),
               ),
             ],
           ),

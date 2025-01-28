@@ -1,6 +1,0 @@
-User:
-curl -X POST "http://localhost:8000/user/" -H "Content-Type: application/json" -d "{\"firebase_uid\": \"sample_uid\", \"email\": \"jozo@gmail.com\", \"display_name\": \"jozo\", \"first_name\": \"jordan\", \"last_name\": \"gizzy\"}"
-
-Day: 
-curl -X POST "http://localhost:8000/day/" -H "Content-Type: application/json" -d "{\"firebase_uid\":
- \"sample_uid\", \"email\": \"jozo@gmail.com\", \"display_name\": \"jozo\", \"first_name\": \"jordan\", \"last_name\": \"gizzy\", \"date\": \"2024-02-10\", \"diet\": [\"healthy\"], \"outside_workout\": [\"running\"], \"second_workout\": [\"gym\"], \"water\": 8, \"alcohol\": 0, \"pages\": 30}"

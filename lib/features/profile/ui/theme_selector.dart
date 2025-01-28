@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:seventy_five_hard/themes.dart';
+import 'package:seventy_five_hard/core/themes/theme_provider.dart';
 
 class ThemeSelector extends StatelessWidget {
   const ThemeSelector({Key? key}) : super(key: key);

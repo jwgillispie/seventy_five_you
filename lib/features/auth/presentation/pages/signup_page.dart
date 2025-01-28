@@ -1,11 +1,10 @@
-//lib/features/auth/presentation/pages/signup_page.dart
+// lib/features/auth/presentation/pages/signup_page.dart
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:seventy_five_hard/features/auth/presentation/bloc/auth_event.dart';
 import 'package:seventy_five_hard/features/auth/presentation/bloc/auth_state.dart';
-import '../../../../../shared/widgets/app_scaffold.dart';
 import '../../../../../core/themes/app_colors.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/auth_form.dart';
@@ -15,31 +14,31 @@ class SignupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      body: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: SFColors.error,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          } else if (state is AuthAuthenticated) {
-            Navigator.pushNamedAndRemoveUntil(
-              context, 
-              '/home',
-              (route) => false,
-            );
-          }
-        },
-        builder: (context, state) {
-          return SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: BlocConsumer<AuthBloc, AuthState>(
+              listener: (context, state) {
+                if (state is AuthError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.message),
+                      backgroundColor: SFColors.error,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                } else if (state is AuthAuthenticated) {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context, 
+                    '/home',
+                    (route) => false,
+                  );
+                }
+              },
+              builder: (context, state) {
+                return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: 48),
@@ -49,11 +48,11 @@ class SignupPage extends StatelessWidget {
                     const SizedBox(height: 24),
                     _buildLoginLink(context),
                   ],
-                ),
-              ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:seventy_five_hard/core/themes/app_colors.dart';
-import '../../../../../themes.dart';
 
 class NutritionSummary extends StatelessWidget {
   const NutritionSummary({Key? key}) : super(key: key);

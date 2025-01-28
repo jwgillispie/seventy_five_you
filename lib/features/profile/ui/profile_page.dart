@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:seventy_five_hard/features/auth/presentation/pages/login_page.dart';
 import 'package:seventy_five_hard/features/profile/ui/reminder_section.dart';
 import 'package:seventy_five_hard/features/profile/ui/theme_selector.dart';
-import 'package:seventy_five_hard/themes.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProfilePage extends StatefulWidget {
