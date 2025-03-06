@@ -20,6 +20,7 @@ class BookProgress extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
+        // ignore: prefer_const_constructors
         gradient: LinearGradient(
           colors: [SFColors.neutral, SFColors.tertiary],
         ),

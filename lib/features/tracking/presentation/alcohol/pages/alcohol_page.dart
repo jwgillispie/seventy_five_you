@@ -56,7 +56,7 @@ class _AlcoholPageState extends State<AlcoholPage> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -82,7 +82,7 @@ class _AlcoholPageState extends State<AlcoholPage> with SingleTickerProviderStat
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(state.message),
-                          backgroundColor: Color(0xFFB23B3B),
+                          backgroundColor: const Color(0xFFB23B3B),
                         ),
                       );
                     }
@@ -110,7 +110,7 @@ class _AlcoholPageState extends State<AlcoholPage> with SingleTickerProviderStat
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [SFColors.neutral, SFColors.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -154,7 +154,7 @@ class _AlcoholPageState extends State<AlcoholPage> with SingleTickerProviderStat
               color: SFColors.surface.withOpacity(0.2),
               borderRadius: BorderRadius.circular(15),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.no_drinks,
               color: SFColors.surface,
               size: 24,
@@ -269,7 +269,7 @@ class _AlcoholPageState extends State<AlcoholPage> with SingleTickerProviderStat
             },
             activeColor: SFColors.primary,
           ),
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Easy', style: TextStyle(color: SFColors.textSecondary)),

@@ -102,7 +102,7 @@ class _DietPageState extends State<DietPage> with SingleTickerProviderStateMixin
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text(
+                      child: const Text(
                         'Cancel',
                         style: TextStyle(color: SFColors.textSecondary),
                       ),
@@ -170,7 +170,7 @@ class _DietPageState extends State<DietPage> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -239,7 +239,7 @@ class _DietPageState extends State<DietPage> with SingleTickerProviderStateMixin
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [SFColors.neutral, SFColors.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

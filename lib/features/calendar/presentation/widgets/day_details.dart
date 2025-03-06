@@ -21,7 +21,7 @@ class DayDetails extends StatelessWidget {
             _buildObjectiveContent(
               icon: Icons.bathroom_outlined,
               label: 'Pee Count: ${day.water!.peeCount}',
-              success: day.water!.peeCount! > 5,
+              success: day.water!.peeCount > 5,
             ),
           ],
         ),

@@ -59,7 +59,7 @@ class _ReadingPageState extends State<ReadingPage>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -76,7 +76,7 @@ class _ReadingPageState extends State<ReadingPage>
                   listener: (context, state) {
                     if (state is ReadingSuccess) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           content:
                               Text('Reading progress updated successfully!'),
                           backgroundColor: SFColors.primary,
@@ -86,7 +86,7 @@ class _ReadingPageState extends State<ReadingPage>
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(state.message),
-                          backgroundColor: Color(0xFFB23B3B),
+                          backgroundColor: const Color(0xFFB23B3B),
                         ),
                       );
                     }
@@ -119,7 +119,7 @@ class _ReadingPageState extends State<ReadingPage>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [SFColors.neutral, SFColors.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -163,7 +163,7 @@ class _ReadingPageState extends State<ReadingPage>
               color: SFColors.surface.withOpacity(0.2),
               borderRadius: BorderRadius.circular(15),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.menu_book,
               color: SFColors.surface,
               size: 24,
@@ -220,7 +220,7 @@ class _ReadingPageState extends State<ReadingPage>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [SFColors.primary, SFColors.secondary],
         ),
         borderRadius: BorderRadius.circular(20),
@@ -234,7 +234,7 @@ class _ReadingPageState extends State<ReadingPage>
       ),
       child: Column(
         children: [
-          Icon(
+          const Icon(
             Icons.emoji_events,
             color: SFColors.surface,
             size: 40,

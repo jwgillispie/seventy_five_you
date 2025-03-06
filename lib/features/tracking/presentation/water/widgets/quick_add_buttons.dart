@@ -30,7 +30,7 @@ class QuickAddButtons extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
+          gradient: const LinearGradient(
             colors: [SFColors.neutral, SFColors.tertiary],
           ),
           borderRadius: BorderRadius.circular(15),
@@ -44,7 +44,7 @@ class QuickAddButtons extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(Icons.water_drop, color: SFColors.surface),
+            const Icon(Icons.water_drop, color: SFColors.surface),
             const SizedBox(width: 8),
             Text(
               '$amount oz',

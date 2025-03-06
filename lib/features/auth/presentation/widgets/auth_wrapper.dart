@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 import 'package:seventy_five_hard/features/auth/presentation/bloc/auth_state.dart';
 import 'package:seventy_five_hard/features/auth/presentation/pages/login_page.dart';
 import '../bloc/auth_bloc.dart';

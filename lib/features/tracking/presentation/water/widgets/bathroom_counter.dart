@@ -47,7 +47,7 @@ class BathroomCounter extends StatelessWidget {
             children: [
               IconButton(
                 onPressed: onDecrement,
-                icon: Icon(
+                icon: const Icon(
                   Icons.remove_circle,
                   color: SFColors.tertiary,
                   size: 32,
@@ -71,7 +71,7 @@ class BathroomCounter extends StatelessWidget {
               ),
               IconButton(
                 onPressed: onIncrement,
-                icon: Icon(
+                icon: const Icon(
                   Icons.add_circle,
                   color: SFColors.tertiary,
                   size: 32,

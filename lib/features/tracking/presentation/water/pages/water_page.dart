@@ -68,7 +68,7 @@ class _WaterPageState extends State<WaterPage> with SingleTickerProviderStateMix
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -85,7 +85,7 @@ class _WaterPageState extends State<WaterPage> with SingleTickerProviderStateMix
                   listener: (context, state) {
                     if (state is WaterSuccess) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           content: Text('Water intake updated! 💧'),
                           backgroundColor: SFColors.primary,
                         ),
@@ -94,7 +94,7 @@ class _WaterPageState extends State<WaterPage> with SingleTickerProviderStateMix
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(state.message),
-                          backgroundColor: Color(0xFFB23B3B),
+                          backgroundColor: const Color(0xFFB23B3B),
                         ),
                       );
                     }
@@ -122,7 +122,7 @@ class _WaterPageState extends State<WaterPage> with SingleTickerProviderStateMix
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [SFColors.neutral, SFColors.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -168,7 +168,7 @@ class _WaterPageState extends State<WaterPage> with SingleTickerProviderStateMix
                   color: SFColors.surface.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(15),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.water_drop,
                   color: SFColors.surface,
                   size: 24,
@@ -232,7 +232,7 @@ class _WaterPageState extends State<WaterPage> with SingleTickerProviderStateMix
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [SFColors.primary, SFColors.secondary],
         ),
         borderRadius: BorderRadius.circular(20),
@@ -246,7 +246,7 @@ class _WaterPageState extends State<WaterPage> with SingleTickerProviderStateMix
       ),
       child: Column(
         children: [
-          Icon(
+          const Icon(
             Icons.celebration,
             color: SFColors.surface,
             size: 40,

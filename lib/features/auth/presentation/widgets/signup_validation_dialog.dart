@@ -31,7 +31,7 @@ class SignupValidationDialog extends StatelessWidget {
                 color: SFColors.primary.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.warning_amber_rounded,
                 color: SFColors.primary,
                 size: 32,

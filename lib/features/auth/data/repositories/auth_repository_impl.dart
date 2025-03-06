@@ -30,7 +30,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
       }
     } else {
-      return Left(NetworkFailure(message: 'No internet connection'));
+      return const Left(NetworkFailure(message: 'No internet connection'));
     }
   }
 
@@ -50,7 +50,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
       }
     } else {
-      return Left(NetworkFailure(message: 'No internet connection'));
+      return const Left(NetworkFailure(message: 'No internet connection'));
     }
   }
 
@@ -71,7 +71,7 @@ class AuthRepositoryImpl implements AuthRepository {
       if (user != null) {
         return Right(user);
       } else {
-        return Left(AuthFailure(message: 'No user logged in'));
+        return const Left(AuthFailure(message: 'No user logged in'));
       }
     } on AuthException catch (e) {
       return Left(AuthFailure(message: e.message));
@@ -88,7 +88,7 @@ class AuthRepositoryImpl implements AuthRepository {
         return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
       }
     } else {
-      return Left(NetworkFailure(message: 'No internet connection'));
+      return const Left(NetworkFailure(message: 'No internet connection'));
     }
   }
 }

@@ -62,7 +62,7 @@ class _WorkoutPageState extends State<WorkoutPage>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -79,7 +79,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                   listener: (context, state) {
                     if (state is WorkoutSuccess) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           content: Text('Workout saved successfully! 💪'),
                           backgroundColor: SFColors.primary,
                         ),
@@ -88,7 +88,7 @@ class _WorkoutPageState extends State<WorkoutPage>
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(state.message),
-                          backgroundColor: Color(0xFFB23B3B),
+                          backgroundColor: const Color(0xFFB23B3B),
                         ),
                       );
                     }
@@ -121,7 +121,7 @@ class _WorkoutPageState extends State<WorkoutPage>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [SFColors.neutral, SFColors.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

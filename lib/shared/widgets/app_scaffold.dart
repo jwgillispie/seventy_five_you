@@ -78,7 +78,7 @@ class _AppScaffoldState extends State<AppScaffold> {
           },
           backgroundColor: SFColors.surface,
           indicatorColor: SFColors.primary.withOpacity(0.2),
-          destinations: [
+          destinations: const [
             NavigationDestination(
               icon: Icon(Icons.home_outlined, color: SFColors.textSecondary),
               selectedIcon: Icon(Icons.home, color: SFColors.primary),

@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:seventy_five_hard/features/auth/presentation/bloc/auth_event.dart';
 import 'package:seventy_five_hard/features/auth/presentation/bloc/auth_state.dart';
-import 'package:seventy_five_hard/navigation_service.dart';
 import '../../../../../core/themes/app_colors.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/auth_form.dart';
@@ -124,8 +123,7 @@ class LoginPage extends StatelessWidget {
           ),
         ),
         TextButton(
-          // onPressed: () => Navigator.pushNamed(context, '/signup'),
-          onPressed: () => NavigationService.navigateToSignup(context),
+          onPressed: () => Navigator.pushNamed(context, '/signup'),
           child: Text(
             'Sign Up',
             style: GoogleFonts.inter(

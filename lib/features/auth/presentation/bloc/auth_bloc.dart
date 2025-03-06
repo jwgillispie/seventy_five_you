@@ -1,13 +1,10 @@
 // lib/features/auth/presentation/bloc/auth_bloc.dart
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:seventy_five_hard/features/auth/domain/usecases/login.dart';
 import 'package:seventy_five_hard/features/auth/domain/usecases/signup.dart';
 import 'package:seventy_five_hard/features/auth/presentation/bloc/auth_event.dart';
-import 'package:seventy_five_hard/features/auth/presentation/bloc/auth_event.dart';
 import 'package:seventy_five_hard/features/auth/presentation/bloc/auth_state.dart';
-import '../../domain/entities/user.dart';
 
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {

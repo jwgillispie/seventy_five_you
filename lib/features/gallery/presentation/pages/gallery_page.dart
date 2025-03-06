@@ -29,7 +29,7 @@ class _GalleryPageState extends State<GalleryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -51,7 +51,7 @@ class _GalleryPageState extends State<GalleryPage> {
                       return Center(
                         child: Text(
                           state.message,
-                          style: TextStyle(color: SFColors.error),
+                          style: const TextStyle(color: SFColors.error),
                         ),
                       );
                     }
@@ -71,7 +71,7 @@ class _GalleryPageState extends State<GalleryPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [SFColors.neutral, SFColors.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

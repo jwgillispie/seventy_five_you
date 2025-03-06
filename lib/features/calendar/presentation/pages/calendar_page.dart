@@ -35,7 +35,7 @@ class _CalendarPageState extends State<CalendarPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -97,23 +97,23 @@ class _CalendarPageState extends State<CalendarPage> {
             color: SFColors.neutral,
           ),
           formatButtonVisible: false,
-          leftChevronIcon: Icon(Icons.chevron_left, color: SFColors.neutral),
-          rightChevronIcon: Icon(Icons.chevron_right, color: SFColors.neutral),
+          leftChevronIcon: const Icon(Icons.chevron_left, color: SFColors.neutral),
+          rightChevronIcon: const Icon(Icons.chevron_right, color: SFColors.neutral),
         ),
         calendarStyle: CalendarStyle(
           todayDecoration: BoxDecoration(
             color: SFColors.neutral.withOpacity(0.8),
             shape: BoxShape.circle,
           ),
-          selectedDecoration: BoxDecoration(
+          selectedDecoration: const BoxDecoration(
             color: SFColors.tertiary,
             shape: BoxShape.circle,
           ),
-          todayTextStyle: TextStyle(color: SFColors.surface),
-          selectedTextStyle: TextStyle(color: SFColors.surface),
-          defaultTextStyle: TextStyle(color: SFColors.textPrimary),
-          outsideTextStyle: TextStyle(color: SFColors.textSecondary),
-          weekendTextStyle: TextStyle(color: SFColors.textPrimary),
+          todayTextStyle: const TextStyle(color: SFColors.surface),
+          selectedTextStyle: const TextStyle(color: SFColors.surface),
+          defaultTextStyle: const TextStyle(color: SFColors.textPrimary),
+          outsideTextStyle: const TextStyle(color: SFColors.textSecondary),
+          weekendTextStyle: const TextStyle(color: SFColors.textPrimary),
         ),
       ),
     );
