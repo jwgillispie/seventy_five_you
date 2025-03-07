@@ -1,17 +1,15 @@
 // lib/features/tracking/presentation/alcohol/bloc/alcohol_bloc.dart
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:meta/meta.dart';
-import 'package:http/http.dart' as http;
 import 'package:seventy_five_hard/features/tracking/data/models/day_model.dart';
+import 'package:seventy_five_hard/features/tracking/data/models/alcohol_tracking_model.dart';
+import 'package:seventy_five_hard/features/tracking/data/services/day_service.dart';
 import 'package:seventy_five_hard/features/tracking/presentation/alcohol/bloc/alcohol_event.dart';
 import 'package:seventy_five_hard/features/tracking/presentation/alcohol/bloc/alcohol_state.dart';
-import 'dart:convert';
-
-
 
 class AlcoholBloc extends Bloc<AlcoholEvent, AlcoholState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final DayService _dayService = DayService();
 
   AlcoholBloc() : super(AlcoholInitial()) {
     on<FetchAlcoholData>(_onFetchAlcoholData);
@@ -22,22 +20,25 @@ class AlcoholBloc extends Bloc<AlcoholEvent, AlcoholState> {
     emit(AlcoholLoading());
     try {
       final user = _auth.currentUser;
-      if (user == null) return;
+      if (user == null) {
+        emit(AlcoholError('User not authenticated'));
+        return;
+      }
 
-      final response = await http.get(
-        Uri.parse('http://localhost:8000/day/${user.uid}/${event.date}'),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        Day day = Day.fromJson(json.decode(response.body));
-        if (day.alcohol != null) {
-          emit(AlcoholLoaded(day.alcohol!));
-        } else {
-          emit(AlcoholEmpty());
-        }
+      final day = await _dayService.getDayByDate(event.date);
+      
+      if (day != null && day.alcohol != null) {
+        emit(AlcoholLoaded(day.alcohol!));
       } else {
-        emit(AlcoholError('Failed to fetch alcohol data'));
+        // Initialize an empty alcohol model
+        final emptyAlcohol = AlcoholTrackingModel(
+          date: event.date,
+          firebaseUid: user.uid,
+          completed: false,
+          difficulty: 5,
+        );
+        
+        emit(AlcoholEmpty());
       }
     } catch (e) {
       emit(AlcoholError(e.toString()));
@@ -47,8 +48,12 @@ class AlcoholBloc extends Bloc<AlcoholEvent, AlcoholState> {
   Future<void> _onUpdateAlcoholData(UpdateAlcoholData event, Emitter<AlcoholState> emit) async {
     try {
       final user = _auth.currentUser;
-      if (user == null) return;
+      if (user == null) {
+        emit(AlcoholError('User not authenticated'));
+        return;
+      }
 
+      // Create alcohol data
       final alcoholData = {
         'alcohol': {
           'date': event.date,
@@ -58,18 +63,11 @@ class AlcoholBloc extends Bloc<AlcoholEvent, AlcoholState> {
         }
       };
 
-      final response = await http.put(
-        Uri.parse('http://localhost:8000/day/${user.uid}/${event.date}'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(alcoholData),
-      );
+      // Update the day record
+      await _dayService.updateDay(event.date, alcoholData);
 
-      if (response.statusCode == 200) {
-        emit(AlcoholSuccess());
-        add(FetchAlcoholData(event.date));
-      } else {
-        emit(AlcoholError('Failed to update alcohol status'));
-      }
+      emit(AlcoholSuccess());
+      add(FetchAlcoholData(event.date));
     } catch (e) {
       emit(AlcoholError(e.toString()));
     }

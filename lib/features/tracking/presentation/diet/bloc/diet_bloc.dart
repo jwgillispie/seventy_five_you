@@ -2,17 +2,16 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
 import 'package:seventy_five_hard/features/tracking/data/models/day_model.dart';
 import 'package:seventy_five_hard/features/tracking/data/models/diet_tracking_model.dart';
+import 'package:seventy_five_hard/features/tracking/data/services/day_service.dart';
 
 part 'diet_event.dart';
 part 'diet_state.dart';
 
 class DietBloc extends Bloc<DietEvent, DietState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final DayService _dayService = DayService();
 
   DietBloc() : super(DietInitial()) {
     on<FetchDietData>(_onFetchDietData);
@@ -23,18 +22,34 @@ class DietBloc extends Bloc<DietEvent, DietState> {
     emit(DietLoading());
     try {
       final user = _auth.currentUser;
-      if (user == null) return;
+      if (user == null) {
+        emit(DietError('User not authenticated'));
+        return;
+      }
 
-      final response = await http.get(
-        Uri.parse('http://localhost:8000/day/${user.uid}/${event.date}'),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        Day day = Day.fromJson(json.decode(response.body));
+      final day = await _dayService.getDayByDate(event.date);
+      
+      if (day != null && day.diet != null) {
         emit(DietLoaded(day.diet!));
       } else {
-        emit(DietError('Failed to fetch diet data'));
+        // Initialize an empty diet model
+        final emptyDiet = DietTrackingModel(
+          date: event.date,
+          firebaseUid: user.uid,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+          snacks: [],
+          completed: false,
+        );
+        
+        // Create the empty diet entry
+        final dietData = {
+          'diet': emptyDiet.toJson(),
+        };
+        
+        await _dayService.updateDay(event.date, dietData);
+        emit(DietLoaded(emptyDiet));
       }
     } catch (e) {
       emit(DietError(e.toString()));
@@ -44,21 +59,21 @@ class DietBloc extends Bloc<DietEvent, DietState> {
   Future<void> _onSubmitMeal(SubmitMeal event, Emitter<DietState> emit) async {
     try {
       final user = _auth.currentUser;
-      if (user == null) return;
-
-      final dietData = event.diet.toJson();
-      final response = await http.put(
-        Uri.parse('http://localhost:8000/day/${user.uid}/${event.date}'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'diet': dietData}),
-      );
-
-      if (response.statusCode == 200) {
-        emit(DietSuccess());
-        add(FetchDietData(event.date));
-      } else {
-        emit(DietError('Failed to update diet'));
+      if (user == null) {
+        emit(DietError('User not authenticated'));
+        return;
       }
+
+      // Update with the diet data
+      final dietData = {
+        'diet': event.diet.toJson(),
+      };
+
+      // Update the day record
+      await _dayService.updateDay(event.date, dietData);
+
+      emit(DietSuccess());
+      add(FetchDietData(event.date));
     } catch (e) {
       emit(DietError(e.toString()));
     }

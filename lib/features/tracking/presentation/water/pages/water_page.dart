@@ -1,16 +1,16 @@
 // lib/features/tracking/presentation/water/pages/water_page.dart
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:seventy_five_hard/core/themes/app_colors.dart';
+import 'package:seventy_five_hard/features/tracking/presentation/water/bloc/water_bloc.dart';
 import 'package:seventy_five_hard/features/tracking/presentation/water/bloc/water_event.dart';
 import 'package:seventy_five_hard/features/tracking/presentation/water/bloc/water_state.dart';
-import '../bloc/water_bloc.dart';
 import '../widgets/water_bottle.dart';
-import '../widgets/water_stats.dart';
-import '../widgets/quick_add_buttons.dart';
 import '../widgets/bathroom_counter.dart';
-import 'dart:math';
+import '../widgets/quick_add_buttons.dart';
+import '../widgets/water_stats.dart';
 
 class WaterPage extends StatefulWidget {
   const WaterPage({Key? key}) : super(key: key);
@@ -27,6 +27,7 @@ class _WaterPageState extends State<WaterPage> with SingleTickerProviderStateMix
   int _ouncesDrunk = 0;
   int _peeCount = 0;
   int _streak = 0;
+  bool _isCompleted = false;
 
   @override
   void initState() {
@@ -90,6 +91,7 @@ class _WaterPageState extends State<WaterPage> with SingleTickerProviderStateMix
                           backgroundColor: SFColors.primary,
                         ),
                       );
+                      _fetchWaterData(); // Refresh data
                     } else if (state is WaterError) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -97,15 +99,17 @@ class _WaterPageState extends State<WaterPage> with SingleTickerProviderStateMix
                           backgroundColor: const Color(0xFFB23B3B),
                         ),
                       );
+                    } else if (state is WaterLoaded) {
+                      setState(() {
+                        _ouncesDrunk = state.water.ouncesDrunk ?? 0;
+                        _peeCount = state.water.peeCount ?? 0;
+                        _isCompleted = state.water.completed ?? false;
+                      });
                     }
                   },
                   builder: (context, state) {
                     if (state is WaterLoading) {
                       return const Center(child: CircularProgressIndicator());
-                    } else if (state is WaterLoaded) {
-                      _ouncesDrunk = state.water.ouncesDrunk ?? 0;
-                      _peeCount = state.water.peeCount ?? 0;
-                      return _buildContent();
                     }
                     return _buildContent();
                   },
@@ -154,7 +158,7 @@ class _WaterPageState extends State<WaterPage> with SingleTickerProviderStateMix
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Stay hydrated!',
+                    'Goal: 1 Gallon (128 oz)',
                     style: GoogleFonts.inter(
                       color: SFColors.surface.withOpacity(0.9),
                       fontSize: 16,
@@ -199,10 +203,10 @@ class _WaterPageState extends State<WaterPage> with SingleTickerProviderStateMix
           const SizedBox(height: 24),
           QuickAddButtons(
             onAdd: (amount) {
-              if (_ouncesDrunk + amount <= 128) {
-                setState(() => _ouncesDrunk += amount);
-                _updateWater();
-              }
+              setState(() {
+                _ouncesDrunk = min(_ouncesDrunk + amount, 128); // Cap at 128 oz (1 gallon)
+              });
+              _updateWater();
             },
           ),
           const SizedBox(height: 24),
@@ -219,6 +223,65 @@ class _WaterPageState extends State<WaterPage> with SingleTickerProviderStateMix
               }
             },
           ),
+          const SizedBox(height: 24),
+          
+          // Progress indicator
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: SFColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: SFColors.neutral.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Text(
+                  'Daily Progress',
+                  style: GoogleFonts.orbitron(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: SFColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: LinearProgressIndicator(
+                    value: _ouncesDrunk / 128,
+                    backgroundColor: SFColors.background,
+                    valueColor: AlwaysStoppedAnimation<Color>(SFColors.tertiary),
+                    minHeight: 12,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  '$_ouncesDrunk oz of 128 oz',
+                  style: GoogleFonts.inter(
+                    color: SFColors.textSecondary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _ouncesDrunk >= 128
+                      ? "You've reached your daily water goal! 🎉"
+                      : "Keep drinking! ${128 - _ouncesDrunk} oz to go",
+                  style: TextStyle(
+                    color: _ouncesDrunk >= 128 ? SFColors.primary : SFColors.textSecondary,
+                    fontWeight: _ouncesDrunk >= 128 ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
           if (_ouncesDrunk >= 128) ...[
             const SizedBox(height: 24),
             _buildCompletionCard(),
@@ -227,7 +290,7 @@ class _WaterPageState extends State<WaterPage> with SingleTickerProviderStateMix
       ),
     );
   }
-
+  
   Widget _buildCompletionCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -267,6 +330,26 @@ class _WaterPageState extends State<WaterPage> with SingleTickerProviderStateMix
             style: GoogleFonts.inter(
               fontSize: 14,
               color: SFColors.surface.withOpacity(0.9),
+            ),
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            style: OutlinedButton.styleFrom(
+              foregroundColor: SFColors.surface,
+              side: const BorderSide(color: SFColors.surface),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              'Return to Home',
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:seventy_five_hard/core/services/app_launch_service.dart';
 import 'package:seventy_five_hard/core/themes/theme_provider.dart';
 import 'package:seventy_five_hard/features/auth/presentation/bloc/auth_state.dart';
 import 'firebase_options.dart';
@@ -37,6 +38,9 @@ void main() async {
     print("Main: Error initializing dependency injection: $e");
   }
   
+  // Initialize app data
+  await AppLaunchService().initialize();
+  
   runApp(MyApp());
 }
 
@@ -64,6 +68,7 @@ class MyApp extends StatelessWidget {
             return ThemeProvider();
           },
         ),
+        // Add other providers here
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {

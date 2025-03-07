@@ -2,18 +2,16 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
 import 'package:seventy_five_hard/features/tracking/data/models/day_model.dart';
 import 'package:seventy_five_hard/features/tracking/data/models/reading_tracking_model.dart';
-
+import 'package:seventy_five_hard/features/tracking/data/services/day_service.dart';
 
 part 'reading_event.dart';
 part 'reading_state.dart';
 
 class ReadingBloc extends Bloc<ReadingEvent, ReadingState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final DayService _dayService = DayService();
 
   ReadingBloc() : super(ReadingInitial()) {
     on<FetchReadingData>(_onFetchReadingData);
@@ -24,22 +22,27 @@ class ReadingBloc extends Bloc<ReadingEvent, ReadingState> {
     emit(ReadingLoading());
     try {
       final user = _auth.currentUser;
-      if (user == null) return;
+      if (user == null) {
+        emit(ReadingError('User not authenticated'));
+        return;
+      }
 
-      final response = await http.get(
-        Uri.parse('http://localhost:8000/day/${user.uid}/${event.date}'),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        Day day = Day.fromJson(json.decode(response.body));
-        if (day.pages != null) {
-          emit(ReadingLoaded(day.pages!));
-        } else {
-          emit(ReadingEmpty());
-        }
+      final day = await _dayService.getDayByDate(event.date);
+      
+      if (day != null && day.pages != null) {
+        emit(ReadingLoaded(day.pages!));
       } else {
-        emit(ReadingError('Failed to fetch reading data'));
+        // Initialize an empty reading model
+        final emptyReading = ReadingTrackingModel(
+          date: event.date,
+          firebaseUid: user.uid,
+          completed: false,
+          summary: '',
+          bookTitle: '',
+          pagesRead: 0
+        );
+        
+        emit(ReadingEmpty());
       }
     } catch (e) {
       emit(ReadingError(e.toString()));
@@ -49,8 +52,12 @@ class ReadingBloc extends Bloc<ReadingEvent, ReadingState> {
   Future<void> _onUpdateReadingProgress(UpdateReadingProgress event, Emitter<ReadingState> emit) async {
     try {
       final user = _auth.currentUser;
-      if (user == null) return;
+      if (user == null) {
+        emit(ReadingError('User not authenticated'));
+        return;
+      }
 
+      // Create reading data
       final readingData = {
         'pages': {
           'date': event.date,
@@ -58,22 +65,15 @@ class ReadingBloc extends Bloc<ReadingEvent, ReadingState> {
           'bookTitle': event.bookTitle,
           'summary': event.summary,
           'pagesRead': event.pagesRead,
-          'completed': event.pagesRead >= 10,
+          'completed': event.pagesRead >= 10, // 10 pages minimum
         }
       };
 
-      final response = await http.put(
-        Uri.parse('http://localhost:8000/day/${user.uid}/${event.date}'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(readingData),
-      );
+      // Update the day record
+      await _dayService.updateDay(event.date, readingData);
 
-      if (response.statusCode == 200) {
-        emit(ReadingSuccess());
-        add(FetchReadingData(event.date));
-      } else {
-        emit(ReadingError('Failed to update reading progress'));
-      }
+      emit(ReadingSuccess());
+      add(FetchReadingData(event.date));
     } catch (e) {
       emit(ReadingError(e.toString()));
     }

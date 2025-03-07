@@ -1,16 +1,16 @@
 // lib/features/tracking/presentation/workout/bloc/workout_bloc.dart
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:meta/meta.dart';
-import 'package:http/http.dart' as http;
 import 'package:seventy_five_hard/features/tracking/data/models/day_model.dart';
+import 'package:seventy_five_hard/features/tracking/data/models/inside_workout_model.dart';
+import 'package:seventy_five_hard/features/tracking/data/models/outside_workout_model.dart';
+import 'package:seventy_five_hard/features/tracking/data/services/day_service.dart';
 import 'package:seventy_five_hard/features/tracking/presentation/workout/bloc/workout_event.dart';
 import 'package:seventy_five_hard/features/tracking/presentation/workout/bloc/workout_state.dart';
-import 'dart:convert';
-
 
 class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final DayService _dayService = DayService();
 
   WorkoutBloc() : super(WorkoutInitial()) {
     on<FetchWorkoutData>(_onFetchWorkoutData);
@@ -21,21 +21,42 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
     emit(WorkoutLoading());
     try {
       final user = _auth.currentUser;
-      if (user == null) return;
+      if (user == null) {
+        emit(WorkoutError('User not authenticated'));
+        return;
+      }
 
-      final response = await http.get(
-        Uri.parse('http://localhost:8000/day/${user.uid}/${event.date}'),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        final day = Day.fromJson(json.decode(response.body));
+      final day = await _dayService.getDayByDate(event.date);
+      
+      if (day != null && day.insideWorkout != null && day.outsideWorkout != null) {
         emit(WorkoutLoaded(
           outsideWorkout: day.outsideWorkout!,
           insideWorkout: day.insideWorkout!,
         ));
       } else {
-        emit(WorkoutError('Failed to fetch workout data'));
+        // Initialize empty workout models if not found
+        final outsideWorkout = OutsideWorkout(
+          date: event.date,
+          firebaseUid: user.uid,
+          description: '',
+          thoughts: '',
+          completed: false,
+          workoutType: '',
+        );
+        
+        final insideWorkout = InsideWorkout(
+          date: event.date,
+          firebaseUid: user.uid,
+          description: '',
+          thoughts: '',
+          completed: false,
+          workoutType: '',
+        );
+        
+        emit(WorkoutLoaded(
+          outsideWorkout: outsideWorkout,
+          insideWorkout: insideWorkout,
+        ));
       }
     } catch (e) {
       emit(WorkoutError(e.toString()));
@@ -45,35 +66,31 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
   Future<void> _onUpdateWorkoutData(UpdateWorkoutData event, Emitter<WorkoutState> emit) async {
     try {
       final user = _auth.currentUser;
-      if (user == null) return;
+      if (user == null) {
+        emit(WorkoutError('User not authenticated'));
+        return;
+      }
 
+      // Create workout data based on whether it's inside or outside
+      final workoutKey = event.isOutside ? 'outside_workout' : 'inside_workout';
       final workoutData = {
-        event.isOutside ? 'outside_workout' : 'inside_workout': {
+        workoutKey: {
           'date': event.date,
           'firebase_uid': user.uid,
           'description': event.description,
           'thoughts': event.thoughts,
           'completed': true,
+          'workoutType': event.isOutside ? 'Outdoor' : 'Indoor',
         }
       };
 
-      final response = await http.put(
-        Uri.parse('http://localhost:8000/day/${user.uid}/${event.date}'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(workoutData),
-      );
+      // Update the day record
+      await _dayService.updateDay(event.date, workoutData);
 
-      if (response.statusCode == 200) {
-        emit(WorkoutSuccess());
-        add(FetchWorkoutData(event.date));
-      } else {
-        emit(WorkoutError('Failed to update workout'));
-      }
+      emit(WorkoutSuccess());
+      add(FetchWorkoutData(event.date));
     } catch (e) {
       emit(WorkoutError(e.toString()));
     }
   }
 }
-
-
-

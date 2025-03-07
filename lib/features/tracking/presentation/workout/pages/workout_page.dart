@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:seventy_five_hard/core/themes/app_colors.dart';
+import 'package:seventy_five_hard/features/tracking/presentation/workout/bloc/workout_bloc.dart';
 import 'package:seventy_five_hard/features/tracking/presentation/workout/bloc/workout_event.dart';
 import 'package:seventy_five_hard/features/tracking/presentation/workout/bloc/workout_state.dart';
-import '../bloc/workout_bloc.dart';
 import '../widgets/workout_form.dart';
 
 class WorkoutPage extends StatefulWidget {
@@ -25,6 +25,7 @@ class _WorkoutPageState extends State<WorkoutPage>
 
   String _description = '';
   String _thoughts = '';
+  bool _isCompleted = false;
 
   @override
   void initState() {
@@ -50,6 +51,16 @@ class _WorkoutPageState extends State<WorkoutPage>
   }
 
   void _updateWorkout() {
+    if (_description.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please describe your workout'),
+          backgroundColor: SFColors.error,
+        ),
+      );
+      return;
+    }
+    
     _workoutBloc.add(UpdateWorkoutData(
       date: today.toString().substring(0, 10),
       description: _description,
@@ -78,6 +89,9 @@ class _WorkoutPageState extends State<WorkoutPage>
                   bloc: _workoutBloc,
                   listener: (context, state) {
                     if (state is WorkoutSuccess) {
+                      setState(() {
+                        _isCompleted = true;
+                      });
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Workout saved successfully! 💪'),
@@ -91,20 +105,25 @@ class _WorkoutPageState extends State<WorkoutPage>
                           backgroundColor: const Color(0xFFB23B3B),
                         ),
                       );
+                    } else if (state is WorkoutLoaded) {
+                      final workout = widget.isOutside 
+                          ? state.outsideWorkout 
+                          : state.insideWorkout;
+                      setState(() {
+                        _description = '';
+                        _thoughts =  '';
+                        _isCompleted = false;
+                      });
+                      // setState(() {
+                      //   _description = workout.description ?? '';
+                      //   _thoughts = workout.thoughts ?? '';
+                      //   _isCompleted = workout.completed ?? false;
+                      // });
                     }
                   },
                   builder: (context, state) {
                     if (state is WorkoutLoading) {
                       return const Center(child: CircularProgressIndicator());
-                    } else if (state is WorkoutLoaded) {
-                      if (widget.isOutside) {
-                        _description = state.outsideWorkout.description!;
-                        _thoughts = state.outsideWorkout.thoughts!;
-                      } else {
-                        _description = state.insideWorkout.description!;
-                        _thoughts = state.insideWorkout.thoughts!;
-                      }
-                      return _buildContent();
                     }
                     return _buildContent();
                   },
@@ -116,6 +135,7 @@ class _WorkoutPageState extends State<WorkoutPage>
       ),
     );
   }
+
 
   Widget _buildHeader() {
     return Container(
@@ -188,12 +208,112 @@ class _WorkoutPageState extends State<WorkoutPage>
             thoughts: _thoughts,
             onDescriptionChanged: (value) {
               setState(() => _description = value);
-              _updateWorkout();
             },
             onThoughtsChanged: (value) {
               setState(() => _thoughts = value);
-              _updateWorkout();
             },
+          ),
+          const SizedBox(height: 30),
+
+          // Complete button or completion message
+          _isCompleted ? _buildCompletedMessage() : _buildCompleteButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompleteButton() {
+    return ElevatedButton(
+      onPressed: _updateWorkout,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: SFColors.primary,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+        textStyle: GoogleFonts.inter(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.check_circle_outline, size: 24),
+          const SizedBox(width: 8),
+          Text(
+            'Complete Workout',
+            style: GoogleFonts.inter(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompletedMessage() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [SFColors.primary, SFColors.secondary],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: SFColors.primary.withOpacity(0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          const Icon(
+            Icons.emoji_events,
+            color: SFColors.surface,
+            size: 40,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Workout Completed! 🎉',
+            style: GoogleFonts.inter(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: SFColors.surface,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Great job getting this ${widget.isOutside ? "outdoor" : "indoor"} workout done! Keep up the momentum.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              color: SFColors.surface.withOpacity(0.9),
+            ),
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            style: OutlinedButton.styleFrom(
+              foregroundColor: SFColors.surface,
+              side: const BorderSide(color: SFColors.surface),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              'Return to Home',
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),

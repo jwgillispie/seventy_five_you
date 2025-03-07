@@ -1,15 +1,15 @@
 // lib/features/tracking/presentation/water/bloc/water_bloc.dart
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:http/http.dart' as http;
 import 'package:seventy_five_hard/features/tracking/data/models/day_model.dart';
+import 'package:seventy_five_hard/features/tracking/data/models/water_tracking_model.dart';
+import 'package:seventy_five_hard/features/tracking/data/services/day_service.dart';
 import 'package:seventy_five_hard/features/tracking/presentation/water/bloc/water_event.dart';
 import 'package:seventy_five_hard/features/tracking/presentation/water/bloc/water_state.dart';
-import 'dart:convert';
-
 
 class WaterBloc extends Bloc<WaterEvent, WaterState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final DayService _dayService = DayService();
 
   WaterBloc() : super(WaterInitial()) {
     on<FetchWaterData>(_onFetchWaterData);
@@ -20,22 +20,17 @@ class WaterBloc extends Bloc<WaterEvent, WaterState> {
     emit(WaterLoading());
     try {
       final user = _auth.currentUser;
-      if (user == null) return;
+      if (user == null) {
+        emit(WaterError('User not authenticated'));
+        return;
+      }
 
-final response = await http.get(
-        Uri.parse('http://localhost:8000/day/${user.uid}/${event.date}'),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        Day day = Day.fromJson(json.decode(response.body));
-        if (day.water != null) {
-          emit(WaterLoaded(day.water!));
-        } else {
-          emit(WaterEmpty());
-        }
+      final day = await _dayService.getDayByDate(event.date);
+      
+      if (day != null && day.water != null) {
+        emit(WaterLoaded(day.water!));
       } else {
-        emit(WaterError('Failed to fetch water data'));
+        emit(WaterEmpty());
       }
     } catch (e) {
       emit(WaterError(e.toString()));
@@ -45,36 +40,29 @@ final response = await http.get(
   Future<void> _onUpdateWaterData(UpdateWaterData event, Emitter<WaterState> emit) async {
     try {
       final user = _auth.currentUser;
-      if (user == null) return;
+      if (user == null) {
+        emit(WaterError('User not authenticated'));
+        return;
+      }
 
+      // Create water tracking data
       final waterData = {
         'water': {
           'date': event.date,
           'firebase_uid': user.uid,
-          'completed': event.ouncesDrunk >= 128,
+          'completed': event.ouncesDrunk >= 128, // 1 gallon = 128 oz
           'peeCount': event.peeCount,
           'ouncesDrunk': event.ouncesDrunk,
         }
       };
 
-      final response = await http.put(
-        Uri.parse('http://localhost:8000/day/${user.uid}/${event.date}'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(waterData),
-      );
+      // Update the day record
+      await _dayService.updateDay(event.date, waterData);
 
-      if (response.statusCode == 200) {
-        emit(WaterSuccess());
-        add(FetchWaterData(event.date));
-      } else {
-        emit(WaterError('Failed to update water intake'));
-      }
+      emit(WaterSuccess());
+      add(FetchWaterData(event.date));
     } catch (e) {
       emit(WaterError(e.toString()));
     }
   }
 }
-
-
-
-
