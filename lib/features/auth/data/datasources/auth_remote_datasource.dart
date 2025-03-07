@@ -82,7 +82,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       try {
         print("AuthRemoteDataSource: Attempting to create user in API: ${userData.toJson()}");
         await _apiClient.post(
-          '/user',
+          '/user/',
           body: userData.toJson(),
         );
         print("AuthRemoteDataSource: API user creation successful");
