@@ -10,6 +10,7 @@ class FirebaseAuthService {
   FirebaseAuthService({FirebaseAuth? auth}) : _auth = auth ?? FirebaseAuth.instance;
 
   Future<User> signUpWithEmailAndPassword(String email, String password) async {
+    print("FirebaseAuthService: Attempting signUp with email: $email");
     try {
       final credential = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -17,12 +18,16 @@ class FirebaseAuthService {
       );
       
       if (credential.user == null) {
+        print("FirebaseAuthService: Failed to create user account - user is null");
         throw AuthException(message: 'Failed to create user account');
       }
       
+      print("FirebaseAuthService: Successfully created user: ${credential.user!.uid}");
       return credential.user!;
     } on FirebaseAuthException catch (e) {
       String errorMessage;
+      
+      print("FirebaseAuthService: Firebase Auth Exception: ${e.code} - ${e.message}");
       
       switch (e.code) {
         case 'weak-password':
@@ -38,19 +43,22 @@ class FirebaseAuthService {
           errorMessage = 'Email/password accounts are not enabled.';
           break;
         default:
-          errorMessage = 'An error occurred during sign up.';
+          errorMessage = 'An error occurred during sign up: ${e.message}';
       }
       
+      print("FirebaseAuthService: Throwing AuthException with message: $errorMessage");
       Fluttertoast.showToast(msg: errorMessage);
       throw AuthException(message: errorMessage);
     } catch (e) {
       const errorMessage = 'An unexpected error occurred';
+      print("FirebaseAuthService: Unexpected error during signUp: $e");
       Fluttertoast.showToast(msg: errorMessage);
       throw AuthException(message: errorMessage);
     }
   }
 
   Future<User> signInWithEmailAndPassword(String email, String password) async {
+    print("FirebaseAuthService: Attempting signIn with email: $email");
     try {
       final credential = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -58,12 +66,16 @@ class FirebaseAuthService {
       );
       
       if (credential.user == null) {
+        print("FirebaseAuthService: Failed to sign in - user is null");
         throw AuthException(message: 'Failed to sign in');
       }
       
+      print("FirebaseAuthService: Successfully signed in user: ${credential.user!.uid}");
       return credential.user!;
     } on FirebaseAuthException catch (e) {
       String errorMessage;
+      
+      print("FirebaseAuthService: Firebase Auth Exception: ${e.code} - ${e.message}");
       
       switch (e.code) {
         case 'user-not-found':
@@ -79,31 +91,41 @@ class FirebaseAuthService {
           errorMessage = 'The email address is not valid.';
           break;
         default:
-          errorMessage = 'An error occurred during sign in.';
+          errorMessage = 'An error occurred during sign in: ${e.message}';
       }
       
+      print("FirebaseAuthService: Throwing AuthException with message: $errorMessage");
       Fluttertoast.showToast(msg: errorMessage);
       throw AuthException(message: errorMessage);
     } catch (e) {
       const errorMessage = 'An unexpected error occurred';
+      print("FirebaseAuthService: Unexpected error during signIn: $e");
       Fluttertoast.showToast(msg: errorMessage);
       throw AuthException(message: errorMessage);
     }
   }
 
   Future<void> signOut() async {
+    print("FirebaseAuthService: Attempting to sign out");
     try {
       await _auth.signOut();
+      print("FirebaseAuthService: Successfully signed out");
     } catch (e) {
       const errorMessage = 'Failed to sign out';
+      print("FirebaseAuthService: Error during signOut: $e");
       Fluttertoast.showToast(msg: errorMessage);
       throw AuthException(message: errorMessage);
     }
   }
 
   User? getCurrentUser() {
-    return _auth.currentUser;
+    final user = _auth.currentUser;
+    print("FirebaseAuthService: getCurrentUser: ${user?.uid ?? 'No current user'}");
+    return user;
   }
 
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
+  Stream<User?> get authStateChanges {
+    print("FirebaseAuthService: Listening to authStateChanges");
+    return _auth.authStateChanges();
+  }
 }

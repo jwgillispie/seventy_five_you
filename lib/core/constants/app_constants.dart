@@ -11,7 +11,7 @@ class AppConstants {
   static const String userKey = 'user_data';
   
   // Validation constants
-  static const int minPasswordLength = 8;
+  static const int minPasswordLength = 4;
   static const int maxNameLength = 50;
   static const String emailRegex = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
 }

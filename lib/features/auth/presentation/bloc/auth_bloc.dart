@@ -24,13 +24,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LoginRequested event,
     Emitter<AuthState> emit,
   ) async {
+    print("AuthBloc: Login requested for email: ${event.email}");
     emit(AuthLoading());
     
     final result = await login(event.email, event.password);
     
     result.fold(
-      (failure) => emit(AuthError(message: failure.message)),
-      (user) => emit(AuthAuthenticated(user)),
+      (failure) {
+        print("AuthBloc: Login failed with error: ${failure.message}");
+        emit(AuthError(message: failure.message));
+      },
+      (user) {
+        print("AuthBloc: Login successful for user: ${user.displayName}");
+        emit(AuthAuthenticated(user));
+      },
     );
   }
 
@@ -38,6 +45,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     SignupRequested event,
     Emitter<AuthState> emit,
   ) async {
+    print("AuthBloc: Signup requested for email: ${event.email}, username: ${event.username}");
     emit(AuthLoading());
     
     final result = await signup(
@@ -47,8 +55,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     
     result.fold(
-      (failure) => emit(AuthError(message: failure.message)),
-      (user) => emit(AuthAuthenticated(user)),
+      (failure) {
+        print("AuthBloc: Signup failed with error: ${failure.message}");
+        emit(AuthError(message: failure.message));
+      },
+      (user) {
+        print("AuthBloc: Signup successful for user: ${user.displayName}");
+        emit(AuthAuthenticated(user));
+      },
     );
   }
 
@@ -56,6 +70,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LogoutRequested event,
     Emitter<AuthState> emit,
   ) {
+    print("AuthBloc: Logout requested");
     emit(AuthInitial());
   }
 }

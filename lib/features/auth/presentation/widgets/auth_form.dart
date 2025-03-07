@@ -24,6 +24,12 @@ class AuthForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("AuthForm: Building AuthForm (isLogin: $isLogin)");
+
+    // For debugging, prefill with test values
+    _emailController.text = 'test@example.com';
+    _passwordController.text = 'Password123';
+
     return Form(
       key: _formKey,
       child: Column(
@@ -32,11 +38,14 @@ class AuthForm extends StatelessWidget {
             AppTextField(
               controller: _usernameController,
               label: 'Username',
-              validator: (value) => Validators.validateRequired(value, 'Username'),
+              validator: (value) =>
+                  Validators.validateRequired(value, 'Username'),
             ),
             const SizedBox(height: 16),
           ],
           AppTextField(
+// lib/features/auth/presentation/widgets/auth_form.dart (continued)
+
             controller: _emailController,
             label: 'Email',
             keyboardType: TextInputType.emailAddress,
@@ -46,6 +55,7 @@ class AuthForm extends StatelessWidget {
           AppTextField(
             controller: _passwordController,
             label: 'Password',
+            obscureText: true,
             validator: Validators.validatePassword,
           ),
           const SizedBox(height: 24),
@@ -60,12 +70,22 @@ class AuthForm extends StatelessWidget {
   }
 
   void _handleSubmit() {
+    print("AuthForm: Handling form submit");
     if (_formKey.currentState?.validate() ?? false) {
+      print("AuthForm: Form validation successful");
+      print("AuthForm: Email: ${_emailController.text}");
+      print("AuthForm: Password: ${_passwordController.text}");
+      if (!isLogin) {
+        print("AuthForm: Username: ${_usernameController.text}");
+      }
+
       onSubmit(
         _emailController.text,
         _passwordController.text,
         isLogin ? null : _usernameController.text,
       );
+    } else {
+      print("AuthForm: Form validation failed");
     }
   }
 }
